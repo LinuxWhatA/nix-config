@@ -1,0 +1,30 @@
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
+
+let
+  ifTheyExist = groups: builtins.filter (group: builtins.hasAttr group config.users.groups) groups;
+in
+{
+  users.mutableUsers = true;
+  users.users.lwa = {
+    isNormalUser = true;
+    shell = pkgs.zsh;
+    extraGroups = ifTheyExist [
+      "git"
+      "wheel"
+      "audio"
+      "video"
+      "network"
+      "libvirtd"
+      "adbusers"
+    ];
+
+    packages = [ pkgs.home-manager ];
+  };
+
+  home-manager.users.lwa = import ../../../../home/lwa/${config.networking.hostName}.nix;
+}
