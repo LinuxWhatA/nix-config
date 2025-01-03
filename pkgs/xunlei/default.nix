@@ -59,13 +59,15 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    mkdir -p $out/{bin,lib,share/icons/hicolor}
-    mv opt/apps/com.xunlei.download/files/* $out/lib
-    mv opt/apps/com.xunlei.download/entries/applications $out/share
+    mkdir -p $out/{bin,lib,share}
+    cp -Pr --no-preserve=ownership opt/apps/com.xunlei.download/files/* $out/lib
+    cp -r opt/apps/com.xunlei.download/entries/* $out/share
+    mv $out/share/icons/hicolor/scalable/apps/com.thunder.download.svg \
+      $out/share/icons/hicolor/scalable/apps/com.xunlei.download.svg
 
-    mv opt/apps/com.xunlei.download/entries/icons/hicolor/scalable \
-      $out/share/icons/hicolor
-    sed -i 's|^Exec=.*|Exec=${pname} %U --no-sandbox|;s|^Icon=.*|Icon=com.thunder.download|' \
+    sed -i -e 's|^Exec=.*|Exec=${pname} %U --no-sandbox|' \
+      -e 's|^Icon=.*|Icon=com.xunlei.download|' \
+      -e 's|^Categories=.*|Categories=Network|' \
       $out/share/applications/com.xunlei.download.desktop
 
     install -Dm755 ${xunlei} $out/bin/${pname}
