@@ -22,11 +22,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1735774425,
-        "narHash": "sha256-C73gLFnEh8ZI0uDijUgCDWCd21T6I6tsaWgIBHcfAXg=",
+        "lastModified": 1735900408,
+        "narHash": "sha256-U+oZBQ3f5fF2hHsupKQH4ihgTKLHgcJh6jEmKDg+W10=",
         "ref": "refs/heads/master",
-        "rev": "5f6aa268e419d053c3d5025da740e390b12ac936",
-        "revCount": 3955,
+        "rev": "1c8d4c8d592e8fab4cff4397db5529ec6f078cf9",
+        "revCount": 3963,
         "type": "git",
         "url": "https://github.com/nix-community/home-manager"
       },
@@ -51,11 +51,35 @@
         "url": "https://mirrors.cernet.edu.cn/nixpkgs.git"
       }
     },
+    "plasma-manager": {
+      "inputs": {
+        "home-manager": [
+          "home-manager"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1735049224,
+        "narHash": "sha256-fWUd9kyXdepphJ7cCzOsuSo7l0kbFCkUqfgKqZyFZzE=",
+        "ref": "refs/heads/trunk",
+        "rev": "d16bbded0ae452bc088489e7dca3ef58d8d1830b",
+        "revCount": 268,
+        "type": "git",
+        "url": "https://github.com/nix-community/plasma-manager"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/nix-community/plasma-manager"
+      }
+    },
     "root": {
       "inputs": {
         "hardware": "hardware",
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "plasma-manager": "plasma-manager"
       }
     }
   },

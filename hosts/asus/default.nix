@@ -16,8 +16,8 @@
     ../common/global
     ../common/users/lwa
 
+    ../common/optional/kde.nix
     ../common/optional/swap.nix
-    ../common/optional/gnome.nix
     ../common/optional/wireless.nix
     ../common/optional/pipewire.nix
     ../common/optional/quietboot.nix
@@ -30,10 +30,8 @@
     ../common/optional/proxychains.nix
   ];
 
-  services.gnome.autoLogin = {
-    enable = true;
-    username = "lwa";
-  };
+  services.displayManager.autoLogin.enable = true;
+  services.displayManager.autoLogin.user = "lwa";
 
   services.kmscon = {
     enable = true;
