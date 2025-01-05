@@ -3,7 +3,6 @@
 {
   programs.vscode = {
     enable = true;
-    enableUpdateCheck = false; # 关闭更新检查
     extensions = with pkgs.vscode-extensions; [
       mkhl.direnv
       bbenoist.nix
