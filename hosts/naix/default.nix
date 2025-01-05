@@ -26,7 +26,7 @@
     ../common/optional/proxychains.nix
   ];
 
-  services.gnome.autoLogin = {
+  my.gnome.autoLogin = {
     enable = true;
     username = "lwa";
   };

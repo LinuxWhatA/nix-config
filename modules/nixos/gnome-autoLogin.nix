@@ -5,10 +5,10 @@
 }:
 
 let
-  cfg = config.services.gnome.autoLogin;
+  cfg = config.my.gnome.autoLogin;
 in
 {
-  options.services.gnome.autoLogin = {
+  options.my.gnome.autoLogin = {
     enable = lib.mkEnableOption "Enable automatic login for the user";
 
     username = lib.mkOption {
