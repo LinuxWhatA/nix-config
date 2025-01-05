@@ -3,10 +3,11 @@
   dpkg,
   stdenv,
   fetchurl,
-  steam-run,
+  buildFHSEnv,
   makeWrapper,
   autoPatchelfHook,
   writeShellScript,
+  zenity,
   nss,
   gtk2,
   alsa-lib,
@@ -16,6 +17,14 @@
   libXScrnSaver,
 }:
 
+let
+  xunlei-env = buildFHSEnv {
+    name = "xunlei-env";
+    includeClosures = true;
+    targetPkgs = pkgs: [ zenity ];
+    runScript = writeShellScript "xunlei-env" "exec $@";
+  };
+in
 stdenv.mkDerivation rec {
   pname = "xunlei";
   version = "1.0.0.5";
@@ -28,7 +37,7 @@ stdenv.mkDerivation rec {
       };
       aarch64-linux = fetchurl {
         url = "https://com-store-packages.uniontech.com/appstore/pool/appstore/c/com.xunlei.download/com.xunlei.download_${version}_arm64.deb";
-        hash = "";
+        hash = "sha256-iA9mbp0wSe66qC5lphMTFPzmOJjzHfWKubGRPiKcVdg=";
       };
     }
     .${stdenv.system} or (throw "${pname}-${version}: ${stdenv.system} is unsupported.");
@@ -55,7 +64,7 @@ stdenv.mkDerivation rec {
   xunlei = writeShellScript "xunlei" ''
     _APPDIR=$(realpath $(dirname $(realpath $0))/..)
     export LD_LIBRARY_PATH=$_APPDIR/lib:$LD_LIBRARY_PATH
-    ${steam-run}/bin/steam-run $_APPDIR/lib/thunder -start $1 "$@"
+    ${xunlei-env}/bin/xunlei-env $_APPDIR/lib/thunder -start $1 "$@"
   '';
 
   installPhase = ''
@@ -65,13 +74,13 @@ stdenv.mkDerivation rec {
     mv $out/share/icons/hicolor/scalable/apps/com.thunder.download.svg \
       $out/share/icons/hicolor/scalable/apps/com.xunlei.download.svg
 
-    sed -i -e 's|^Exec=.*|Exec=${pname} %U --no-sandbox|' \
+    sed -e 's|^Exec=.*|Exec=${pname} %U --no-sandbox|' \
       -e 's|^Icon=.*|Icon=com.xunlei.download|' \
       -e 's|^Categories=.*|Categories=Network|' \
-      $out/share/applications/com.xunlei.download.desktop
+      -i $out/share/applications/com.xunlei.download.desktop
 
     install -Dm755 ${xunlei} $out/bin/${pname}
-    install -Dm644 ${./license.html} -t $out/share/licenses/${pname}
+    install -Dm644 ${./LICENSE.html} $out/share/licenses/${pname}/LICENSE.html
   '';
 
   meta = with lib; {
