@@ -13,6 +13,7 @@
     ];
     userSettings = {
       "update.mode" = "none";
+      "extensions.autoCheckUpdates" = false;
       "[nix]"."editor.tabSize" = 2;
       "editor.fontLigatures" = true;
       "window.commandCenter" = false;
