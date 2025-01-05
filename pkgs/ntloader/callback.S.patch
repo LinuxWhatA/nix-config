@@ -1,0 +1,14 @@
+diff --git a/callback.S b/callback.S
+index eb73dcf..ecff8b2 100644
+--- a/callback.S
++++ b/callback.S
+@@ -47,8 +47,8 @@
+ /** Paging bit in CR0 */
+ #define CR0_PG 0x80000000
+ 
+-	.arch	i386
+ 	.code32
++	.arch	i386
+ 
+ 	/* Call an arbitrary real-mode function */
+ 	.section ".text", "ax", @progbits

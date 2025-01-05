@@ -62,8 +62,8 @@
         useOSProber = true;
         configurationLimit = 10;
         extraFiles = {
-          "ntloader" = ../../pkgs/ntloader/ntloader;
-          "initrd.cpio" = ../../pkgs/ntloader/initrd.cpio;
+          "ntloader" = "${pkgs.ntloader}/ntloader";
+          "initrd.cpio" = "${pkgs.ntloader}/initrd.cpio";
         };
         extraEntries = ''
           menuentry "Windows VHD" --class windows {
