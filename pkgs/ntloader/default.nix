@@ -26,6 +26,8 @@ stdenv.mkDerivation rec {
     cpio
   ];
 
+  # Fix building with newer binutils
+  # https://github.com/ipxe/ipxe/commit/6ca597eee
   patches = [
     ./startup.S.patch
     ./callback.S.patch
