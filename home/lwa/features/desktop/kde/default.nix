@@ -26,7 +26,7 @@
               "applications:org.kde.dolphin.desktop"
               "applications:org.kde.konsole.desktop"
               "applications:firefox.desktop"
-              "applications:code.desktop"
+              "applications:code-url-handler.desktop"
             ];
           }
           "org.kde.plasma.marginsseparator" # 边距分隔线
