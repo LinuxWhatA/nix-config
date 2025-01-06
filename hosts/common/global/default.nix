@@ -43,6 +43,11 @@
     wget
   ];
 
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
+
   # Cleanup stuff included by default
   services.speechd.enable = lib.mkDefault false;
 }
