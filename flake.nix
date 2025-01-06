@@ -3,13 +3,13 @@
 
   inputs = {
     nixpkgs.url = "git+https://mirrors.cernet.edu.cn/nixpkgs.git?ref=nixpkgs-unstable";
-    hardware.url = "git+https://github.com/nixos/nixos-hardware";
+    hardware.url = "github:nixos/nixos-hardware";
     home-manager = {
-      url = "git+https://github.com/nix-community/home-manager";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     plasma-manager = {
-      url = "git+https://github.com/nix-community/plasma-manager";
+      url = "github:nix-community/plasma-manager";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };

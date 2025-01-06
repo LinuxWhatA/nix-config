@@ -18,7 +18,7 @@
       ];
       warn-dirty = false;
 
-      substituters = lib.mkForce [
+      substituters = [
         "https://mirrors.cernet.edu.cn/nix-channels/store"
       ];
     };

@@ -4,15 +4,15 @@
       "locked": {
         "lastModified": 1735388221,
         "narHash": "sha256-e5IOgjQf0SZcFCEV/gMGrsI0gCJyqOKShBQU0iiM3Kg=",
-        "ref": "refs/heads/master",
+        "owner": "nixos",
+        "repo": "nixos-hardware",
         "rev": "7c674c6734f61157e321db595dbfcd8523e04e19",
-        "revCount": 2057,
-        "type": "git",
-        "url": "https://github.com/nixos/nixos-hardware"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "https://github.com/nixos/nixos-hardware"
+        "owner": "nixos",
+        "repo": "nixos-hardware",
+        "type": "github"
       }
     },
     "home-manager": {
@@ -22,17 +22,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1736013363,
-        "narHash": "sha256-P4lsS2Y5GzBfC8OfXtD/xWEucX6oHGTjOzjEjEJbXfc=",
-        "ref": "refs/heads/master",
-        "rev": "0d7908bd09165db6699908b7e3970f137327cbf0",
-        "revCount": 3979,
-        "type": "git",
-        "url": "https://github.com/nix-community/home-manager"
+        "lastModified": 1736089250,
+        "narHash": "sha256-/LPWMiiJGPHGd7ZYEgmbE2da4zvBW0acmshUjYC3WG4=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "172b91bfb2b7f5c4a8c6ceac29fd53a01ef07196",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "https://github.com/nix-community/home-manager"
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
       }
     },
     "nixpkgs": {
@@ -63,15 +63,15 @@
       "locked": {
         "lastModified": 1735049224,
         "narHash": "sha256-fWUd9kyXdepphJ7cCzOsuSo7l0kbFCkUqfgKqZyFZzE=",
-        "ref": "refs/heads/trunk",
+        "owner": "nix-community",
+        "repo": "plasma-manager",
         "rev": "d16bbded0ae452bc088489e7dca3ef58d8d1830b",
-        "revCount": 268,
-        "type": "git",
-        "url": "https://github.com/nix-community/plasma-manager"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "https://github.com/nix-community/plasma-manager"
+        "owner": "nix-community",
+        "repo": "plasma-manager",
+        "type": "github"
       }
     },
     "root": {
