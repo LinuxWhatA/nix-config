@@ -29,8 +29,7 @@ stdenv.mkDerivation rec {
   CFLAGS = [ "-Wno-error=array-bounds" ];
 
   installPhase = ''
-    mkdir -p $out
-    cp ntloader $out
+    install -D ntloader -t $out
     find utils/rootfs | cpio -o -H newc > $out/initrd.cpio
   '';
 
