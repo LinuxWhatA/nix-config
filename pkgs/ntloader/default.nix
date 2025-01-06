@@ -15,8 +15,8 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "grub4dos";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-v7jIKcxxLeLvd4ymnImkFS/iwxwySDmAO5+QFytkU24=";
+    rev = "4cb1c1113297c1dc01c14a8c572cdfff25ca9035";
+    sha256 = "sha256-stjg7PNgS/HgbQdoF+B9jNXfGfgbF0rSRB4KtjWRH8A=";
   };
 
   nativeBuildInputs = [
@@ -26,12 +26,7 @@ stdenv.mkDerivation rec {
     cpio
   ];
 
-  # Fix building with newer binutils
-  # https://github.com/ipxe/ipxe/commit/6ca597eee
-  patches = [
-    ./startup.S.patch
-    ./callback.S.patch
-  ];
+  CFLAGS = [ "-Wno-error=array-bounds" ];
 
   installPhase = ''
     mkdir -p $out
