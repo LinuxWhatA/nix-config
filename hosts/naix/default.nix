@@ -15,9 +15,10 @@
     ../common/global
     ../common/users/lwa
 
+    ../common/optional/kde.nix
     ../common/optional/swap.nix
-    ../common/optional/gnome.nix
     ../common/optional/pipewire.nix
+    ../common/optional/quietboot.nix
 
     ../common/optional/hosts.nix
     ../common/optional/steam.nix
@@ -26,25 +27,13 @@
     ../common/optional/proxychains.nix
   ];
 
-  my.gnome.autoLogin = {
-    enable = true;
-    username = "lwa";
-  };
+  services.displayManager.autoLogin.enable = true;
+  services.displayManager.autoLogin.user = "lwa";
 
-  services.kmscon = {
-    enable = true;
-    autologinUser = "lwa";
-    fonts = [
-      {
-        name = "MesloLGS NF";
-        package = pkgs.meslo-lgs-nf;
-      }
-    ];
-  };
+  my.kmscon.enable = true;
+  my.kmscon.autologinUser = "lwa";
 
-  networking = {
-    hostName = "naix";
-  };
+  networking.hostName = "naix";
 
   boot = {
     kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;

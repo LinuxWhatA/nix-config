@@ -33,20 +33,10 @@
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "lwa";
 
-  services.kmscon = {
-    enable = true;
-    autologinUser = "lwa";
-    fonts = [
-      {
-        name = "MesloLGS NF";
-        package = pkgs.meslo-lgs-nf;
-      }
-    ];
-  };
+  my.kmscon.enable = true;
+  my.kmscon.autologinUser = "lwa";
 
-  networking = {
-    hostName = "asus";
-  };
+  networking.hostName = "asus";
 
   boot = {
     kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;

@@ -21,9 +21,12 @@
         "browser.uiCustomization.state" = builtins.toJSON {
           # 自定义 UI
           placements = {
+            unified-extensions-area = [
+              "_3c078156-979c-498b-8990-85f7987dd929_-browser-action"
+            ];
             nav-bar = [
               "firefox-view-button"
-              "sidebar-button"
+              # "sidebar-button"
               "back-button"
               "forward-button"
               "stop-reload-button"

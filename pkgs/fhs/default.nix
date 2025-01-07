@@ -15,7 +15,7 @@ pkgs.buildFHSEnv {
     ++ pkgs.appimageTools.defaultFhsEnvArgs.targetPkgs pkgs;
   profile = ''
     export IN_NIX_SHELL=impure
-    export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib";
+    export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib"
   '';
   runScript = pkgs.writeShellScript "fhs" "exec $@";
 }
