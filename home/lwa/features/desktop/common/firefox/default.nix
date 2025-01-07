@@ -3,19 +3,21 @@
     enable = true;
     languagePacks = [ "zh-CN" ];
     profiles.lwa = {
+      userChrome = builtins.readFile ./userChrome.css;
       search = {
         force = true;
         default = "Bing";
       };
       settings = {
-        "sidebar.revamp" = true; # 侧栏
-        "sidebar.verticalTabs" = true; # 垂直标签页
-        "sidebar.main.tools" = "aichat,history"; # 侧栏工具
+        # "sidebar.revamp" = true; # 侧栏
+        # "sidebar.verticalTabs" = true; # 垂直标签页
+        # "sidebar.main.tools" = "aichat,history"; # 侧栏工具
         "layout.css.has-selector.enabled" = true; # 启用 CSS 选择器
         "privacy.donottrackheader.enabled" = true; # 向网站发出“请勿跟踪”请求
         "browser.preferences.moreFromMozilla" = false; # 不显示更多 Firefox 产品
         "privacy.globalprivacycontrol.enabled" = true; # 要求网站不许出售或共享我的数据
         "browser.crashReports.unsubmittedCheck.autoSubmit2" = false; # 不发送积压的崩溃报告
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true; # 启用自定义样式
         "browser.uiCustomization.state" = builtins.toJSON {
           # 自定义 UI
           placements = {
@@ -96,6 +98,11 @@
           # 沉浸式翻译
           installation_mode = "normal_installed";
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/immersive-translate/latest.xpi";
+        };
+        "{3c078156-979c-498b-8990-85f7987dd929}" = {
+          # 侧边栏
+          installation_mode = "normal_installed";
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/sidebery/latest.xpi";
         };
       };
     };

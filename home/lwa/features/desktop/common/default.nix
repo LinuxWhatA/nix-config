@@ -3,7 +3,7 @@
 {
   imports = [
     ./vscode.nix
-    ./firefox.nix
+    ./firefox
   ];
 
   home.packages = with pkgs; [
