@@ -10,7 +10,6 @@
     vlc
     xunlei
     fsearch
-    xarchiver
     wechat-uos
     wpsoffice-cn
     lx-music-desktop
