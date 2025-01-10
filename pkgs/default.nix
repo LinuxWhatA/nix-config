@@ -11,5 +11,5 @@ rec {
   patchedpython = pkgs.callPackage ./patchedpython { };
   plasma-applet-netspeed-widget = pkgs.callPackage ./plasma-applet-netspeed-widget { };
 
-  xunlei = pkgs.callPackage ./xunlei { };
+  xunlei-uos = pkgs.callPackage ./xunlei-uos { };
 }
