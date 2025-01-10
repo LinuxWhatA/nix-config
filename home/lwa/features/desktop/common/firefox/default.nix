@@ -81,10 +81,6 @@
       DisplayBookmarksToolbar = "newtab"; # 在新标签页显示书签工具栏
       PostQuantumKeyAgreementEnabled = true; # 启用适用于 TLS 的后量子密钥协议
       RequestedLocales = [ "zh_CN" ];
-      DNSOverHTTPS = {
-        Enabled = true;
-        ProviderURL = "https://dns.alidns.com/dns-query";
-      };
       ExtensionSettings = {
         "adguardadblocker@adguard.com" = {
           # 广告拦截
