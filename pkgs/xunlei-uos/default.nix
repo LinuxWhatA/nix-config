@@ -38,7 +38,8 @@ let
           hash = sources.loongarch64_hash;
         };
       }
-      .${stdenv.hostPlatform.system} or (throw "${pname}-${version}: ${stdenv.hostPlatform.system} is unsupported.");
+      .${stdenv.hostPlatform.system}
+        or (throw "${pname}-${version}: ${stdenv.hostPlatform.system} is unsupported.");
 
     buildInputs = [
       nss
@@ -62,7 +63,7 @@ let
       cp -r opt/apps/com.xunlei.download/files $out/lib/xunlei
       cp -r opt/apps/com.xunlei.download/entries $out/share
       mv $out/share/icons/hicolor/scalable/apps/com.thunder.download.svg \
-        $out/share/icons/hicolor/scalable/apps/com.xunlei.download.png
+        $out/share/icons/hicolor/scalable/apps/com.xunlei.download.svg
       substituteInPlace $out/share/applications/com.xunlei.download.desktop \
         --replace-fail "Categories=net" "Categories=Network" \
         --replace-fail "/opt/apps/com.xunlei.download/files/start.sh" "xunlei-uos" \
@@ -72,7 +73,7 @@ let
     '';
 
     meta = {
-      description = "xunlei download";
+      description = "Download manager supporting HTTP, FTP, BitTorrent, and eDonkey network protocols";
       homepage = "https://www.xunlei.com";
       license = lib.licenses.unfree;
       platforms = [
