@@ -12,4 +12,5 @@ rec {
   plasma-applet-netspeed-widget = pkgs.callPackage ./plasma-applet-netspeed-widget { };
 
   xunlei-uos = pkgs.callPackage ./xunlei-uos { };
+  dev-sidecar = pkgs.callPackage ./dev-sidecar { };
 }

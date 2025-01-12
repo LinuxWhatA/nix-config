@@ -11,6 +11,7 @@
     fsearch
     xunlei-uos
     wechat-uos
+    dev-sidecar
     wpsoffice-cn
     lx-music-desktop
     qbittorrent-enhanced
