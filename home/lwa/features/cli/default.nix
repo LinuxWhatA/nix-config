@@ -10,7 +10,7 @@
     rar
     htop
     fastfetch
-    proton-call
+    proton-run
     patchedpython
     nixfmt-rfc-style
   ];
