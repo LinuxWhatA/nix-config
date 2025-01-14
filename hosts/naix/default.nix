@@ -18,8 +18,8 @@
     ../common/optional/kde.nix
     ../common/optional/swap.nix
     ../common/optional/pipewire.nix
-    ../common/optional/quietboot.nix
 
+    ../common/optional/qemu.nix
     ../common/optional/hosts.nix
     ../common/optional/steam.nix
     ../common/optional/v2raya.nix
