@@ -30,9 +30,13 @@ let
   wrapPrefix = if (!pkgs.stdenv.isDarwin) then "LD_LIBRARY_PATH" else "DYLD_LIBRARY_PATH";
 
   pip = pkgs.writeShellScriptBin "pip" ''
-    [ -f ~/.venv/bin/pip ] || python3 -m venv ~/.venv --copies
-    ~/.venv/bin/pip config set global.index-url https://mirrors.cernet.edu.cn/pypi/web/simple
-    ~/.venv/bin/pip $@
+    set -e
+    pip=~/.venv/bin/pip3
+    if [ ! -f $pip ]; then
+      python3 -m venv ~/.venv --copies
+      $pip config set global.index-url https://mirrors.cernet.edu.cn/pypi/web/simple
+    fi
+    exec $pip $@
   '';
 in
 
