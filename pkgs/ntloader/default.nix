@@ -30,7 +30,8 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     install -D ntloader -t $out
-    find utils/rootfs | cpio -o -H newc > $out/initrd.cpio
+    cd utils/rootfs
+    find * | cpio -o -H newc > $out/initrd.cpio
   '';
 
   meta = with lib; {
