@@ -55,5 +55,12 @@ in
             }))
           ];
       }).run;
+
+    # lutris 添加 winetricks
+    lutris = prev.lutris.override {
+      extraPkgs = pkgs: with pkgs; [
+        winetricks
+      ];
+    };
   };
 }

@@ -8,6 +8,7 @@
 
   home.packages = with pkgs; [
     vlc
+    lutris
     fsearch
     xunlei-uos
     wechat-uos
