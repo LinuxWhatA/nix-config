@@ -39,5 +39,21 @@ in
       };
       cargoHash = "sha256-LBXCcFqqscCGgtTzt/gr7Lz0ExT9kAWrXPuPuKzKt0E=";
     });
+
+    # https://wiki.nixos.org/wiki/Games
+    steam-run =
+      (prev.steam.override {
+        extraLibraries =
+          pkgs: with pkgs; [
+            libxkbcommon
+            mesa
+            wayland
+            (sndio.overrideAttrs (old: {
+              postFixup = ''
+                ln -s $out/lib/libsndio.so $out/lib/libsndio.so.6.1
+              '';
+            }))
+          ];
+      }).run;
   };
 }
