@@ -26,7 +26,7 @@
     ../common/optional/hosts.nix
     ../common/optional/steam.nix
     ../common/optional/v2raya.nix
-    ../common/optional/waydroid.nix
+    # ../common/optional/waydroid.nix
     ../common/optional/proxychains.nix
   ];
 
