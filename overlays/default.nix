@@ -51,7 +51,6 @@ in
     proton-caller = prev.proton-caller.overrideAttrs (old: {
       src = old.src.override {
         owner = "LinuxWhatA";
-        repo = "proton-caller";
         rev = "7ed1962baf920893368f805dc63c896a2f206176";
         sha256 = "sha256-gAnsP4AR1NnTCThF29H3qvI+PP459qYX72+OBHX0kV4=";
       };
@@ -74,12 +73,12 @@ in
           ];
       }).run;
 
-    # lutris 添加 winetricks
-    lutris = prev.lutris.override {
-      extraPkgs =
-        pkgs: with pkgs; [
-          winetricks
-        ];
-    };
+    # update winetricks
+    winetricks = prev.winetricks.overrideAttrs (old: {
+      src = old.src.override rec {
+        version = "20250102";
+        hash = "sha256-Km2vVTYsLs091cjmNTW8Kqku3vdsEA0imTtZfqZWDQo=";
+      };
+    });
   };
 }
