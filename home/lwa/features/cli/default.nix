@@ -11,7 +11,14 @@
     htop
     fastfetch
     proton-run
+    vulkan-tools
     patchedpython
     nixfmt-rfc-style
+
+    (wineWowPackages.full.override {
+      wineRelease = "staging";
+      mingwSupport = true;
+    })
+    winetricks
   ];
 }
