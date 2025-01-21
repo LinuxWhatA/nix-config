@@ -8,4 +8,7 @@
 
     extraCompatPackages = [ pkgs.proton-ge-bin ];
   };
+
+  programs.gamescope.enable = true;
+  programs.gamemode.enable = true;
 }

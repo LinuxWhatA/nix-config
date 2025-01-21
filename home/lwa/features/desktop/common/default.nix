@@ -8,6 +8,7 @@
 
   home.packages = with pkgs; [
     vlc
+    heroic
     lutris
     fsearch
     xunlei-uos
