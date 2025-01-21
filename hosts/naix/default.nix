@@ -17,6 +17,7 @@
 
     ../common/optional/kde.nix
     ../common/optional/swap.nix
+    ../common/optional/wireless.nix
     ../common/optional/pipewire.nix
 
     ../common/optional/qemu.nix
