@@ -78,6 +78,7 @@ in
       src = old.src.override rec {
         version = "20250102";
         hash = "sha256-Km2vVTYsLs091cjmNTW8Kqku3vdsEA0imTtZfqZWDQo=";
+        rev = version;
       };
     });
 
