@@ -28,9 +28,6 @@
     overlays = builtins.attrValues outputs.overlays;
     config = {
       allowUnfree = true;
-      permittedInsecurePackages = [
-        "electron-30.5.1" # lx-music-desktop required
-      ];
     };
   };
 

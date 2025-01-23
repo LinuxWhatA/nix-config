@@ -8,12 +8,13 @@
 
   home.packages = with pkgs; [
     vlc
+    qcm
     fsearch
     xunlei-uos
     wechat-uos
     dev-sidecar
     wpsoffice-cn
-    lx-music-desktop
     qbittorrent-enhanced
+    unblock-netease-music
   ];
 }

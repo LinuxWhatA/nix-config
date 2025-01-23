@@ -13,4 +13,5 @@ rec {
 
   xunlei-uos = pkgs.callPackage ./xunlei-uos { };
   dev-sidecar = pkgs.callPackage ./dev-sidecar { };
+  unblock-netease-music = pkgs.callPackage ./unblock-netease-music { };
 }
