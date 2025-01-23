@@ -81,14 +81,5 @@ in
         rev = version;
       };
     });
-
-    # heroic 添加 gamescope
-    heroic = (
-      prev.heroic.override {
-        extraPkgs = pkgs: [
-          pkgs.gamescope
-        ];
-      }
-    );
   };
 }
