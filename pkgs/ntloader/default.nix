@@ -10,7 +10,7 @@
 
 stdenv.mkDerivation rec {
   pname = "ntloader";
-  version = "2.0.1";
+  version = "2.0.1-unstable-2025-01-05";
 
   src = fetchFromGitHub {
     owner = "grub4dos";
