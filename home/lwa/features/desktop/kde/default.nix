@@ -48,7 +48,7 @@
     configFile = {
       "kcminputrc"."Keyboard"."NumLock" = 0; # 开启数字键盘
       "klipperrc"."General"."IgnoreImages" = false; # 启用剪切板图片
-      "klipperrc"."General"."MaxClipItems" = 100; # 剪切板最大条目数
+      "klipperrc"."General"."MaxClipItems" = 200; # 剪切板最大条目数
       # 虚拟键盘
       "kwinrc"."Wayland"."InputMethod" =
         "/run/current-system/sw/share/applications/org.fcitx.Fcitx5.desktop";
