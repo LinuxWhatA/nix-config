@@ -21,4 +21,6 @@
     })
     winetricks
   ];
+
+  my.services.unblock-netease-music.enable = true;
 }

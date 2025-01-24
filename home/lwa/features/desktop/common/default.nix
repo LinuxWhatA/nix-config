@@ -15,6 +15,5 @@
     dev-sidecar
     wpsoffice-cn
     qbittorrent-enhanced
-    unblock-netease-music
   ];
 }
