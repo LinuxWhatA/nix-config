@@ -9,6 +9,7 @@
     fhs
     rar
     htop
+    usbutils
     fastfetch
     proton-run
     vulkan-tools
