@@ -20,7 +20,6 @@
       self,
       nixpkgs,
       home-manager,
-      plasma-manager,
       ...
     }@inputs:
     let
