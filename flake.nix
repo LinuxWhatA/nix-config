@@ -52,40 +52,14 @@
       nixosConfigurations = {
         # AMD 主机
         naix = lib.nixosSystem {
-          modules = [
-            ./hosts/naix
-            ./home/lwa/nixpkgs.nix
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "bkp";
-              home-manager.users.lwa = import ./home/lwa/naix.nix;
-              home-manager.extraSpecialArgs = {
-                inherit inputs outputs;
-              };
-            }
-          ];
+          modules = [ ./hosts/naix ];
           specialArgs = {
             inherit inputs outputs;
           };
         };
         # X455LJ 笔记本
         asus = lib.nixosSystem {
-          modules = [
-            ./hosts/asus
-            ./home/lwa/nixpkgs.nix
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "bkp";
-              home-manager.users.lwa = import ./home/lwa/asus.nix;
-              home-manager.extraSpecialArgs = {
-                inherit inputs outputs;
-              };
-            }
-          ];
+          modules = [ ./hosts/asus ];
           specialArgs = {
             inherit inputs outputs;
           };
@@ -96,6 +70,17 @@
         "lwa@naix" = lib.homeManagerConfiguration {
           modules = [
             ./home/lwa/naix.nix
+            ./home/lwa/nixpkgs.nix
+          ];
+          pkgs = pkgsFor.x86_64-linux;
+          extraSpecialArgs = {
+            inherit inputs outputs;
+          };
+        };
+
+        "lwa@asus" = lib.homeManagerConfiguration {
+          modules = [
+            ./home/lwa/asus.nix
             ./home/lwa/nixpkgs.nix
           ];
           pkgs = pkgsFor.x86_64-linux;
