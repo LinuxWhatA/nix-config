@@ -10,7 +10,7 @@
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
-    ./zsh
+    ./zsh.nix
     ./nix.nix
     ./vim.nix
     ./fonts.nix

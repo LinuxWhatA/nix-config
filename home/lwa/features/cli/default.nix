@@ -2,6 +2,8 @@
 
 {
   imports = [
+    ./zsh
+
     ./direnv.nix
     ./git.nix
   ];
