@@ -48,5 +48,6 @@ stdenv.mkDerivation rec {
       lgpl3
     ];
     mainProgram = pname;
+    platforms = lib.platforms.linux;
   };
 }
