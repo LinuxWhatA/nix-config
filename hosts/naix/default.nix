@@ -19,6 +19,7 @@
     ../common/optional/swap.nix
     ../common/optional/wireless.nix
     ../common/optional/pipewire.nix
+    ../common/optional/x11-no-suspend.nix
 
     ../common/optional/qemu.nix
     ../common/optional/hosts.nix
