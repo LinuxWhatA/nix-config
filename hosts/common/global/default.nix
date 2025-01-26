@@ -13,8 +13,10 @@
     ./zsh.nix
     ./nix.nix
     ./vim.nix
+    ./sops.nix
     ./fonts.nix
     ./locale.nix
+    ./openssh.nix
     ./security.nix
   ] ++ (builtins.attrValues outputs.nixosModules);
 

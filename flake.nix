@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "git+https://mirrors.cernet.edu.cn/nixpkgs.git?ref=nixpkgs-unstable";
     hardware.url = "github:nixos/nixos-hardware";
+    sops-nix = {
+      url = "github:mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";

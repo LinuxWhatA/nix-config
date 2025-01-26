@@ -1,0 +1,19 @@
+keys:
+  - &users:
+    - &lwa 8F4BAB52ACA642BA487942DEB165B7BAC7705BCE
+  - &hosts:
+    - &naix age14jye7xur033l5wkuas2rrktshf9z9f8jy0ug3ttvkhgel898r5qqhtj0gs
+creation_rules:
+  - path_regex: hosts/naix/secrets.yaml$
+    key_groups:
+    - age:
+      - *naix
+      pgp:
+      - *lwa
+
+  - path_regex: hosts/common/secrets.yaml$
+    key_groups:
+    - age:
+      - *naix
+      pgp:
+      - *lwa
