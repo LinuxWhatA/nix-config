@@ -18,6 +18,7 @@
     ./locale.nix
     ./openssh.nix
     ./security.nix
+    ./optin-persistence.nix
   ] ++ (builtins.attrValues outputs.nixosModules);
 
   home-manager.useGlobalPkgs = true;

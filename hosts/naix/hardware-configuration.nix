@@ -18,7 +18,7 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/0311cdf0-a4ea-4ad9-b35b-a79046cb0897";
+    device = "/dev/disk/by-label/nixos";
     fsType = "btrfs";
     options = [
       "subvol=root"
@@ -27,7 +27,7 @@
   };
 
   fileSystems."/nix" = {
-    device = "/dev/disk/by-uuid/0311cdf0-a4ea-4ad9-b35b-a79046cb0897";
+    device = "/dev/disk/by-label/nixos";
     fsType = "btrfs";
     options = [
       "subvol=nix"
@@ -37,7 +37,7 @@
   };
 
   fileSystems."/home" = {
-    device = "/dev/disk/by-uuid/0311cdf0-a4ea-4ad9-b35b-a79046cb0897";
+    device = "/dev/disk/by-label/nixos";
     fsType = "btrfs";
     options = [
       "subvol=home"
@@ -46,12 +46,22 @@
   };
 
   fileSystems."/swap" = {
-    device = "/dev/disk/by-uuid/0311cdf0-a4ea-4ad9-b35b-a79046cb0897";
+    device = "/dev/disk/by-label/nixos";
     fsType = "btrfs";
     options = [
       "subvol=swap"
       "noatime"
     ];
+  };
+
+  fileSystems."/persist" = {
+    device = "/dev/disk/by-label/nixos";
+    fsType = "btrfs";
+    options = [
+      "subvol=persist"
+      "compress=zstd"
+    ];
+    neededForBoot = true;
   };
 
   fileSystems."/boot" = {
@@ -60,7 +70,7 @@
   };
 
   fileSystems."/mnt/TiPlus5000" = {
-    device = "/dev/disk/by-uuid/F604474D04470FD3";
+    device = "/dev/disk/by-label/TiPlus5000";
     fsType = "ntfs";
     options = [
       "nofail"
@@ -78,7 +88,7 @@
   };
 
   fileSystems."/mnt/Files" = {
-    device = "/dev/disk/by-uuid/E4B6EF47B6EF18B6";
+    device = "/dev/disk/by-label/Files";
     fsType = "ntfs";
     options = [
       "nofail"
