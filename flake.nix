@@ -2,7 +2,7 @@
   description = "NixOS configuration of LinuxWhatA";
 
   inputs = {
-    nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixpkgs-unstable";
+    nixpkgs.url = "git+https://mirror.nju.edu.cn/git/nixpkgs.git?ref=nixpkgs-unstable";
     hardware.url = "github:nixos/nixos-hardware";
     impermanence.url = "github:nix-community/impermanence";
     disko = {
@@ -68,6 +68,16 @@
         # X455LJ 笔记本
         asus = lib.nixosSystem {
           modules = [ ./hosts/asus ];
+          specialArgs = {
+            inherit inputs outputs;
+          };
+        };
+        # cdrom
+        cdrom = lib.nixosSystem {
+          modules = [
+            ./hosts/naix
+            ./hosts/cdrom
+          ];
           specialArgs = {
             inherit inputs outputs;
           };
