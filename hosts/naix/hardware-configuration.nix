@@ -1,11 +1,13 @@
 {
   config,
   lib,
-  pkgs,
+  inputs,
   ...
 }:
 
 {
+  imports = [ inputs.disko.nixosModules.disko ];
+
   boot.initrd.availableKernelModules = [
     "nvme"
     "xhci_pci"
@@ -17,57 +19,61 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "btrfs";
-    options = [
-      "subvol=root"
-      "compress=zstd"
-    ];
+  disko.devices.disk.main = {
+    type = "disk";
+    device = "/dev/disk/by-diskseq/1";
+    content = {
+      type = "gpt";
+      partitions = {
+        ESP = {
+          priority = 1;
+          start = "1M";
+          end = "512M";
+          type = "EF00";
+          content = {
+            type = "filesystem";
+            format = "vfat";
+            mountpoint = "/boot";
+            mountOptions = [ "umask=0077" ];
+          };
+        };
+        nixos = {
+          size = "100%";
+          content = {
+            type = "btrfs";
+            extraArgs = [ "-Lnixos" ];
+            subvolumes = {
+              "/root" = {
+                mountOptions = [ "compress=zstd" ];
+                mountpoint = "/";
+              };
+              "/home" = {
+                mountOptions = [ "compress=zstd" ];
+                mountpoint = "/home";
+              };
+              "/persist" = {
+                mountOptions = [ "compress=zstd" ];
+                mountpoint = "/persist";
+              };
+              "/nix" = {
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
+                mountpoint = "/nix";
+              };
+              "/swap" = {
+                mountpoint = "/swap";
+                swap.swapfile.size = "8G";
+              };
+            };
+          };
+        };
+      };
+    };
   };
 
-  fileSystems."/nix" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "btrfs";
-    options = [
-      "subvol=nix"
-      "compress=zstd"
-      "noatime"
-    ];
-  };
-
-  fileSystems."/home" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "btrfs";
-    options = [
-      "subvol=home"
-      "compress=zstd"
-    ];
-  };
-
-  fileSystems."/swap" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "btrfs";
-    options = [
-      "subvol=swap"
-      "noatime"
-    ];
-  };
-
-  fileSystems."/persist" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "btrfs";
-    options = [
-      "subvol=persist"
-      "compress=zstd"
-    ];
-    neededForBoot = true;
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/12CE-A600";
-    fsType = "vfat";
-  };
+  fileSystems."/persist".neededForBoot = true;
 
   fileSystems."/mnt/TiPlus5000" = {
     device = "/dev/disk/by-label/TiPlus5000";

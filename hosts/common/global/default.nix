@@ -43,6 +43,9 @@
     wget
   ];
 
+  # 将当前配置写入 /etc/nixos
+  environment.etc."nixos".source = ../../..;
+
   programs.appimage = {
     enable = true;
     binfmt = true;
