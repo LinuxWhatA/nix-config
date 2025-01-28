@@ -50,7 +50,6 @@
         efiSupport = true;
         device = "nodev";
         default = "saved";
-        useOSProber = true;
         configurationLimit = 10;
         extraFiles = {
           "ntloader" = "${pkgs.ntloader}/ntloader";
@@ -59,13 +58,15 @@
         extraEntries = ''
           menuentry "Windows VHD" --class windows {
             savedefault
-            search --set=root --fs-uuid 12CE-A600
-            chainloader /ntloader initrd=/initrd.cpio uuid=F604474D04470FD3 file=/OS/Windows.vhd
+            search --no-floppy --efidisk-only --set --file /ntloader
+            search --no-floppy --set=fs_uuid --file /OS/Windows.vhd
+            probe --set=dev_uuid --fs-uuid $fs_uuid
+            chainloader /ntloader initrd=/initrd.cpio uuid=$dev_uuid file=/OS/Windows.vhd
           }
 
           menuentry "Ventoy" {
             savedefault
-            search --set=root --fs-uuid 223C-F3F8
+            search --no-floppy --efidisk-only --set --label VTOYEFI
             chainloader /EFI/BOOT/grubx64_real.efi
           }
         '';
