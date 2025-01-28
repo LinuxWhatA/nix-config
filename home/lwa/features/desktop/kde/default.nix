@@ -46,6 +46,9 @@
       ];
     };
     configFile = {
+      "kscreenlockerrc"."Daemon"."Autolock" = false; # 不自动锁屏
+      "kscreenlockerrc"."Daemon"."LockOnResume" = false; # 唤醒后锁屏
+      "kscreenlockerrc"."Daemon"."Timeout" = 0; # 锁屏超时
       "kcminputrc"."Keyboard"."NumLock" = 0; # 开启数字键盘
       "klipperrc"."General"."IgnoreImages" = false; # 启用剪切板图片
       "klipperrc"."General"."MaxClipItems" = 200; # 剪切板最大条目数
