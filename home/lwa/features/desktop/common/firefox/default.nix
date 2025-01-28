@@ -88,11 +88,6 @@
           installation_mode = "normal_installed";
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/adguard-adblocker/latest.xpi";
         };
-        "firefox@tampermonkey.net" = {
-          # 油猴
-          installation_mode = "normal_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/tampermonkey/latest.xpi";
-        };
         "{5efceaa7-f3a2-4e59-a54b-85319448e305}" = {
           # 沉浸式翻译
           installation_mode = "normal_installed";
