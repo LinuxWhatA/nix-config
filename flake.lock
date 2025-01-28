@@ -58,12 +58,12 @@
         "rev": "300081d0cc72df578b02d914df941b8ec62240e6",
         "revCount": 741826,
         "type": "git",
-        "url": "https://mirrors.cernet.edu.cn/nixpkgs.git"
+        "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
       },
       "original": {
         "ref": "nixpkgs-unstable",
         "type": "git",
-        "url": "https://mirrors.cernet.edu.cn/nixpkgs.git"
+        "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
       }
     },
     "plasma-manager": {

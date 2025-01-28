@@ -2,7 +2,7 @@
   description = "NixOS configuration of LinuxWhatA";
 
   inputs = {
-    nixpkgs.url = "git+https://mirrors.cernet.edu.cn/nixpkgs.git?ref=nixpkgs-unstable";
+    nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixpkgs-unstable";
     hardware.url = "github:nixos/nixos-hardware";
     impermanence.url = "github:nix-community/impermanence";
     sops-nix = {
