@@ -2,23 +2,23 @@
   description = "NixOS configuration of LinuxWhatA";
 
   inputs = {
-    nixpkgs.url = "git+https://mirror.nju.edu.cn/git/nixpkgs.git?ref=nixpkgs-unstable";
-    hardware.url = "github:nixos/nixos-hardware";
-    impermanence.url = "github:nix-community/impermanence";
+    nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixpkgs-unstable";
+    hardware.url = "git+https://gitee.com/mirrors/nixos-hardware";
+    impermanence.url = "git+https://gitee.com/linuxwhata/impermanence";
     disko = {
-      url = "github:nix-community/disko";
+      url = "git+https://gitee.com/linuxwhata/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {
-      url = "github:mic92/sops-nix";
+      url = "git+https://gitee.com/linuxwhata/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "git+https://gitee.com/mirrors/home-manager-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     plasma-manager = {
-      url = "github:nix-community/plasma-manager";
+      url = "git+https://gitee.com/linuxwhata/plasma-manager";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };

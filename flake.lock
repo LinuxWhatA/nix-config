@@ -7,32 +7,32 @@
         ]
       },
       "locked": {
-        "lastModified": 1737038063,
-        "narHash": "sha256-rMEuiK69MDhjz1JgbaeQ9mBDXMJ2/P8vmOYRbFndXsk=",
-        "owner": "nix-community",
-        "repo": "disko",
-        "rev": "bf0abfde48f469c256f2b0f481c6281ff04a5db2",
-        "type": "github"
+        "lastModified": 1738148035,
+        "narHash": "sha256-KYOATYEwaKysL3HdHdS5kbQMXvzS4iPJzJrML+3TKAo=",
+        "ref": "refs/heads/master",
+        "rev": "18d0a984cc2bc82cf61df19523a34ad463aa7f54",
+        "revCount": 1172,
+        "type": "git",
+        "url": "https://gitee.com/linuxwhata/disko"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "disko",
-        "type": "github"
+        "type": "git",
+        "url": "https://gitee.com/linuxwhata/disko"
       }
     },
     "hardware": {
       "locked": {
-        "lastModified": 1737751639,
-        "narHash": "sha256-ZEbOJ9iT72iwqXsiEMbEa8wWjyFvRA9Ugx8utmYbpz4=",
-        "owner": "nixos",
-        "repo": "nixos-hardware",
-        "rev": "dfad538f751a5aa5d4436d9781ab27a6128ec9d4",
-        "type": "github"
+        "lastModified": 1737590910,
+        "narHash": "sha256-qM/y6Dtpu9Wmf5HqeZajQdn+cS0aljdYQQQnrvx+LJE=",
+        "ref": "refs/heads/master",
+        "rev": "9368027715d8dde4b84c79c374948b5306fdd2db",
+        "revCount": 2094,
+        "type": "git",
+        "url": "https://gitee.com/mirrors/nixos-hardware"
       },
       "original": {
-        "owner": "nixos",
-        "repo": "nixos-hardware",
-        "type": "github"
+        "type": "git",
+        "url": "https://gitee.com/mirrors/nixos-hardware"
       }
     },
     "home-manager": {
@@ -42,48 +42,48 @@
         ]
       },
       "locked": {
-        "lastModified": 1737968762,
-        "narHash": "sha256-xiPARGKwocaMtv+U/rgi+h2g56CZZEmrcl7ldRaslq8=",
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "rev": "e1ae908bcc30af792b0bb0a52e53b03d2577255e",
-        "type": "github"
+        "lastModified": 1737704314,
+        "narHash": "sha256-zta8jvOQ2wRCZmiwFEnS5iCulWAh8e+fLUlQxrgOBjM=",
+        "ref": "refs/heads/master",
+        "rev": "a0428685572b134f6594e7d7f5db5e1febbab2d7",
+        "revCount": 4018,
+        "type": "git",
+        "url": "https://gitee.com/mirrors/home-manager-nix"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "type": "github"
+        "type": "git",
+        "url": "https://gitee.com/mirrors/home-manager-nix"
       }
     },
     "impermanence": {
       "locked": {
         "lastModified": 1737831083,
         "narHash": "sha256-LJggUHbpyeDvNagTUrdhe/pRVp4pnS6wVKALS782gRI=",
-        "owner": "nix-community",
-        "repo": "impermanence",
+        "ref": "refs/heads/master",
         "rev": "4b3e914cdf97a5b536a889e939fb2fd2b043a170",
-        "type": "github"
+        "revCount": 179,
+        "type": "git",
+        "url": "https://gitee.com/linuxwhata/impermanence"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "impermanence",
-        "type": "github"
+        "type": "git",
+        "url": "https://gitee.com/linuxwhata/impermanence"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1737942377,
-        "narHash": "sha256-8Eo/jRAgT3CbAloyqOj6uPN1EqBvLI/Tv2g+RxHjkhU=",
+        "lastModified": 1738009863,
+        "narHash": "sha256-KxmFlQ2j9PpDhKRXWu85bv3R2wmfkUqdpJhEwz9JN/E=",
         "ref": "nixpkgs-unstable",
-        "rev": "88a55dffa4d44d294c74c298daf75824dc0aafb5",
-        "revCount": 744509,
+        "rev": "f898cbfddfab52593da301a397a17d0af801bbc3",
+        "revCount": 744748,
         "type": "git",
-        "url": "https://mirror.nju.edu.cn/git/nixpkgs.git"
+        "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
       },
       "original": {
         "ref": "nixpkgs-unstable",
         "type": "git",
-        "url": "https://mirror.nju.edu.cn/git/nixpkgs.git"
+        "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
       }
     },
     "plasma-manager": {
@@ -98,15 +98,15 @@
       "locked": {
         "lastModified": 1736549395,
         "narHash": "sha256-XzwkB62Tt5UYoL1jXiHzgk/qz2fUpGHExcSIbyGTtI0=",
-        "owner": "nix-community",
-        "repo": "plasma-manager",
+        "ref": "refs/heads/trunk",
         "rev": "a53af7f1514ef4cce8620a9d6a50f238cdedec8b",
-        "type": "github"
+        "revCount": 273,
+        "type": "git",
+        "url": "https://gitee.com/linuxwhata/plasma-manager"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "plasma-manager",
-        "type": "github"
+        "type": "git",
+        "url": "https://gitee.com/linuxwhata/plasma-manager"
       }
     },
     "root": {
@@ -129,15 +129,15 @@
       "locked": {
         "lastModified": 1737411508,
         "narHash": "sha256-j9IdflJwRtqo9WpM0OfAZml47eBblUHGNQTe62OUqTw=",
-        "owner": "mic92",
-        "repo": "sops-nix",
+        "ref": "refs/heads/master",
         "rev": "015d461c16678fc02a2f405eb453abb509d4e1d4",
-        "type": "github"
+        "revCount": 923,
+        "type": "git",
+        "url": "https://gitee.com/linuxwhata/sops-nix"
       },
       "original": {
-        "owner": "mic92",
-        "repo": "sops-nix",
-        "type": "github"
+        "type": "git",
+        "url": "https://gitee.com/linuxwhata/sops-nix"
       }
     }
   },

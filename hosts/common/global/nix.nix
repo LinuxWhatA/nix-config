@@ -6,6 +6,11 @@
 
 {
   nix = {
+    nixPath = [
+      "nixpkgs=${inputs.nixpkgs}"
+      "home-manager=${inputs.home-manager}"
+    ];
+
     settings = {
       trusted-users = [
         "root"
@@ -19,15 +24,13 @@
       warn-dirty = false;
 
       substituters = lib.mkForce [
-        ""https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store""
+        "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
       ];
     };
 
     gc = {
       automatic = true;
-      dates = "weekly";
-      # Keep the last 3 generations
-      options = "--delete-older-than +3";
+      options = "--delete-older-than 3d";
     };
   };
 }
