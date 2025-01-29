@@ -33,4 +33,5 @@ in
   };
 
   home-manager.users.lwa = import ../../../../home/lwa/${config.networking.hostName}.nix;
+  home-manager.users.root = import ../../../../home/root;
 }
