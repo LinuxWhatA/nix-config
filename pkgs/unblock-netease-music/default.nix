@@ -42,7 +42,7 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Revive unavailable songs for Netease Cloud Music (Refactored & Enhanced version) ";
-    homepage = "https://github.com/UnblockNeteaseMusic/serverc";
+    homepage = "https://github.com/UnblockNeteaseMusic/server";
     license = with lib.licenses; [
       gpl3
       lgpl3

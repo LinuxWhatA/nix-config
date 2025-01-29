@@ -88,7 +88,7 @@
         (var(--urlbar-toolbar-height) - var(--urlbar-height)) / 2
     ) !important;
     width: calc(--urlbar-width) !important;
-    border-radius: 14px !important;
+    border-radius: 15px !important;
 }
 
 #urlbar-container {
