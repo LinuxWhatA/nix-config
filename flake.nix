@@ -72,7 +72,8 @@
             inherit inputs outputs;
           };
         };
-        # cdrom
+
+        # nix build .#nixosConfigurations.cdrom.config.system.build.isoImage
         cdrom = lib.nixosSystem {
           modules = [
             ./hosts/naix
