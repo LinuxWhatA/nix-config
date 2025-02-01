@@ -11,6 +11,11 @@ in
 {
   options.my.services.unblock-netease-music = {
     enable = lib.mkEnableOption "Enable unblock-netease-music";
+    env = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      description = "Setting environment variables";
+    };
     args = lib.mkOption {
       type = lib.types.str;
       default = "";
@@ -27,6 +32,7 @@ in
         After = "network.target";
       };
       Service = {
+        Environment = "${cfg.env}";
         ExecStart = "${pkgs.unblock-netease-music}/bin/unblock-netease-music ${cfg.args}";
         Restart = "always";
         RestartSec = "10";

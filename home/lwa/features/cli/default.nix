@@ -26,5 +26,8 @@
     winetricks
   ];
 
-  my.services.unblock-netease-music.enable = true;
+  my.services.unblock-netease-music = {
+    enable = true;
+    env = "SEARCH_ALBUM=true";
+  };
 }
