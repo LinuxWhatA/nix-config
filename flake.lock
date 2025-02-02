@@ -22,11 +22,11 @@
     },
     "hardware": {
       "locked": {
-        "lastModified": 1737590910,
-        "narHash": "sha256-qM/y6Dtpu9Wmf5HqeZajQdn+cS0aljdYQQQnrvx+LJE=",
+        "lastModified": 1737751639,
+        "narHash": "sha256-ZEbOJ9iT72iwqXsiEMbEa8wWjyFvRA9Ugx8utmYbpz4=",
         "ref": "refs/heads/master",
-        "rev": "9368027715d8dde4b84c79c374948b5306fdd2db",
-        "revCount": 2094,
+        "rev": "dfad538f751a5aa5d4436d9781ab27a6128ec9d4",
+        "revCount": 2099,
         "type": "git",
         "url": "https://gitee.com/mirrors/nixos-hardware"
       },
@@ -42,11 +42,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1737704314,
-        "narHash": "sha256-zta8jvOQ2wRCZmiwFEnS5iCulWAh8e+fLUlQxrgOBjM=",
+        "lastModified": 1738275749,
+        "narHash": "sha256-PM+cGduJ05EZ+YXulqAwUFjvfKpPmW080mcuN6R1POw=",
         "ref": "refs/heads/master",
-        "rev": "a0428685572b134f6594e7d7f5db5e1febbab2d7",
-        "revCount": 4018,
+        "rev": "a8159195bfaef3c64df75d3b1e6a68d49d392be9",
+        "revCount": 4080,
         "type": "git",
         "url": "https://gitee.com/mirrors/home-manager-nix"
       },
@@ -72,11 +72,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1738009863,
-        "narHash": "sha256-KxmFlQ2j9PpDhKRXWu85bv3R2wmfkUqdpJhEwz9JN/E=",
+        "lastModified": 1738297584,
+        "narHash": "sha256-AYvaFBzt8dU0fcSK2jKD0Vg23K2eIRxfsVXIPCW9a0E=",
         "ref": "nixpkgs-unstable",
-        "rev": "f898cbfddfab52593da301a397a17d0af801bbc3",
-        "revCount": 744748,
+        "rev": "9189ac18287c599860e878e905da550aa6dec1cd",
+        "revCount": 745949,
         "type": "git",
         "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
       },
@@ -127,11 +127,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1737411508,
-        "narHash": "sha256-j9IdflJwRtqo9WpM0OfAZml47eBblUHGNQTe62OUqTw=",
+        "lastModified": 1738291974,
+        "narHash": "sha256-wkwYJc8cKmmQWUloyS9KwttBnja2ONRuJQDEsmef320=",
         "ref": "refs/heads/master",
-        "rev": "015d461c16678fc02a2f405eb453abb509d4e1d4",
-        "revCount": 923,
+        "rev": "4c1251904d8a08c86ac6bc0d72cc09975e89aef7",
+        "revCount": 924,
         "type": "git",
         "url": "https://gitee.com/linuxwhata/sops-nix"
       },
