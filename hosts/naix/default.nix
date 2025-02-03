@@ -52,6 +52,8 @@
         device = "nodev";
         default = "saved";
         configurationLimit = 10;
+        extraConfig = "set timeout=5";
+        theme = "${pkgs.grub-cyberre-theme}/grub/themes/CyberRe";
         extraFiles = {
           "ntloader" = "${pkgs.ntloader}/ntloader";
           "initrd.cpio" = "${pkgs.ntloader}/initrd.cpio";

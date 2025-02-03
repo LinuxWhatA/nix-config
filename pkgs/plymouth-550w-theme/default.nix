@@ -1,11 +1,11 @@
 {
-  stdenv,
+  stdenvNoCC,
   lib,
   fetchFromGitHub,
   ...
 }:
 
-stdenv.mkDerivation {
+stdenvNoCC.mkDerivation {
   pname = "plymouth-550w-theme";
   version = "1.0";
   src = fetchFromGitHub {
