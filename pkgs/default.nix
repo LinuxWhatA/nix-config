@@ -9,6 +9,7 @@ rec {
   ntloader = pkgs.callPackage ./ntloader { };
   proton-run = pkgs.callPackage ./proton-run { };
   patchedpython = pkgs.callPackage ./patchedpython { };
+  plymouth-550w-theme = pkgs.callPackage ./plymouth-550w-theme { };
   plasma-applet-netspeed-widget = pkgs.callPackage ./plasma-applet-netspeed-widget { };
 
   xunlei-uos = pkgs.callPackage ./xunlei-uos { };

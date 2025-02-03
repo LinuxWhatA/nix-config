@@ -13,6 +13,8 @@
   boot = {
     plymouth = {
       enable = true;
+      theme = "550w";
+      themePackages = [ pkgs.plymouth-550w-theme ];
     };
     loader.timeout = 0;
     kernelParams = [

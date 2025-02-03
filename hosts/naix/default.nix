@@ -19,6 +19,7 @@
     ../common/optional/swap.nix
     ../common/optional/wireless.nix
     ../common/optional/pipewire.nix
+    ../common/optional/quietboot.nix
 
     ../common/optional/hosts.nix
     ../common/optional/steam.nix
