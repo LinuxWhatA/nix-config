@@ -3,7 +3,7 @@
   ...
 }:
 
-rec {
+{
   fhs = pkgs.callPackage ./fhs { };
   winfonts = pkgs.callPackage ./winfonts { };
   ntloader = pkgs.callPackage ./ntloader { };
