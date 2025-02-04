@@ -39,11 +39,11 @@
       file="$HOME/.vscode/argv.json"
       [ -f $file ] || (mkdir -p $(dirname $file) && echo "{}" > $file)
       json=$(${pkgs.fixjson}/bin/fixjson --minify $file)
-      echo $json '${argv}' | ${pkgs.jq}/bin/jq -s ".[0]*.[1]" > $file
+      echo $json '${argv}' | ${pkgs.jq}/bin/jq -s add > $file
 
       file="$HOME/.config/Code/User/settings.json"
       [ -f $file ] || (mkdir -p $(dirname $file) && echo "{}" > $file)
       json=$(${pkgs.fixjson}/bin/fixjson --minify $file)
-      echo $json '${userSettings}' | ${pkgs.jq}/bin/jq -s ".[0]*.[1]" > $file
+      echo $json '${userSettings}' | ${pkgs.jq}/bin/jq -s add > $file
     '';
 }
