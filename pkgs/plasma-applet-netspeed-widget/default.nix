@@ -12,7 +12,7 @@ stdenvNoCC.mkDerivation rec {
     owner = "dfaust";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-lP2wenbrghMwrRl13trTidZDz+PllyQXQT3n9n3hzrg=";
+    hash = "sha256-lP2wenbrghMwrRl13trTidZDz+PllyQXQT3n9n3hzrg=";
   };
 
   installPhase = ''
@@ -20,10 +20,10 @@ stdenvNoCC.mkDerivation rec {
     cp -r package/* $out/share/plasma/plasmoids/org.kde.netspeedWidget
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Plasma 5 and 6 widget that displays the currently used network bandwidth.";
     homepage = "https://github.com/dfaust/plasma-applet-netspeed-widget";
-    license = licenses.gpl2;
-    platforms = platforms.linux;
+    license = lib.licenses.gpl2;
+    platforms = lib.platforms.linux;
   };
 }
