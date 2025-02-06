@@ -3,14 +3,14 @@
 {
   imports = [
     ./zsh
-
-    ./direnv.nix
     ./git.nix
+    ./direnv.nix
   ];
 
   home.packages = with pkgs; [
     fhs
     rar
+    yazi
     nixd
     htop
     usbutils
