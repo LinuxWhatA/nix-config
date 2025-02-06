@@ -34,10 +34,10 @@ stdenv.mkDerivation rec {
     find * | cpio -o -H newc > $out/initrd.cpio
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Windows NT6+ OS/VHD/WIM loader";
     homepage = "https://github.com/grub4dos/ntloader";
-    license = licenses.gpl2;
-    platforms = platforms.linux;
+    license = lib.licenses.gpl2;
+    platforms = lib.platforms.linux;
   };
 }

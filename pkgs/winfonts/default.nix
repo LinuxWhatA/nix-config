@@ -3,17 +3,17 @@
   stdenvNoCC,
 }:
 
-stdenvNoCC.mkDerivation rec {
+stdenvNoCC.mkDerivation {
   pname = "winfonts";
   version = "1.0";
 
   src = ./fonts;
   installPhase = "install -Dm644 * -t $out/share/fonts/truetype";
 
-  meta = with lib; {
+  meta = {
     description = "fonts from Microsoft Windows 11 For Simplified Chinese";
     homepage = "https://learn.microsoft.com/zh-cn/typography/font-list";
-    license = licenses.unfree;
-    platforms = platforms.all;
+    license = lib.licenses.unfree;
+    platforms = lib.platforms.all;
   };
 }
