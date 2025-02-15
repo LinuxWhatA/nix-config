@@ -63,6 +63,7 @@
                 mountpoint = "/nix";
               };
               "/swap" = {
+                mountOptions = [ "noatime" ];
                 mountpoint = "/swap";
                 swap.swapfile.size = "8G";
               };
