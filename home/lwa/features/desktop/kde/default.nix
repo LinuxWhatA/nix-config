@@ -6,6 +6,8 @@
     inputs.plasma-manager.homeManagerModules.plasma-manager
   ];
 
+  services.kdeconnect.enable = true;
+
   home.packages = [ pkgs.plasma-applet-netspeed-widget ];
 
   programs.plasma = {
