@@ -2,42 +2,37 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  libbfd,
-  libiberty,
-  libz,
-  cpio,
 }:
 
 stdenv.mkDerivation rec {
   pname = "ntloader";
-  version = "2.0.1-unstable-2025-01-05";
+  version = "3.0.3-unstable-2025-02-16";
 
   src = fetchFromGitHub {
     owner = "grub4dos";
     repo = pname;
-    rev = "4cb1c1113297c1dc01c14a8c572cdfff25ca9035";
-    sha256 = "sha256-stjg7PNgS/HgbQdoF+B9jNXfGfgbF0rSRB4KtjWRH8A=";
+    rev = "17c0e3004371e0850210039f4ab4dd78d65e8cc0";
+    sha256 = "sha256-atUSgxGddBoNMxF23lMV4SApNYACjCJWf5dOhA6aLaY=";
   };
 
-  nativeBuildInputs = [
-    libbfd
-    libiberty
-    libz
-    cpio
+  makeFlags = [
+    "ntloader"
+    "initrd.cpio"
   ];
-
-  CFLAGS = [ "-Wno-error=array-bounds" ];
 
   installPhase = ''
     install -D ntloader -t $out
-    cd utils/rootfs
-    find * | cpio -o -H newc > $out/initrd.cpio
+    install -D initrd.cpio -t $out
   '';
 
   meta = {
-    description = "Windows NT6+ OS/VHD/WIM loader";
+    description = "bootloader for NT6+ WIM, VHD and VHDX images";
     homepage = "https://github.com/grub4dos/ntloader";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
+    license = lib.licenses.gpl3Only;
+    platforms = [
+      "x86-linux"
+      "x86_64-linux"
+      "aarch64-linux"
+    ];
   };
 }
