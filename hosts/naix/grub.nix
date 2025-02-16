@@ -29,6 +29,10 @@
           search --no-floppy --efidisk-only --set --label VTOYEFI
           chainloader /EFI/BOOT/grubx64_real.efi
         }
+
+        menuentry "Halt" {
+          halt
+        }
       '';
     };
   };
