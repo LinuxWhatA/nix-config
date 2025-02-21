@@ -20,7 +20,7 @@
     ../common/optional/swap.nix
     ../common/optional/wireless.nix
     ../common/optional/pipewire.nix
-    ../common/optional/quietboot.nix
+    ../common/optional/plymouth.nix
     ../common/optional/systemd-boot.nix
 
     ../common/optional/hosts.nix

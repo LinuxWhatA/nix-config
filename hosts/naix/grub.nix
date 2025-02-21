@@ -8,8 +8,8 @@
       efiSupport = true;
       device = "nodev";
       default = "saved";
+      splashImage = null;
       configurationLimit = 10;
-      extraConfig = "set timeout=5";
       theme = "${pkgs.grub-cyberre-theme}/grub/themes/CyberRe";
       extraFiles = {
         "ntloader" = "${pkgs.ntloader}/ntloader";
