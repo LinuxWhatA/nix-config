@@ -51,10 +51,6 @@
     adb.enable = true;
   };
 
-  environment.systemPackages = with pkgs; [
-    easyeffects # 用于反转左右声道
-  ];
-
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
