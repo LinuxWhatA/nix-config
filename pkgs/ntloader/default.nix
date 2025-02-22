@@ -6,12 +6,12 @@
 
 stdenv.mkDerivation rec {
   pname = "ntloader";
-  version = "3.0.3-unstable-2025-02-16";
+  version = "3.0.3";
 
   src = fetchFromGitHub {
     owner = "grub4dos";
     repo = pname;
-    rev = "17c0e3004371e0850210039f4ab4dd78d65e8cc0";
+    rev = "v${version}";
     sha256 = "sha256-atUSgxGddBoNMxF23lMV4SApNYACjCJWf5dOhA6aLaY=";
   };
 
