@@ -48,15 +48,17 @@
       ];
     };
     configFile = {
-      "kscreenlockerrc"."Daemon"."Autolock" = false; # 不自动锁屏
+      "kscreenlockerrc"."Daemon"."Autolock" = false; # 自动锁屏
       "kscreenlockerrc"."Daemon"."LockOnResume" = false; # 唤醒后锁屏
       "kscreenlockerrc"."Daemon"."Timeout" = 0; # 锁屏超时
       "kcminputrc"."Keyboard"."NumLock" = 0; # 开启数字键盘
       "klipperrc"."General"."IgnoreImages" = false; # 启用剪切板图片
       "klipperrc"."General"."MaxClipItems" = 200; # 剪切板最大条目数
-      # 虚拟键盘
       "kwinrc"."Wayland"."InputMethod" =
-        "/run/current-system/sw/share/applications/org.fcitx.Fcitx5.desktop";
+        "/run/current-system/sw/share/applications/org.fcitx.Fcitx5.desktop"; # 设置虚拟键盘以支持Fcitx
+      "kwinrc"."Plugins"."wobblywindowsEnabled" = true; # 窗口惯性晃动特效
+      "kwinrc"."Plugins"."squashEnabled" = false; # 关闭（收缩）最小化动画
+      "kwinrc"."Plugins"."magiclampEnabled" = true; # 开启（神灯）最小化动画
     };
   };
 }
