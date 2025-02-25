@@ -86,8 +86,6 @@
       "uid=1000"
       "gid=100"
       "umask=0000"
-      "fmask=0000"
-      "dmask=0000"
     ];
   };
 
@@ -101,12 +99,9 @@
       "uid=1000"
       "gid=100"
       "umask=0000"
-      "fmask=0000"
-      "dmask=0000"
     ];
   };
 
-  swapDevices = [ { device = "/swap/swapfile"; } ];
   services.btrfs.autoScrub.enable = true;
   services.btrfs.autoScrub.fileSystems = [ "/" ];
 
