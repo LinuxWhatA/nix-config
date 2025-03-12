@@ -9,9 +9,8 @@
   };
 
   # https://wiki.nixos.org/wiki/Bluetooth#USB_device_needs_to_be_unplugged/re-plugged_after_suspends
-  powerManagement.resumeCommands = ''
-    ${pkgs.util-linux}/bin/rfkill block bluetooth
-    ${pkgs.util-linux}/bin/rfkill unblock bluetooth
+  powerManagement.powerUpCommands = ''
+    ${pkgs.usbutils}/bin/usbreset USB2.0-BT
   '';
 
   networking.wireless = {
