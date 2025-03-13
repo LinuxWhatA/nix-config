@@ -6,11 +6,11 @@
 
 let
   pname = "dev-sidecar";
-  version = "1.8.9";
+  version = "2.0.0";
 
   src = fetchurl {
-    url = "https://github.com/docmirror/dev-sidecar/releases/download/v${version}/DevSidecar-${version}-node17.AppImage";
-    hash = "sha256-ovV+rK4rIr9UmZ4OQzDqzwDSPr2VWMvAXn5P3cZj3Dc=";
+    url = "https://github.com/docmirror/dev-sidecar/releases/download/v${version}/DevSidecar-${version}-linux-x86_64.AppImage";
+    hash = "sha256-m/deM/qAQ3Hy2Je8SK0aJrqeuMKAwKI0OnmEH4w3QuI=";
   };
 
   appimageContents = appimageTools.extract { inherit pname version src; };
