@@ -6,13 +6,13 @@
 
 stdenv.mkDerivation rec {
   pname = "ntloader";
-  version = "3.0.3";
+  version = "3.0.5-unstable-2025-03-21";
 
   src = fetchFromGitHub {
     owner = "grub4dos";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-atUSgxGddBoNMxF23lMV4SApNYACjCJWf5dOhA6aLaY=";
+    rev = "57d3c32c6dc722d80856d34b98aa0cab2d12dc26";
+    sha256 = "sha256-/Y+wuG9nkAps6OHjWgfN0G5NQjYmrK23Mup0hYEDbcI=";
   };
 
   makeFlags = [
