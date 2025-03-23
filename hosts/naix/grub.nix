@@ -18,15 +18,21 @@
       extraEntries = ''
         menuentry "Windows VHD" --class windows {
           savedefault
-          search --no-floppy --efidisk-only --set --file /ntloader
-          search --no-floppy --set=fs_uuid --file /OS/Windows.vhd
-          probe --set=dev_uuid --fs-uuid $fs_uuid
-          chainloader /ntloader initrd=/initrd.cpio uuid=$dev_uuid file=/OS/Windows.vhd
+          search -s -f /ntloader
+          search -s dev -f /OS/Windows.vhd
+          probe -s dev_uuid -u $dev
+          if [ "''${grub_platform}" = "efi" ]; then
+            linux /ntloader uuid=''${dev_uuid} vhd=/OS/windows.vhd
+            initrd /initrd.cpio
+          else
+            linux16 /ntloader uuid=''${dev_uuid} vhd=/OS/windows.vhd
+            initrd16 /initrd.cpio
+          fi;
         }
 
         menuentry "Ventoy" {
           savedefault
-          search --no-floppy --efidisk-only --set --label VTOYEFI
+          search -s -l VTOYEFI
           chainloader /EFI/BOOT/grubx64_real.efi
         }
 
