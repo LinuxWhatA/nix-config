@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   inputs,
   ...
@@ -16,7 +15,7 @@
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelModules = [ "kvm-amd" "nct6775" ];
   boot.extraModulePackages = [ ];
 
   disko.devices.disk.main = {
@@ -113,5 +112,4 @@
   # networking.interfaces.enp34s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
