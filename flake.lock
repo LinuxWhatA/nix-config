@@ -22,11 +22,11 @@
     },
     "hardware": {
       "locked": {
-        "lastModified": 1742376361,
-        "narHash": "sha256-VFMgJkp/COvkt5dnkZB4D2szVdmF6DGm5ZdVvTUy61c=",
+        "lastModified": 1743167577,
+        "narHash": "sha256-I09SrXIO0UdyBFfh0fxDq5WnCDg8XKmZ1HQbaXzMA1k=",
         "ref": "refs/heads/master",
-        "rev": "daaae13dff0ecc692509a1332ff9003d9952d7a9",
-        "revCount": 2167,
+        "rev": "0ed819e708af17bfc4bbc63ee080ef308a24aa42",
+        "revCount": 2172,
         "type": "git",
         "url": "https://gitee.com/mirrors/nixos-hardware"
       },
@@ -42,11 +42,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1742569620,
-        "narHash": "sha256-igC2cu+cPRB3E4QwKR+vGagyAtoyB+DrmWwDKm8jkaw=",
+        "lastModified": 1743136572,
+        "narHash": "sha256-uwaVrKgi6g1TUq56247j6QvvFtYHloCkjCrEpGBvV54=",
         "ref": "refs/heads/master",
-        "rev": "8a68f18e96bcab13e4f97bece61e6602298a3141",
-        "revCount": 4369,
+        "rev": "1efd2503172016a6742c87b47b43ca2c8145607d",
+        "revCount": 4412,
         "type": "git",
         "url": "https://gitee.com/mirrors/home-manager-nix"
       },
@@ -72,11 +72,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1740019556,
-        "narHash": "sha256-vn285HxnnlHLWnv59Og7muqECNMS33mWLM14soFIv2g=",
+        "lastModified": 1743076231,
+        "narHash": "sha256-yQugdVfi316qUfqzN8JMaA2vixl+45GxNm4oUfXlbgw=",
         "ref": "nixpkgs-unstable",
-        "rev": "dad564433178067be1fbdfcce23b546254b6d641",
-        "revCount": 755883,
+        "rev": "6c5963357f3c1c840201eda129a99d455074db04",
+        "revCount": 774949,
         "type": "git",
         "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
       },
