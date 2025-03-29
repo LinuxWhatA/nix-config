@@ -11,6 +11,11 @@
     (modulesPath + "/installer/cd-dvd/channel.nix")
   ];
 
+  users.users.lwa = {
+    password = lib.mkForce "";
+    hashedPasswordFile = lib.mkForce null;
+  };
+
   environment.systemPackages = with pkgs; [
     jq # disko required
     disko
