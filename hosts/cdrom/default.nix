@@ -16,5 +16,8 @@
     disko
   ];
 
+  # 快速压缩
+  isoImage.squashfsCompression = "lz4";
+
   boot.loader.grub.enable = lib.mkForce false;
 }
