@@ -6,7 +6,7 @@
       userChrome = builtins.readFile ./userChrome.css;
       search = {
         force = true;
-        default = "Bing";
+        default = "bing";
       };
       settings = {
         # "sidebar.revamp" = true; # 侧栏

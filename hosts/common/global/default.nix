@@ -1,6 +1,5 @@
 # This file (and the global directory) holds config that i use on all hosts
 {
-  lib,
   pkgs,
   inputs,
   outputs,
@@ -51,7 +50,4 @@
     enable = true;
     binfmt = true;
   };
-
-  # Cleanup stuff included by default
-  services.speechd.enable = lib.mkDefault false;
 }
