@@ -8,7 +8,7 @@ stdenvNoCC.mkDerivation {
   version = "1.0";
 
   src = ./fonts;
-  installPhase = "install -Dm644 * -t $out/share/fonts/truetype";
+  installPhase = "install -Dm444 * -t $out/share/fonts/truetype";
 
   meta = {
     description = "fonts from Microsoft Windows 11 For Simplified Chinese";
