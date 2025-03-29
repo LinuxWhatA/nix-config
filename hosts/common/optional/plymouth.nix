@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   ...
 }:
@@ -10,7 +11,7 @@
       theme = "550w";
       themePackages = [ pkgs.plymouth-550w-theme ];
     };
-    loader.timeout = 5;
+    loader.timeout = lib.mkDefault 5;
     kernelParams = [
       "quiet"
       "splash"
