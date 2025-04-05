@@ -15,10 +15,14 @@
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" "nct6775" ];
+  boot.kernelModules = [
+    "kvm-amd"
+    "nct6775"
+  ];
   boot.extraModulePackages = [ ];
 
   disko.devices.disk.main = {
+    imageSize = "32G";
     type = "disk";
     device = "/dev/disk/by-diskseq/1";
     content = {

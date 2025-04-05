@@ -59,6 +59,7 @@
 
       nixosConfigurations = {
         # AMD 主机
+        # nix build .#nixosConfigurations.naix.config.system.build.diskoImagesScript
         naix = lib.nixosSystem {
           modules = [ ./hosts/naix ];
           specialArgs = {
