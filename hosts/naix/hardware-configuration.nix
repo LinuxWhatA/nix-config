@@ -28,10 +28,14 @@
     content = {
       type = "gpt";
       partitions = {
+        MBR = {
+          priority = 0;
+          size = "1M";
+          type = "EF02";
+        };
         ESP = {
           priority = 1;
-          start = "1M";
-          end = "512M";
+          size = "512M";
           type = "EF00";
           content = {
             type = "filesystem";
@@ -78,6 +82,15 @@
   };
 
   fileSystems."/persist".neededForBoot = true;
+
+  # nix build .#nixosConfigurations.naix.config.system.build.vmWithDisko
+  virtualisation.vmVariantWithDisko = {
+    virtualisation = {
+      fileSystems."/persist".neededForBoot = true;
+      memorySize = 8192;
+      cores = 6;
+    };
+  };
 
   fileSystems."/mnt/TiPlus5000" = {
     device = "/dev/disk/by-label/TiPlus5000";
