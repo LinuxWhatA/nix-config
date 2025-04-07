@@ -20,7 +20,7 @@ in
   config = lib.mkIf cfg.enable {
     services.kmscon = {
       enable = true;
-      autologinUser = "lwa";
+      autologinUser = cfg.autologinUser;
       fonts = [
         {
           name = "MesloLGS NF";
