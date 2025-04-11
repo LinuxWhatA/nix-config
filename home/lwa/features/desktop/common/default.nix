@@ -9,6 +9,7 @@
   home.packages = with pkgs; [
     vlc
     qcm
+    scrcpy
     fsearch
     xunlei-uos
     wechat-uos
