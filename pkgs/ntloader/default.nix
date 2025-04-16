@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     owner = "grub4dos";
     repo = pname;
     rev = "v${version}";
-    hash = "sha256-V1F6lQp75/kjhgayxSkUlMK60fCsVK+csRNsNgexd2w=";
+    hash = "sha256-lAvHHd14qmIQs+s2cxsUiYUplw64ZiOjDDde3ULrNjE=";
   };
 
   makeFlags = [
