@@ -22,13 +22,8 @@ in
       "adbusers"
     ];
 
-    hashedPasswordFile = config.sops.secrets.lwa-password.path;
+    hashedPassword = "$6$6aT0cza7dVGIOdsf$ICgv1WOo255hp41vzsz2c7m1BtI51MFfmR7K7qJdJ4zRR2yFSNS0mKsqSMhMPPSWbShpi5UzgMmOkd/9UMxEg0";
     packages = [ pkgs.home-manager ];
-  };
-
-  sops.secrets.lwa-password = {
-    sopsFile = ../../secrets.yaml;
-    neededForUsers = true;
   };
 
   home-manager.users.lwa = import ../../../../home/lwa/${config.networking.hostName}.nix;
