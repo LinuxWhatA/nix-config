@@ -28,11 +28,6 @@
     content = {
       type = "gpt";
       partitions = {
-        MBR = {
-          priority = 0;
-          size = "1M";
-          type = "EF02";
-        };
         ESP = {
           priority = 1;
           size = "512M";
