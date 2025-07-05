@@ -9,10 +9,6 @@
       url = "git+https://gitee.com/linuxwhata/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    sops-nix = {
-      url = "git+https://gitee.com/linuxwhata/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     home-manager = {
       url = "git+https://gitee.com/mirrors/home-manager-nix";
       inputs.nixpkgs.follows = "nixpkgs";
