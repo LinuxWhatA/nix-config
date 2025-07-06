@@ -12,7 +12,7 @@
     ];
   };
 
-  home.activation.modifyArgv =
+  home.activation.vscodeSettings =
     let
       argv = builtins.toJSON {
         "locale" = "zh-cn";
