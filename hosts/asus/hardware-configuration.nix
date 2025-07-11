@@ -1,10 +1,13 @@
 {
   config,
+  inputs,
   lib,
   ...
 }:
 
 {
+  imports = [ inputs.disko.nixosModules.disko ];
+
   boot.initrd = {
     availableKernelModules = [
       "xhci_pci"
@@ -14,50 +17,74 @@
     kernelModules = [ "kvm-intel" ];
   };
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/00be4f47-8b8b-47ac-a287-e0eddeef7ab3";
-    fsType = "btrfs";
-    options = [
-      "subvol=root"
-      "compress-force=zstd:15"
-    ];
+  disko.devices.disk.main = {
+    imageSize = "32G";
+    type = "disk";
+    device = "/dev/sda";
+    content = {
+      type = "gpt";
+      partitions = {
+        ESP = {
+          priority = 1;
+          size = "512M";
+          type = "EF00";
+          content = {
+            type = "filesystem";
+            format = "vfat";
+            mountpoint = "/boot";
+            mountOptions = [ "umask=0077" ];
+          };
+        };
+        nixos = {
+          size = "100%";
+          content = {
+            type = "btrfs";
+            extraArgs = [ "-Lnixos" ];
+            subvolumes = {
+              "/root" = {
+                mountOptions = [ "compress=zstd" ];
+                mountpoint = "/";
+              };
+              "/home" = {
+                mountOptions = [ "compress=zstd" ];
+                mountpoint = "/home";
+              };
+              "/persist" = {
+                mountOptions = [ "compress=zstd" ];
+                mountpoint = "/persist";
+              };
+              "/nix" = {
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
+                mountpoint = "/nix";
+              };
+              "/swap" = {
+                mountOptions = [ "noatime" ];
+                mountpoint = "/swap";
+                swap.swapfile.size = "8G";
+              };
+            };
+          };
+        };
+      };
+    };
   };
 
-  fileSystems."/nix" = {
-    device = "/dev/disk/by-uuid/00be4f47-8b8b-47ac-a287-e0eddeef7ab3";
-    fsType = "btrfs";
-    options = [
-      "subvol=nix"
-      "compress-force=zstd:15"
-      "noatime"
-    ];
+  fileSystems."/persist".neededForBoot = true;
+
+  # nix build .#nixosConfigurations.naix.config.system.build.vmWithDisko
+  virtualisation.vmVariantWithDisko = {
+    virtualisation = {
+      fileSystems."/persist".neededForBoot = true;
+      memorySize = 8192;
+      cores = 4;
+    };
   };
 
-  fileSystems."/home" = {
-    device = "/dev/disk/by-uuid/00be4f47-8b8b-47ac-a287-e0eddeef7ab3";
-    fsType = "btrfs";
-    options = [
-      "subvol=home"
-      "compress-force=zstd:15"
-    ];
-  };
-
-  fileSystems."/swap" = {
-    device = "/dev/disk/by-uuid/00be4f47-8b8b-47ac-a287-e0eddeef7ab3";
-    fsType = "btrfs";
-    options = [
-      "subvol=swap"
-      "noatime"
-    ];
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/12CE-A600";
-    fsType = "vfat";
-  };
-
-  swapDevices = [ { device = "/swap/swapfile"; } ];
   services.btrfs.autoScrub.enable = true;
+  services.btrfs.autoScrub.fileSystems = [ "/" ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
@@ -68,5 +95,4 @@
   # networking.interfaces.wlp3s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
