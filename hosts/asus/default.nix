@@ -26,15 +26,15 @@
     ../common/optional/hosts.nix
     ../common/optional/steam.nix
     ../common/optional/v2raya.nix
-    # ../common/optional/waydroid.nix
     ../common/optional/proxychains.nix
   ];
 
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "lwa";
 
-  my.kmscon.enable = true;
-  my.kmscon.autologinUser = "lwa";
+  # FIXME 开启此选项无法进入桌面
+  # my.kmscon.enable = true;
+  # my.kmscon.autologinUser = "lwa";
 
   networking.hostName = "asus";
 
