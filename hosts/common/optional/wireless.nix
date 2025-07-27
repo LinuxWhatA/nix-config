@@ -13,12 +13,7 @@
     ${pkgs.usbutils}/bin/usbreset USB2.0-BT
   '';
 
-  networking.wireless = {
+  networking.networkmanager = {
     enable = true;
   };
-
-  # Ensure group exists
-  users.groups.network = { };
-
-  systemd.services.wpa_supplicant.preStart = "touch /etc/wpa_supplicant.conf";
 }
