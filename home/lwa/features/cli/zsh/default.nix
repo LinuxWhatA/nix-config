@@ -5,6 +5,10 @@
     enable = true;
     enableCompletion = false;
     autosuggestion.enable = true;
+    autosuggestion.strategy = [
+      "history"
+      "completion"
+    ];
     syntaxHighlighting.enable = true;
     historySubstringSearch = {
       enable = true;
