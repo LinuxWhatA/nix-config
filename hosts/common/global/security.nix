@@ -1,3 +1,5 @@
+{ pkgs, ... }:
+
 {
   # Increase open file limit for sudoers
   security.pam.loginLimits = [
@@ -19,4 +21,8 @@
     enable = true;
     extraConfig = "Defaults env_reset,timestamp_timeout=60";
   };
+
+  security.pki.certificateFiles = [
+    "${pkgs.dev-sidecar}/dev-sidecar.ca.crt"
+  ];
 }
