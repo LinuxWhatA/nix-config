@@ -4,4 +4,6 @@
     ./features/desktop/kde
     ./features/games
   ];
+
+  hostname = "naix";
 }
