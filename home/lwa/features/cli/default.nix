@@ -1,10 +1,11 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
   imports = [
     ./zsh
     ./git.nix
     ./direnv.nix
+    inputs.vscode-server.homeModules.default
   ];
 
   home.packages = with pkgs; [
@@ -31,4 +32,7 @@
     enable = true;
     env = "SEARCH_ALBUM=true";
   };
+
+  services.vscode-server.enable = true;
+  services.vscode-server.enableFHS = true;
 }
