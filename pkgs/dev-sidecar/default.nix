@@ -1,5 +1,6 @@
 {
   lib,
+  openssl,
   fetchurl,
   appimageTools,
 }:
@@ -23,6 +24,9 @@ appimageTools.wrapType2 rec {
     substituteInPlace $out/share/applications/@docmirrordev-sidecar-gui.desktop \
       --replace-fail 'Exec=AppRun' 'Exec=dev-sidecar'
     cp -r ${appimageContents}/usr/share/icons $out/share
+    ${openssl}/bin/openssl genrsa -out $out/dev-sidecar.ca.key.pem 2048
+    ${openssl}/bin/openssl req -x509 -new -nodes -key $out/dev-sidecar.ca.key.pem -sha256 -days 3650 \
+      -out $out/dev-sidecar.ca.crt -subj ""/C=CN/ST=GuangDong/L=ShenZhen/O=dev-sidecar/CN=DevSidecar""
   '';
 
   meta = {
