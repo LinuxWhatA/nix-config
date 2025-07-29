@@ -18,6 +18,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
   };
 
   outputs =
