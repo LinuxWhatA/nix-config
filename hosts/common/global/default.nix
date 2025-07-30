@@ -19,6 +19,8 @@
     ./optin-persistence.nix
   ] ++ (builtins.attrValues outputs.nixosModules);
 
+  boot.kernel.sysctl."kernel.sysrq" = 1;
+
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.extraSpecialArgs = {
