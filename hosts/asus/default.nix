@@ -32,6 +32,16 @@
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "lwa";
 
+  services.xrdp = {
+    enable = true;
+    openFirewall = true;
+    defaultWindowManager = ''
+      unset DBUS_SESSION_BUS_ADDRESS
+      unset XDG_RUNTIME_DIR
+      startplasma-x11
+    '';
+  };
+
   # FIXME 开启此选项无法进入桌面
   # my.kmscon.enable = true;
   # my.kmscon.autologinUser = "lwa";
