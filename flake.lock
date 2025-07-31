@@ -7,17 +7,19 @@
         ]
       },
       "locked": {
-        "lastModified": 1753140376,
-        "narHash": "sha256-7lrVrE0jSvZHrxEzvnfHFE/Wkk9DDqb+mYCodI5uuB8=",
+        "dir": "disko",
+        "lastModified": 1753904486,
+        "narHash": "sha256-WaAzZlGP9rBcUWeSI6gmlfYlFErV3YjiVWwnSxhyNkw=",
         "ref": "refs/heads/master",
-        "rev": "545aba02960caa78a31bd9a8709a0ad4b6320a5c",
-        "revCount": 1261,
+        "rev": "4eb51674dac514d55ac753d40df9247a3713ecae",
+        "revCount": 11,
         "type": "git",
-        "url": "https://gitee.com/linuxwhata/disko"
+        "url": "https://gitee.com/linuxwhata/mirrors"
       },
       "original": {
+        "dir": "disko",
         "type": "git",
-        "url": "https://gitee.com/linuxwhata/disko"
+        "url": "https://gitee.com/linuxwhata/mirrors"
       }
     },
     "flake-utils": {
@@ -75,26 +77,28 @@
     },
     "impermanence": {
       "locked": {
-        "lastModified": 1737831083,
-        "narHash": "sha256-LJggUHbpyeDvNagTUrdhe/pRVp4pnS6wVKALS782gRI=",
+        "dir": "impermanence",
+        "lastModified": 1753904486,
+        "narHash": "sha256-WaAzZlGP9rBcUWeSI6gmlfYlFErV3YjiVWwnSxhyNkw=",
         "ref": "refs/heads/master",
-        "rev": "4b3e914cdf97a5b536a889e939fb2fd2b043a170",
-        "revCount": 179,
+        "rev": "4eb51674dac514d55ac753d40df9247a3713ecae",
+        "revCount": 11,
         "type": "git",
-        "url": "https://gitee.com/linuxwhata/impermanence"
+        "url": "https://gitee.com/linuxwhata/mirrors"
       },
       "original": {
+        "dir": "impermanence",
         "type": "git",
-        "url": "https://gitee.com/linuxwhata/impermanence"
+        "url": "https://gitee.com/linuxwhata/mirrors"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1753722563,
-        "narHash": "sha256-FK8iq76wlacriq3u0kFCehsRYTAqjA9nfprpiSWRWIc=",
+        "lastModified": 1753844155,
+        "narHash": "sha256-w81jpZeM3AtYlTKIhT05p3IqvJRIHZPyp0Acgb6hXWc=",
         "ref": "nixpkgs-unstable",
-        "rev": "648f70160c03151bc2121d179291337ad6bc564b",
-        "revCount": 836323,
+        "rev": "e44b8dc0882d66e2627a8ff252b04a22f4a629fd",
+        "revCount": 836767,
         "type": "git",
         "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
       },
@@ -102,20 +106,6 @@
         "ref": "nixpkgs-unstable",
         "type": "git",
         "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1682134069,
-        "narHash": "sha256-TnI/ZXSmRxQDt2sjRYK/8j8iha4B4zP2cnQCZZ3vp7k=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "fd901ef4bf93499374c5af385b2943f5801c0833",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "type": "indirect"
       }
     },
     "plasma-manager": {
@@ -128,17 +118,19 @@
         ]
       },
       "locked": {
-        "lastModified": 1748196248,
-        "narHash": "sha256-1iHjsH6/5UOerJEoZKE+Gx1BgAoge/YcnUsOA4wQ/BU=",
-        "ref": "refs/heads/trunk",
-        "rev": "b7697abe89967839b273a863a3805345ea54ab56",
-        "revCount": 278,
+        "dir": "plasma-manager",
+        "lastModified": 1753904486,
+        "narHash": "sha256-WaAzZlGP9rBcUWeSI6gmlfYlFErV3YjiVWwnSxhyNkw=",
+        "ref": "refs/heads/master",
+        "rev": "4eb51674dac514d55ac753d40df9247a3713ecae",
+        "revCount": 11,
         "type": "git",
-        "url": "https://gitee.com/linuxwhata/plasma-manager"
+        "url": "https://gitee.com/linuxwhata/mirrors"
       },
       "original": {
+        "dir": "plasma-manager",
         "type": "git",
-        "url": "https://gitee.com/linuxwhata/plasma-manager"
+        "url": "https://gitee.com/linuxwhata/mirrors"
       }
     },
     "root": {
@@ -170,20 +162,24 @@
     "vscode-server": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
-        "lastModified": 1753541826,
-        "narHash": "sha256-foGgZu8+bCNIGeuDqQ84jNbmKZpd+JvnrL2WlyU4tuU=",
-        "owner": "nix-community",
-        "repo": "nixos-vscode-server",
-        "rev": "6d5f074e4811d143d44169ba4af09b20ddb6937d",
-        "type": "github"
+        "dir": "nixos-vscode-server",
+        "lastModified": 1753904486,
+        "narHash": "sha256-WaAzZlGP9rBcUWeSI6gmlfYlFErV3YjiVWwnSxhyNkw=",
+        "ref": "refs/heads/master",
+        "rev": "4eb51674dac514d55ac753d40df9247a3713ecae",
+        "revCount": 11,
+        "type": "git",
+        "url": "https://gitee.com/linuxwhata/mirrors"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "nixos-vscode-server",
-        "type": "github"
+        "dir": "nixos-vscode-server",
+        "type": "git",
+        "url": "https://gitee.com/linuxwhata/mirrors"
       }
     }
   },

@@ -22,6 +22,7 @@
     extraConfig = "Defaults env_reset,timestamp_timeout=60";
   };
 
+  # 普通用户电源权限（XRDP）
   security.polkit = {
     enable = true;
     extraConfig = ''
@@ -33,7 +34,7 @@
             "org.freedesktop.login1.reboot-multiple-sessions",
             "org.freedesktop.login1.power-off",
             "org.freedesktop.login1.power-off-multiple-sessions",
-          ].indexOf(action.id) !== -1
+          ].indexOf(action.id) !== -1
         ) {
           return polkit.Result.YES;
         }
