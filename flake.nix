@@ -4,9 +4,9 @@
   inputs = {
     nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixpkgs-unstable";
     hardware.url = "git+https://gitee.com/mirrors/nixos-hardware";
-    impermanence.url = "git+https://gitee.com/linuxwhata/impermanence";
+    impermanence.url = "git+https://gitee.com/linuxwhata/mirrors?dir=impermanence";
     disko = {
-      url = "git+https://gitee.com/linuxwhata/disko";
+      url = "git+https://gitee.com/linuxwhata/mirrors?dir=disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
@@ -14,11 +14,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     plasma-manager = {
-      url = "git+https://gitee.com/linuxwhata/plasma-manager";
+      url = "git+https://gitee.com/linuxwhata/mirrors?dir=plasma-manager";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
-    vscode-server.url = "github:nix-community/nixos-vscode-server";
+    vscode-server = {
+      url = "git+https://gitee.com/linuxwhata/mirrors?dir=nixos-vscode-server";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
