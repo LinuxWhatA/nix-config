@@ -19,10 +19,13 @@
         "/etc/machine-id"
       ];
       directories = [
+        "/etc/NetworkManager/system-connections"
+        "/var/lib/fprint"
         "/var/lib/systemd"
         "/var/lib/nixos"
         "/var/log"
         "/srv"
+        "/tmp" # Prevent OOM during compilation
       ];
     };
   };
