@@ -16,6 +16,7 @@ in
       "wheel"
       "audio"
       "video"
+      "input"
       "libvirtd"
       "adbusers"
       "networkmanager"
