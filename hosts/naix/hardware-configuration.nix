@@ -45,10 +45,6 @@
             type = "btrfs";
             extraArgs = [ "-Lnixos" ];
             subvolumes = {
-              "/root" = {
-                mountOptions = [ "compress=zstd" ];
-                mountpoint = "/";
-              };
               "/home" = {
                 mountOptions = [ "compress=zstd" ];
                 mountpoint = "/home";
@@ -75,7 +71,14 @@
       };
     };
   };
-
+  fileSystems."/" = {
+    device = "tmpfs";
+    fsType = "tmpfs";
+    options = [
+      "relatime"
+      "mode=755"
+    ];
+  };
   fileSystems."/persist".neededForBoot = true;
 
   # nix build .#nixosConfigurations.naix.config.system.build.vmWithDisko

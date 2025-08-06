@@ -31,7 +31,6 @@
         }
 
         menuentry "Ventoy" {
-          savedefault
           search -s -l VTOYEFI
           chainloader /EFI/BOOT/grubx64_real.efi
         }
