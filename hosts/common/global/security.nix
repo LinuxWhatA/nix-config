@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   # Increase open file limit for sudoers
@@ -17,6 +17,7 @@
     }
   ];
 
+  security.sudo.enable = lib.mkForce false;
   security.sudo-rs = {
     enable = true;
     extraConfig = "Defaults env_reset,timestamp_timeout=60";
