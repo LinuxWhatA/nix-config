@@ -37,9 +37,8 @@
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "lwa";
 
-  # FIXME 开启此选项无法进入桌面
-  # my.kmscon.enable = true;
-  # my.kmscon.autologinUser = "lwa";
+  my.kmscon.enable = true;
+  my.kmscon.autologinUser = "lwa";
 
   networking.hostName = "naix";
 
