@@ -6,4 +6,12 @@
       20172
     ];
   };
+
+  environment.persistence = {
+    "/persist" = {
+      directories = [
+        "/etc/v2raya"
+      ];
+    };
+  };
 }
