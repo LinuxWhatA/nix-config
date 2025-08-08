@@ -21,6 +21,7 @@ stdenvNoCC.mkDerivation {
   '';
 
   meta = {
+    homepage = "https://github.com/metgen/CyberReFresh";
     platforms = lib.platforms.all;
   };
 }

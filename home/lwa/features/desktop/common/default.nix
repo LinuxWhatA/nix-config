@@ -29,4 +29,17 @@
       source = "${pkgs.dev-sidecar}/dev-sidecar.ca.key.pem";
     };
   };
+
+  home.activation.DevSidecarSettings =
+    let
+      setting = builtins.toJSON {
+        overwall = true;
+      };
+    in
+    ''
+      file="$HOME/.dev-sidecar/setting.json"
+      [ -f $file ] || (mkdir -p $(dirname $file) && echo "{}" > $file)
+      json=$(${pkgs.fixjson}/bin/fixjson --minify $file)
+      echo $json '${setting}' | ${pkgs.jq}/bin/jq -s add > $file
+    '';
 }

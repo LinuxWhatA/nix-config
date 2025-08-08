@@ -25,6 +25,7 @@ stdenvNoCC.mkDerivation {
   '';
 
   meta = {
+    homepage = "https://github.com/Davidyz/plymouth-theme-550w";
     platforms = lib.platforms.all;
   };
 }

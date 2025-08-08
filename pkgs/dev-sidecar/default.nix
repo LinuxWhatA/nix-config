@@ -7,16 +7,16 @@
 
 let
   pname = "dev-sidecar";
-  version = "2.0.0";
+  version = "2.0.0.2";
 
   src = fetchurl {
     url = "https://github.com/docmirror/dev-sidecar/releases/download/v${version}/DevSidecar-${version}-linux-x86_64.AppImage";
-    hash = "sha256-m/deM/qAQ3Hy2Je8SK0aJrqeuMKAwKI0OnmEH4w3QuI=";
+    hash = "sha256-bEGXlm0VFVPU/FZ2ACBVIKoBxGKVQZ4lDa8ue6I22xs=";
   };
 
   appimageContents = appimageTools.extract { inherit pname version src; };
 in
-appimageTools.wrapType2 rec {
+appimageTools.wrapType2 {
   inherit src pname version;
 
   extraInstallCommands = ''
@@ -32,7 +32,6 @@ appimageTools.wrapType2 rec {
   meta = {
     description = "Developer sidecar, proxy https requests to domestic accelerated channels";
     homepage = "https://github.com/docmirror/dev-sidecar";
-    changelog = "https://github.com/docmirror/dev-sidecar/releases/tag/v${version}";
     license = lib.licenses.mpl20;
     platforms = [ "x86_64-linux" ];
     mainProgram = "dev-sidecar";

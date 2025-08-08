@@ -9,6 +9,7 @@
       device = "nodev";
       default = "saved";
       splashImage = null;
+      gfxmodeEfi = "1024x768";
       configurationLimit = 10;
       theme = "${pkgs.grub-cyberre-theme}/grub/themes/CyberRe";
       extraFiles = {
