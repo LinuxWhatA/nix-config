@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   imports = [
@@ -7,6 +7,7 @@
 
   home.packages = with pkgs.gnomeExtensions; [
     vitals # 系统监控
+    kimpanel # Fcitx 用户界面
     gsconnect
     dash-to-dock
     appindicator # 托盘图标
@@ -21,6 +22,7 @@
         disable-user-extensions = false;
         enabled-extensions = with pkgs.gnomeExtensions; [
           vitals.extensionUuid
+          kimpanel.extensionUuid
           gsconnect.extensionUuid
           dash-to-dock.extensionUuid
           appindicator.extensionUuid
@@ -55,6 +57,9 @@
         cache-size = 50;
         history-size = 150;
       };
+      "org/gnome/settings-daemon/plugins/xsettings".overrides = [
+        (lib.gvariant.mkDictionaryEntry "Gtk/IMModule" (lib.gvariant.mkVariant "fcitx"))
+      ];
       "org/gnome/settings-daemon/plugins/media-keys" = {
         home = [ "<Super>e" ]; # 主目录-快捷键
         control-center = [ "<Super>i" ]; # 设置-快捷键

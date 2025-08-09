@@ -1,18 +1,10 @@
 { pkgs, ... }:
 
 {
-  services = {
-    xserver = {
-      desktopManager.gnome = {
-        enable = true;
-      };
-      displayManager.gdm = {
-        enable = true;
-        autoSuspend = false;
-      };
-    };
-    gnome.games.enable = false;
-  };
+  services.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.displayManager.gdm.autoSuspend = false;
+  services.gnome.games.enable = false;
 
   environment.gnome.excludePackages = with pkgs; [
     orca # 屏幕阅读器
@@ -28,7 +20,8 @@
     gnome-contacts # 联系人
   ];
 
-  # Fix broken stuff
-  services.avahi.enable = false;
-  networking.networkmanager.enable = false;
+  environment.variables = {
+    XMODIFIERS = "@im=fcitx";
+    QT_IM_MODULE = "fcitx";
+  };
 }

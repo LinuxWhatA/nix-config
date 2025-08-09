@@ -18,8 +18,8 @@
     ../common/global
     ../common/users/lwa
 
-    ../common/optional/kde.nix
     ../common/optional/swap.nix
+    ../common/optional/gnome.nix
     ../common/optional/nix-ld.nix
     ../common/optional/wireless.nix
     ../common/optional/pipewire.nix

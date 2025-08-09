@@ -2,8 +2,8 @@
 
 {
   programs.nix-ld.enable = true;
-  environment.variables = lib.mkForce {
-    NIX_LD_LIBRARY_PATH =
+  environment.variables = {
+    NIX_LD_LIBRARY_PATH = lib.mkForce (
       with pkgs;
       lib.makeLibraryPath [
         stdenv.cc.cc
@@ -99,7 +99,8 @@
         libdrm
         mesa
         libxkbcommon
-      ];
-    NIX_LD = lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
+      ]
+    );
+    NIX_LD = lib.mkForce (lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker");
   };
 }

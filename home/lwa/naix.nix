@@ -1,7 +1,7 @@
 {
   imports = [
     ./global
-    ./features/desktop/kde
+    ./features/desktop/gnome
     ./features/games
   ];
 
