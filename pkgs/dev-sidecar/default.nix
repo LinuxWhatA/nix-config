@@ -1,33 +1,56 @@
 {
   lib,
+  dpkg,
+  stdenv,
   openssl,
   fetchurl,
-  appimageTools,
+  buildFHSEnv,
+  writeShellScript,
+  nss,
+  gtk3,
+  mesa,
+  alsa-lib,
 }:
 
 let
-  pname = "dev-sidecar";
-  version = "2.0.0.2";
+  DevSidecar-unwrapped = stdenv.mkDerivation rec {
+    pname = "dev-sidecar";
+    version = "2.0.0.2";
 
-  src = fetchurl {
-    url = "https://github.com/docmirror/dev-sidecar/releases/download/v${version}/DevSidecar-${version}-linux-x86_64.AppImage";
-    hash = "sha256-bEGXlm0VFVPU/FZ2ACBVIKoBxGKVQZ4lDa8ue6I22xs=";
+    src = fetchurl {
+      url = "https://github.com/docmirror/dev-sidecar/releases/download/v${version}/DevSidecar-${version}-linux-amd64.deb";
+      hash = "sha256-QxZy6yRAt59akgAMj3oM8Bmd8k+0ccz0587ed4nGZ5g=";
+    };
+
+    nativeBuildInputs = [ dpkg ];
+    unpackPhase = "dpkg-deb -x $src $out";
+
+    installPhase = ''
+      sed -i 's|^Exec=.*|Exec=dev-sidecar %U|' \
+        $out/usr/share/applications/@docmirrordev-sidecar-gui.desktop
+    '';
   };
-
-  appimageContents = appimageTools.extract { inherit pname version src; };
 in
-appimageTools.wrapType2 {
-  inherit src pname version;
-
-  extraInstallCommands = ''
-    install -Dm444 ${appimageContents}/@docmirrordev-sidecar-gui.desktop -t $out/share/applications
-    substituteInPlace $out/share/applications/@docmirrordev-sidecar-gui.desktop \
-      --replace-fail 'Exec=AppRun' 'Exec=dev-sidecar'
-    cp -r ${appimageContents}/usr/share/icons $out/share
-    ${openssl}/bin/openssl genrsa -out $out/dev-sidecar.ca.key.pem 2048
-    ${openssl}/bin/openssl req -x509 -new -nodes -key $out/dev-sidecar.ca.key.pem -sha256 -days 3650 \
-      -out $out/dev-sidecar.ca.crt -subj ""/C=CN/ST=GuangDong/L=ShenZhen/O=dev-sidecar/CN=DevSidecar""
+buildFHSEnv {
+  inherit (DevSidecar-unwrapped) pname version;
+  runScript = writeShellScript "dev-sidecar" ''
+    exec ${DevSidecar-unwrapped}/opt/dev-sidecar/@docmirrordev-sidecar-gui "$@"
   '';
+  extraInstallCommands = ''
+    ${openssl}/bin/openssl genrsa -out $out/dev-sidecar.ca.key.pem 2048
+    ${openssl}/bin/openssl req -x509 -new -nodes -key $out/dev-sidecar.ca.key.pem -sha256 -days 365 \
+      -out $out/dev-sidecar.ca.crt -subj "/C=CN/ST=GuangDong/L=ShenZhen/O=dev-sidecar/CN=DevSidecar"
+
+    ln -s ${DevSidecar-unwrapped}/usr/share $out/share
+  '';
+
+  includeClosures = true;
+  targetPkgs = pkgs: [
+    nss
+    gtk3
+    mesa
+    alsa-lib
+  ];
 
   meta = {
     description = "Developer sidecar, proxy https requests to domestic accelerated channels";
