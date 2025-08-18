@@ -1,4 +1,5 @@
 {
+  pkgs,
   outputs,
   ...
 }:
@@ -18,5 +19,10 @@
       allowUnfree = true;
       allowUnfreePredicate = _: true;
     };
+  };
+
+  home.file."Documents/nixpkgs" = {
+    force = true;
+    source = pkgs.path;
   };
 }
