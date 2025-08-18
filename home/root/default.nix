@@ -8,7 +8,7 @@
   home = {
     username = lib.mkDefault "root";
     homeDirectory = lib.mkDefault "/root";
-    stateVersion = lib.mkDefault "24.11";
+    stateVersion = lib.mkDefault "25.11";
 
     file = {
       ".zsh" = {

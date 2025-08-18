@@ -29,7 +29,7 @@
   ];
 
   my.services.unblock-netease-music = {
-    enable = true;
+    enable = false;
     env = "SEARCH_ALBUM=true";
   };
 
