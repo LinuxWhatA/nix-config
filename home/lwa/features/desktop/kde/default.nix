@@ -3,7 +3,7 @@
 {
   imports = [
     ../common
-    inputs.plasma-manager.homeManagerModules.plasma-manager
+    inputs.plasma-manager.homeModules.plasma-manager
   ];
 
   services.kdeconnect.enable = true;

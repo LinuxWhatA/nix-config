@@ -7,6 +7,7 @@
   buildFHSEnv,
   writeShellScript,
   nss,
+  glib,
   gtk3,
   mesa,
   alsa-lib,
@@ -37,16 +38,15 @@ buildFHSEnv {
     exec ${DevSidecar-unwrapped}/opt/dev-sidecar/@docmirrordev-sidecar-gui "$@"
   '';
   extraInstallCommands = ''
-    ${openssl}/bin/openssl genrsa -out $out/dev-sidecar.ca.key.pem 2048
-    ${openssl}/bin/openssl req -x509 -new -nodes -key $out/dev-sidecar.ca.key.pem -sha256 -days 365 \
-      -out $out/dev-sidecar.ca.crt -subj "/C=CN/ST=GuangDong/L=ShenZhen/O=dev-sidecar/CN=DevSidecar"
-
+    ln -s ${./dev-sidecar.ca.crt} $out/dev-sidecar.ca.crt
+    ln -s ${./dev-sidecar.ca.key.pem} $out/dev-sidecar.ca.key.pem
     ln -s ${DevSidecar-unwrapped}/usr/share $out/share
   '';
 
   includeClosures = true;
   targetPkgs = pkgs: [
     nss
+    glib
     gtk3
     mesa
     alsa-lib

@@ -26,6 +26,7 @@
     ../common/optional/hosts.nix
     ../common/optional/steam.nix
     ../common/optional/v2raya.nix
+    ../common/optional/sunshine.nix
     ../common/optional/proxychains.nix
   ];
 

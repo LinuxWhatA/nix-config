@@ -9,10 +9,9 @@
   home.packages = with pkgs; [
     vlc
     qcm
+    wechat
     scrcpy
     fsearch
-    xunlei-uos
-    wechat-uos
     dev-sidecar
     wpsoffice-cn
     qbittorrent-enhanced

@@ -20,14 +20,20 @@ in
     wechat-uos = prev.buildFHSEnv (
       prev.wechat-uos.args
       // {
-        extraInstallCommands =
-          prev.wechat-uos.args.extraInstallCommands
-          + ''
-            sed -i 's|^Categories=.*|Categories=Network;Chat;|' \
-              $out/share/applications/com.tencent.wechat.desktop
-          '';
+        extraInstallCommands = prev.wechat-uos.args.extraInstallCommands + ''
+          sed -i 's|^Categories=.*|Categories=Network;Chat;|' \
+            $out/share/applications/com.tencent.wechat.desktop
+        '';
       }
     );
+
+    # wechat
+    wechat = prev.wechat.overrideAttrs (old: {
+      src = prev.fetchurl {
+        url = "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage";
+        hash = "sha256-gBWcNQ1o1AZfNsmu1Vi1Kilqv3YbR+wqOod4XYAeVKo=";
+      };
+    });
 
     # proton-caller 换源
     proton-caller = prev.proton-caller.overrideAttrs (old: {
