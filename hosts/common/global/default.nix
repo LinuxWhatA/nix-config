@@ -17,7 +17,8 @@
     ./openssh.nix
     ./security.nix
     ./optin-persistence.nix
-  ] ++ (builtins.attrValues outputs.nixosModules);
+  ]
+  ++ (builtins.attrValues outputs.nixosModules);
 
   boot.kernel.sysctl."kernel.sysrq" = 1;
 
@@ -43,6 +44,11 @@
     lsof
     wget
   ];
+
+  # 允许 Electron 在 Wayland 原生上运行
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+  };
 
   # 将当前配置写入 /etc/nixos
   environment.etc."nixos".source = ../../..;

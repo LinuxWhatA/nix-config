@@ -32,6 +32,7 @@
         };
         userSettings = builtins.toJSON {
           "update.mode" = "none";
+          "files.autoGuessEncoding" = true;
           "extensions.autoCheckUpdates" = false;
           "[nix]" = {
             "editor.tabSize" = 2;
