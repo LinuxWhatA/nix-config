@@ -28,7 +28,7 @@
               "applications:org.kde.dolphin.desktop"
               "applications:org.kde.konsole.desktop"
               "applications:firefox.desktop"
-              "applications:code-url-handler.desktop"
+              "applications:code.desktop"
             ];
           }
           "org.kde.plasma.marginsseparator" # 边距分隔线
@@ -59,6 +59,8 @@
       "kwinrc"."Plugins"."wobblywindowsEnabled" = true; # 窗口惯性晃动特效
       "kwinrc"."Plugins"."squashEnabled" = false; # 关闭（收缩）最小化动画
       "kwinrc"."Plugins"."magiclampEnabled" = true; # 开启（神灯）最小化动画
+      "krunnerrc"."Plugins"."baloosearchEnabled" = false; # 关闭文件索引
+      "baloofilerc"."Basic Settings"."Indexing-Enabled" = false;
     };
   };
 }

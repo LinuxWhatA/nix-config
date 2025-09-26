@@ -6,10 +6,7 @@
 
 {
   nix = {
-    nixPath = [
-      "nixpkgs=${inputs.nixpkgs}"
-      "home-manager=${inputs.home-manager}"
-    ];
+    channel.enable = false;
 
     settings = {
       trusted-users = [

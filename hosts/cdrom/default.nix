@@ -8,7 +8,6 @@
 {
   imports = [
     (modulesPath + "/installer/cd-dvd/installation-cd-graphical-base.nix")
-    (modulesPath + "/installer/cd-dvd/channel.nix")
   ];
 
   users.users.lwa = {

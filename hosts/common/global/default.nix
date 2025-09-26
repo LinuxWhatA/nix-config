@@ -39,6 +39,7 @@
   hardware.enableRedistributableFirmware = true;
 
   environment.systemPackages = with pkgs; [
+    nh
     file
     tree
     lsof

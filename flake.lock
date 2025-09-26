@@ -8,11 +8,11 @@
       },
       "locked": {
         "dir": "disko",
-        "lastModified": 1757405936,
-        "narHash": "sha256-iiRCJXX5q9Byq8FT5TGdWLFvGN2IMZjZplnKMQQ1wao=",
+        "lastModified": 1758895962,
+        "narHash": "sha256-ZBiZsSjKVZl00lIDuLJsXTsoEWCnWun165ydkE0AdWQ=",
         "ref": "refs/heads/master",
-        "rev": "00417f1834cd4ce7c76769952586603ca3bfa58a",
-        "revCount": 26,
+        "rev": "3a9d5bed4089f870c5a006239b88221dfe5d380f",
+        "revCount": 32,
         "type": "git",
         "url": "https://gitee.com/linuxwhata/mirrors"
       },
@@ -42,11 +42,11 @@
     },
     "hardware": {
       "locked": {
-        "lastModified": 1757081837,
-        "narHash": "sha256-wAgZ+BaRR/cqmKP0bWnJ9rO9KLz91R5aOdJiT+k/J2E=",
+        "lastModified": 1757943327,
+        "narHash": "sha256-w6cDExPBqbq7fTLo4dZ1ozDGeq3yV6dSN4n/sAaS6OM=",
         "ref": "refs/heads/master",
-        "rev": "7e56e39db4008521552e9d2b0d9ae9bf8e0cdce2",
-        "revCount": 2406,
+        "rev": "67a709cfe5d0643dafd798b0b613ed579de8be05",
+        "revCount": 2422,
         "type": "git",
         "url": "https://gitee.com/mirrors/nixos-hardware"
       },
@@ -62,11 +62,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1757075491,
-        "narHash": "sha256-a+NMGl5tcvm+hyfSG2DlVPa8nZLpsumuRj1FfcKb2mQ=",
+        "lastModified": 1758296614,
+        "narHash": "sha256-l60D1i0aaSqemy9dL7wP0ePMfcv/oZbeKpvUMY+q0kQ=",
         "ref": "refs/heads/master",
-        "rev": "f56bf065f9abedc7bc15e1f2454aa5c8edabaacf",
-        "revCount": 5353,
+        "rev": "55b1f5b7b191572257545413b98e37abab2fdb00",
+        "revCount": 5437,
         "type": "git",
         "url": "https://gitee.com/mirrors/home-manager-nix"
       },
@@ -78,11 +78,11 @@
     "impermanence": {
       "locked": {
         "dir": "impermanence",
-        "lastModified": 1757405936,
-        "narHash": "sha256-iiRCJXX5q9Byq8FT5TGdWLFvGN2IMZjZplnKMQQ1wao=",
+        "lastModified": 1758895962,
+        "narHash": "sha256-ZBiZsSjKVZl00lIDuLJsXTsoEWCnWun165ydkE0AdWQ=",
         "ref": "refs/heads/master",
-        "rev": "00417f1834cd4ce7c76769952586603ca3bfa58a",
-        "revCount": 26,
+        "rev": "3a9d5bed4089f870c5a006239b88221dfe5d380f",
+        "revCount": 32,
         "type": "git",
         "url": "https://gitee.com/linuxwhata/mirrors"
       },
@@ -94,11 +94,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1757034884,
-        "narHash": "sha256-PgLSZDBEWUHpfTRfFyklmiiLBE1i1aGCtz4eRA3POao=",
+        "lastModified": 1758763312,
+        "narHash": "sha256-puBMviZhYlqOdUUgEmMVJpXqC/ToEqSvkyZ30qQ09xM=",
         "ref": "nixpkgs-unstable",
-        "rev": "ca77296380960cd497a765102eeb1356eb80fed0",
-        "revCount": 856744,
+        "rev": "e57b3b16ad8758fd681511a078f35c416a8cc939",
+        "revCount": 866984,
         "type": "git",
         "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
       },
@@ -119,11 +119,11 @@
       },
       "locked": {
         "dir": "plasma-manager",
-        "lastModified": 1757405936,
-        "narHash": "sha256-iiRCJXX5q9Byq8FT5TGdWLFvGN2IMZjZplnKMQQ1wao=",
+        "lastModified": 1758895962,
+        "narHash": "sha256-ZBiZsSjKVZl00lIDuLJsXTsoEWCnWun165ydkE0AdWQ=",
         "ref": "refs/heads/master",
-        "rev": "00417f1834cd4ce7c76769952586603ca3bfa58a",
-        "revCount": 26,
+        "rev": "3a9d5bed4089f870c5a006239b88221dfe5d380f",
+        "revCount": 32,
         "type": "git",
         "url": "https://gitee.com/linuxwhata/mirrors"
       },
@@ -168,11 +168,11 @@
       },
       "locked": {
         "dir": "nixos-vscode-server",
-        "lastModified": 1757405936,
-        "narHash": "sha256-iiRCJXX5q9Byq8FT5TGdWLFvGN2IMZjZplnKMQQ1wao=",
+        "lastModified": 1758895962,
+        "narHash": "sha256-ZBiZsSjKVZl00lIDuLJsXTsoEWCnWun165ydkE0AdWQ=",
         "ref": "refs/heads/master",
-        "rev": "00417f1834cd4ce7c76769952586603ca3bfa58a",
-        "revCount": 26,
+        "rev": "3a9d5bed4089f870c5a006239b88221dfe5d380f",
+        "revCount": 32,
         "type": "git",
         "url": "https://gitee.com/linuxwhata/mirrors"
       },
