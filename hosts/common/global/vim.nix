@@ -6,7 +6,6 @@
     defaultEditor = true;
     package = (pkgs.vim_configurable.override { }).customize {
       name = "vim";
-      # Install plugins for example for syntax highlighting of nix files
       vimrcConfig.packages.myplugins = with pkgs.vimPlugins; {
         start = [
           vim-nix
@@ -44,6 +43,8 @@
         " 状态栏
         set statusline=%f\ %h%m%r%=\ %y\ [%{&fileformat}]\ [%{&encoding}]\ \ %-8.(%l,%c%)\ %P
         set laststatus=2
+        " 编码
+        set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
       '';
     };
   };
