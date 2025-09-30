@@ -31,6 +31,7 @@
 
     ../common/optional/qemu.nix
     ../common/optional/waydroid.nix
+    ../common/optional/sunshine.nix
     ../common/optional/proxychains.nix
   ];
 
