@@ -21,10 +21,7 @@
     patchedpython
     nixfmt-rfc-style
 
-    (wineWowPackages.full.override {
-      wineRelease = "staging";
-      mingwSupport = true;
-    })
+    winePackages.stagingFull
     winetricks
   ];
 

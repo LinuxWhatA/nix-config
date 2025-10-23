@@ -2,7 +2,6 @@
   lib,
   dpkg,
   stdenv,
-  openssl,
   fetchurl,
   buildFHSEnv,
   writeShellScript,
@@ -27,14 +26,14 @@ let
     unpackPhase = "dpkg-deb -x $src $out";
 
     installPhase = ''
-      sed -i 's|^Exec=.*|Exec=dev-sidecar %U|' \
-        $out/usr/share/applications/@docmirrordev-sidecar-gui.desktop
+      substituteInPlace $out/usr/share/applications/@docmirrordev-sidecar-gui.desktop \
+        --replace-fail "/opt/dev-sidecar/@docmirrordev-sidecar-gui" "dev-sidecar"
     '';
   };
 in
 buildFHSEnv {
   inherit (DevSidecar-unwrapped) pname version;
-  runScript = writeShellScript "dev-sidecar" ''
+  runScript = writeShellScript "run-DevSidecar" ''
     exec ${DevSidecar-unwrapped}/opt/dev-sidecar/@docmirrordev-sidecar-gui "$@"
   '';
   extraInstallCommands = ''
@@ -57,6 +56,5 @@ buildFHSEnv {
     homepage = "https://github.com/docmirror/dev-sidecar";
     license = lib.licenses.mpl20;
     platforms = [ "x86_64-linux" ];
-    mainProgram = "dev-sidecar";
   };
 }

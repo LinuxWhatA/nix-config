@@ -19,8 +19,8 @@
       extraEntries = ''
         menuentry "Windows VHD" --class windows {
           savedefault
-          search -s -f /ntloader
-          search -s dev -f /OS/Windows.vhd
+          search --no-floppy -s -f /ntloader
+          search --no-floppy -s dev -f /OS/Windows.vhd
           probe -s dev_uuid -u $dev
           if [ "''${grub_platform}" = "efi" ]; then
             linux /ntloader uuid=''${dev_uuid} vhd=/OS/windows.vhd

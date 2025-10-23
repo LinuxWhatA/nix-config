@@ -12,7 +12,9 @@
     wechat
     scrcpy
     fsearch
+    xunlei-uos
     dev-sidecar
+    moonlight-qt
     wpsoffice-cn
     qbittorrent-enhanced
     netease-cloud-music-gtk

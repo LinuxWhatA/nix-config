@@ -19,6 +19,7 @@ in
       "input"
       "libvirtd"
       "adbusers"
+      "gamemode"
       "networkmanager"
     ];
 
