@@ -44,6 +44,7 @@
     tree
     lsof
     wget
+    net-tools
   ];
 
   # 允许 Electron 在 Wayland 原生上运行
