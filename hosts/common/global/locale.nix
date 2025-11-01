@@ -16,8 +16,8 @@
           fcitx5-gtk
           fcitx5-pinyin-zhwiki
           fcitx5-pinyin-moegirl
-          fcitx5-chinese-addons
           fcitx5-material-color
+          qt6Packages.fcitx5-chinese-addons
         ];
         settings.addons = {
           pinyin.globalSection.CloudPinyinEnabled = "True";

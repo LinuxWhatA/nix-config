@@ -6,7 +6,7 @@
     hardware.url = "git+https://gitee.com/mirrors/nixos-hardware";
     impermanence.url = "git+https://gitee.com/linuxwhata/mirrors?dir=impermanence";
     disko = {
-      url = "git+https://gitee.com/linuxwhata/mirrors?dir=disko";
+      url = "git+https://gitcode.com/gh_mirrors/di/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
@@ -14,13 +14,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     plasma-manager = {
-      url = "git+https://gitee.com/linuxwhata/mirrors?dir=plasma-manager";
+      url = "git+https://gitcode.com/gh_mirrors/pl/plasma-manager";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
-    };
-    vscode-server = {
-      url = "git+https://gitee.com/linuxwhata/mirrors?dir=nixos-vscode-server";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 

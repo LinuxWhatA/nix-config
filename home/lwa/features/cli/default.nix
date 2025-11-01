@@ -1,11 +1,11 @@
-{ pkgs, inputs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
     ./zsh
     ./git.nix
     ./direnv.nix
-    inputs.vscode-server.homeModules.default
+    # (fetchTarball "https://github.com/nix-community/nixos-vscode-server/tarball/master")
   ];
 
   home.packages = with pkgs; [
@@ -30,6 +30,6 @@
     env = "SEARCH_ALBUM=true";
   };
 
-  services.vscode-server.enable = true;
-  services.vscode-server.enableFHS = true;
+  # services.vscode-server.enable = true;
+  # services.vscode-server.enableFHS = true;
 }
