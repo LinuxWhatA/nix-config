@@ -4,7 +4,7 @@
   ...
 }:
 
-{
+rec {
   imports = [ inputs.disko.nixosModules.disko ];
 
   boot.initrd.availableKernelModules = [
@@ -75,7 +75,7 @@
     device = "tmpfs";
     fsType = "tmpfs";
     options = [
-      "relatime"
+      "noatime"
       "mode=755"
     ];
   };
@@ -90,30 +90,28 @@
     };
   };
 
-  fileSystems."/mnt/TiPlus5000" = {
-    device = "/dev/disk/by-label/TiPlus5000";
-    fsType = "ntfs";
-    options = [
-      "nofail"
-      "nodev"
-      "nocase"
-      "uid=1000"
-      "gid=100"
-      "umask=0000"
-    ];
-  };
-
   fileSystems."/mnt/Files" = {
     device = "/dev/disk/by-label/Files";
     fsType = "ntfs";
     options = [
-      "nofail"
+      "users"
       "nodev"
+      "nofail"
       "nocase"
+      "nosuid"
       "uid=1000"
       "gid=100"
-      "umask=0000"
+      "umask=000"
+      "x-gvfs-show"
+      "big_writes"
+      "windows_names"
     ];
+  };
+
+  fileSystems."/mnt/TiPlus5000" = {
+    device = "/dev/disk/by-label/TiPlus5000";
+    fsType = "ntfs";
+    options = fileSystems."/mnt/Files".options;
   };
 
   services.btrfs.autoScrub.enable = true;

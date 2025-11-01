@@ -10,6 +10,7 @@
     inputs.hardware.nixosModules.common-pc-ssd
     inputs.hardware.nixosModules.common-gpu-amd
     inputs.hardware.nixosModules.common-cpu-amd
+    inputs.hardware.nixosModules.common-cpu-amd-pstate
     inputs.hardware.nixosModules.common-cpu-amd-zenpower
 
     ./grub.nix
@@ -49,6 +50,7 @@
       "aarch64-linux"
       "i686-linux"
     ];
+    supportedFilesystems = [ "ntfs" ];
   };
 
   hardware.graphics = {
