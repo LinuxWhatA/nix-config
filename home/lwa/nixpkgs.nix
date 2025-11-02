@@ -6,8 +6,9 @@
 {
   nix.settings = {
     experimental-features = [
-      "nix-command"
       "flakes"
+      "nix-command"
+      "ca-derivations"
     ];
     warn-dirty = false;
   };

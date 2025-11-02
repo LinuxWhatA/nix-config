@@ -11,17 +11,6 @@
     ../features/cli
   ] ++ (builtins.attrValues outputs.homeManagerModules);
 
-  nix = {
-    package = lib.mkDefault pkgs.nix;
-    settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      warn-dirty = false;
-    };
-  };
-
   systemd.user.startServices = "sd-switch";
 
   programs = {
