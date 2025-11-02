@@ -5,6 +5,7 @@
 
 {
   fhs = pkgs.callPackage ./fhs { };
+  uudeck = pkgs.callPackage ./uudeck { };
   winfonts = pkgs.callPackage ./winfonts { };
   ntloader = pkgs.callPackage ./ntloader { };
   proton-run = pkgs.callPackage ./proton-run { };

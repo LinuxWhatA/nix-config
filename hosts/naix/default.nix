@@ -21,6 +21,7 @@
 
     ../common/optional/swap.nix
     ../common/optional/gnome.nix
+    ../common/optional/uudeck.nix
     ../common/optional/nix-ld.nix
     ../common/optional/wireless.nix
     ../common/optional/pipewire.nix
