@@ -35,6 +35,7 @@ stdenv.mkDerivation rec {
       --add-flags "$out/lib/app.js"
 
     # CA certificate: $out/lib/ca.crt
+    cd $out/lib
     bash $out/lib/generate-cert.sh
 
     runHook postInstall

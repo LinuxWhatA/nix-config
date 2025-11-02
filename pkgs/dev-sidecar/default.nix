@@ -9,6 +9,7 @@
   glib,
   gtk3,
   mesa,
+  openssl,
   alsa-lib,
 }:
 
@@ -22,12 +23,15 @@ let
       hash = "sha256-QxZy6yRAt59akgAMj3oM8Bmd8k+0ccz0587ed4nGZ5g=";
     };
 
-    nativeBuildInputs = [ dpkg ];
+    nativeBuildInputs = [ dpkg openssl ];
     unpackPhase = "dpkg-deb -x $src $out";
 
     installPhase = ''
       substituteInPlace $out/usr/share/applications/@docmirrordev-sidecar-gui.desktop \
         --replace-fail "/opt/dev-sidecar/@docmirrordev-sidecar-gui" "dev-sidecar"
+      # CA certificate
+      cd $out
+      bash ${./generate-cert.sh}
     '';
   };
 in
@@ -37,8 +41,8 @@ buildFHSEnv {
     exec ${DevSidecar-unwrapped}/opt/dev-sidecar/@docmirrordev-sidecar-gui "$@"
   '';
   extraInstallCommands = ''
-    ln -s ${./dev-sidecar.ca.crt} $out/dev-sidecar.ca.crt
-    ln -s ${./dev-sidecar.ca.key.pem} $out/dev-sidecar.ca.key.pem
+    ln -s ${DevSidecar-unwrapped}/dev-sidecar.ca.crt $out/dev-sidecar.ca.crt
+    ln -s ${DevSidecar-unwrapped}/dev-sidecar.ca.key.pem $out/dev-sidecar.ca.key.pem
     ln -s ${DevSidecar-unwrapped}/usr/share $out/share
   '';
 
@@ -48,6 +52,7 @@ buildFHSEnv {
     glib
     gtk3
     mesa
+    openssl
     alsa-lib
   ];
 
