@@ -5,30 +5,23 @@
     ../common
   ];
 
-  home.packages = with pkgs.gnomeExtensions; [
-    vitals # 系统监控
-    kimpanel # Fcitx 用户界面
-    gsconnect
-    dash-to-dock
-    appindicator # 托盘图标
-    blur-my-shell # 美化
-    clipboard-indicator # 剪贴板
-  ];
+  programs.gnome-shell = {
+    enable = true;
+    extensions = map (pkg: { package = pkg; }) [
+      pkgs.gnomeExtensions.vitals # 系统监控
+      pkgs.gnomeExtensions.kimpanel # Fcitx 用户界面
+      pkgs.gnomeExtensions.gsconnect
+      pkgs.gnomeExtensions.dash-to-dock
+      pkgs.gnomeExtensions.appindicator # 托盘图标
+      pkgs.gnomeExtensions.blur-my-shell # 美化
+      pkgs.gnomeExtensions.clipboard-indicator # 剪贴板
+    ];
+  };
 
   dconf = {
     enable = true;
     settings = {
       "org/gnome/shell" = {
-        disable-user-extensions = false;
-        enabled-extensions = with pkgs.gnomeExtensions; [
-          vitals.extensionUuid
-          kimpanel.extensionUuid
-          gsconnect.extensionUuid
-          dash-to-dock.extensionUuid
-          appindicator.extensionUuid
-          blur-my-shell.extensionUuid
-          clipboard-indicator.extensionUuid
-        ];
         favorite-apps = [
           "org.gnome.Nautilus.desktop" # 文件管理器
           "org.gnome.Console.desktop"

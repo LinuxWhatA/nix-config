@@ -25,6 +25,7 @@
     QT_IM_MODULE = "fcitx";
   };
 
+  # kde connect 端口
   networking.firewall = rec {
     allowedTCPPortRanges = [
       {
