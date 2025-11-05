@@ -72,7 +72,7 @@
     device = "tmpfs";
     fsType = "tmpfs";
     options = [
-      "relatime"
+      "noatime"
       "mode=755"
     ];
   };

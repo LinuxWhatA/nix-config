@@ -45,18 +45,6 @@
           "terminal.integrated.fontFamily" = "'MesloLGS NF'";
           "nix.serverPath" = "nixd";
           "nix.enableLanguageServer" = true;
-          "nix.serverSettings" = {
-            "nixd" = {
-              options = {
-                nixos = {
-                  expr = ''(builtins.getFlake (builtins.toString ./.)).nixosConfigurations."${config.hostname}".options'';
-                };
-                home-manager = {
-                  expr = ''(builtins.getFlake (builtins.toString ./.)).homeConfigurations."${config.home.username}@${config.hostname}".options'';
-                };
-              };
-            };
-          };
         };
       in
       ''
