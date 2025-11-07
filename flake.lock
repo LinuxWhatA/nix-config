@@ -7,17 +7,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1761899396,
-        "narHash": "sha256-XOpKBp6HLzzMCbzW50TEuXN35zN5WGQREC7n34DcNMM=",
+        "lastModified": 1762276996,
+        "narHash": "sha256-TtcPgPmp2f0FAnc+DMEw4ardEgv1SGNR3/WFGH0N19M=",
         "ref": "refs/heads/master",
-        "rev": "6f4cf5abbe318e4cd1e879506f6eeafd83f7b998",
-        "revCount": 1276,
+        "rev": "af087d076d3860760b3323f6b583f4d828c1ac17",
+        "revCount": 1279,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/di/disko"
+        "url": "https://gitcode.com/gh_mirrors/di/disko.git"
       },
       "original": {
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/di/disko"
+        "url": "https://gitcode.com/gh_mirrors/di/disko.git"
       }
     },
     "flake-parts": {
@@ -60,19 +60,17 @@
     },
     "impermanence": {
       "locked": {
-        "dir": "impermanence",
-        "lastModified": 1762010366,
-        "narHash": "sha256-OI8/WzUdboRjxg84bh4Mn3y3hyOhCZkToMz2WHR1u8c=",
-        "ref": "refs/heads/master",
-        "rev": "6bfe58d3c1d0fb94d3c83ea41c912f7d05cf0093",
-        "revCount": 26,
-        "type": "git",
-        "url": "https://gitee.com/linuxwhata/mirrors"
+        "lastModified": 1737831083,
+        "narHash": "sha256-LJggUHbpyeDvNagTUrdhe/pRVp4pnS6wVKALS782gRI=",
+        "owner": "nix-community",
+        "repo": "impermanence",
+        "rev": "4b3e914cdf97a5b536a889e939fb2fd2b043a170",
+        "type": "github"
       },
       "original": {
-        "dir": "impermanence",
-        "type": "git",
-        "url": "https://gitee.com/linuxwhata/mirrors"
+        "owner": "nix-community",
+        "repo": "impermanence",
+        "type": "github"
       }
     },
     "nix-index-database": {
@@ -127,11 +125,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1762156382,
-        "narHash": "sha256-Yg7Ag7ov5+36jEFC1DaZh/12SEXo6OO3/8rqADRxiqs=",
+        "lastModified": 1762361079,
+        "narHash": "sha256-lz718rr1BDpZBYk7+G8cE6wee3PiBUpn8aomG/vLLiY=",
         "ref": "nixpkgs-unstable",
-        "rev": "7241bcbb4f099a66aafca120d37c65e8dda32717",
-        "revCount": 888688,
+        "rev": "ffcdcf99d65c61956d882df249a9be53e5902ea5",
+        "revCount": 889916,
         "type": "git",
         "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
       },
@@ -166,11 +164,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1762115864,
-        "narHash": "sha256-KREKZiBAkAnqJC+jvY+vSbLlrg8j6DFEU7Lv+tgOlHI=",
+        "lastModified": 1762274591,
+        "narHash": "sha256-Vbhluvk15qwiyNDyPd9tjJh9gxIfUjbKVT79c05Pd3I=",
         "ref": "refs/heads/trunk",
-        "rev": "8e9e76efa3cc811c230512b40d8cfde06e40da5b",
-        "revCount": 296,
+        "rev": "6296d7100cc84b2ff732b7c103a50c2856974cf6",
+        "revCount": 297,
         "type": "git",
         "url": "https://gitcode.com/gh_mirrors/pl/plasma-manager"
       },

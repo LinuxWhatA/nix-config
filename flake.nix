@@ -8,8 +8,8 @@
     home-manager.url = "git+https://gitee.com/mirrors/home-manager-nix";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "git+https://gitee.com/mirrors/nixos-hardware";
-    impermanence.url = "git+https://gitee.com/linuxwhata/mirrors?dir=impermanence";
-    disko.url = "git+https://gitcode.com/gh_mirrors/di/disko";
+    impermanence.url = "github:nix-community/impermanence";
+    disko.url = "git+https://gitcode.com/gh_mirrors/di/disko.git";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     plasma-manager.url = "git+https://gitcode.com/gh_mirrors/pl/plasma-manager";
     plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
