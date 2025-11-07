@@ -2,108 +2,41 @@
   description = "NixOS configuration of LinuxWhatA";
 
   inputs = {
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    nixos-unified.url = "github:srid/nixos-unified";
     nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixpkgs-unstable";
-    hardware.url = "git+https://gitee.com/mirrors/nixos-hardware";
+    home-manager.url = "git+https://gitee.com/mirrors/home-manager-nix";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-hardware.url = "git+https://gitee.com/mirrors/nixos-hardware";
     impermanence.url = "git+https://gitee.com/linuxwhata/mirrors?dir=impermanence";
-    disko = {
-      url = "git+https://gitcode.com/gh_mirrors/di/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    home-manager = {
-      url = "git+https://gitee.com/mirrors/home-manager-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    plasma-manager = {
-      url = "git+https://gitcode.com/gh_mirrors/pl/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
+    disko.url = "git+https://gitcode.com/gh_mirrors/di/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+    plasma-manager.url = "git+https://gitcode.com/gh_mirrors/pl/plasma-manager";
+    plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
+    plasma-manager.inputs.home-manager.follows = "home-manager";
+
+    # Software inputs
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      home-manager,
-      ...
-    }@inputs:
-    let
-      inherit (self) outputs;
+    inputs@{ self, ... }:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
         "aarch64-linux"
       ];
-      lib = nixpkgs.lib // home-manager.lib;
-      forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
-      pkgsFor = lib.genAttrs systems (
-        system:
-        import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-        }
-      );
-    in
-    {
-      inherit lib;
-      nixosModules = import ./modules/nixos;
-      homeManagerModules = import ./modules/home-manager;
+      imports = (with builtins; map (fn: ./modules/flake/${fn}) (attrNames (readDir ./modules/flake)));
 
-      overlays = import ./overlays { inherit inputs outputs; };
-
-      packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
-      devShells = forEachSystem (pkgs: import ./shell.nix { inherit pkgs; });
-
-      nixosConfigurations = {
-        # AMD 主机
-        # nix build .#nixosConfigurations.naix.config.system.build.diskoImagesScript
-        naix = lib.nixosSystem {
-          modules = [ ./hosts/naix ];
-          specialArgs = {
-            inherit inputs outputs;
+      perSystem =
+        { lib, system, ... }:
+        {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = lib.attrValues self.overlays;
+            config.allowUnfree = true;
           };
         };
-        # X455LJ 笔记本
-        asus = lib.nixosSystem {
-          modules = [ ./hosts/asus ];
-          specialArgs = {
-            inherit inputs outputs;
-          };
-        };
-
-        # nix build .#nixosConfigurations.cdrom.config.system.build.isoImage
-        cdrom = lib.nixosSystem {
-          modules = [
-            ./hosts/naix
-            ./hosts/cdrom
-          ];
-          specialArgs = {
-            inherit inputs outputs;
-          };
-        };
-      };
-
-      homeConfigurations = {
-        "lwa@naix" = lib.homeManagerConfiguration {
-          modules = [
-            ./home/lwa/naix.nix
-            ./home/lwa/nixpkgs.nix
-          ];
-          pkgs = pkgsFor.x86_64-linux;
-          extraSpecialArgs = {
-            inherit inputs outputs;
-          };
-        };
-
-        "lwa@asus" = lib.homeManagerConfiguration {
-          modules = [
-            ./home/lwa/asus.nix
-            ./home/lwa/nixpkgs.nix
-          ];
-          pkgs = pkgsFor.x86_64-linux;
-          extraSpecialArgs = {
-            inherit inputs outputs;
-          };
-        };
-      };
     };
 }

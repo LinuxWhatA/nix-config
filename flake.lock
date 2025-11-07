@@ -20,19 +20,22 @@
         "url": "https://gitcode.com/gh_mirrors/di/disko"
       }
     },
-    "hardware": {
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
       "locked": {
-        "lastModified": 1761827175,
-        "narHash": "sha256-XdPVSYyIBK4/ruoqujaQmmSGg3J2/EenexV9IEXhr6o=",
-        "ref": "refs/heads/master",
-        "rev": "43ffe9ac82567512abb83187cb673de1091bdfa8",
-        "revCount": 2477,
-        "type": "git",
-        "url": "https://gitee.com/mirrors/nixos-hardware"
+        "lastModified": 1762440070,
+        "narHash": "sha256-xxdepIcb39UJ94+YydGP221rjnpkDZUlykKuF54PsqI=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "26d05891e14c88eb4a5d5bee659c0db5afb609d8",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "https://gitee.com/mirrors/nixos-hardware"
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
       }
     },
     "home-manager": {
@@ -72,6 +75,56 @@
         "url": "https://gitee.com/linuxwhata/mirrors"
       }
     },
+    "nix-index-database": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1762055842,
+        "narHash": "sha256-Pu1v3mlFhRzZiSxVHb2/i/f5yeYyRNqr0RvEUJ4UgHo=",
+        "owner": "nix-community",
+        "repo": "nix-index-database",
+        "rev": "359ff6333a7b0b60819d4c20ed05a3a1f726771f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nix-index-database",
+        "type": "github"
+      }
+    },
+    "nixos-hardware": {
+      "locked": {
+        "lastModified": 1761827175,
+        "narHash": "sha256-XdPVSYyIBK4/ruoqujaQmmSGg3J2/EenexV9IEXhr6o=",
+        "ref": "refs/heads/master",
+        "rev": "43ffe9ac82567512abb83187cb673de1091bdfa8",
+        "revCount": 2477,
+        "type": "git",
+        "url": "https://gitee.com/mirrors/nixos-hardware"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitee.com/mirrors/nixos-hardware"
+      }
+    },
+    "nixos-unified": {
+      "locked": {
+        "lastModified": 1761760408,
+        "narHash": "sha256-4HmMWMeHnjUnL81REfExzLR+Cj7+Nmu7dQM45oTWw84=",
+        "owner": "srid",
+        "repo": "nixos-unified",
+        "rev": "1f8ab18330354d2305a0d793da58a6ef83e2857c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "srid",
+        "repo": "nixos-unified",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1762156382,
@@ -86,6 +139,21 @@
         "ref": "nixpkgs-unstable",
         "type": "git",
         "url": "https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "lastModified": 1761765539,
+        "narHash": "sha256-b0yj6kfvO8ApcSE+QmA6mUfu8IYG6/uU28OFn4PaC8M=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "719359f4562934ae99f5443f20aa06c2ffff91fc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "type": "github"
       }
     },
     "plasma-manager": {
@@ -114,9 +182,12 @@
     "root": {
       "inputs": {
         "disko": "disko",
-        "hardware": "hardware",
+        "flake-parts": "flake-parts",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
+        "nix-index-database": "nix-index-database",
+        "nixos-hardware": "nixos-hardware",
+        "nixos-unified": "nixos-unified",
         "nixpkgs": "nixpkgs",
         "plasma-manager": "plasma-manager"
       }

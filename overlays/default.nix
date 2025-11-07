@@ -1,27 +1,46 @@
-{
-  outputs,
-  inputs,
-}:
+{ flake, ... }:
 
 let
-  addPatches =
-    pkg: patches:
-    pkg.overrideAttrs (oldAttrs: {
-      patches = (oldAttrs.patches or [ ]) ++ patches;
-    });
+  inherit (flake) inputs;
+  inherit (inputs) self;
+  packages = self + /packages;
 in
-{
-  # Adds my custom packages
-  additions = final: prev: import ../pkgs { pkgs = final; };
+self: super:
+let
+  # Auto-import all packages from the packages directory
+  # TODO: Upstream this to nixos0-unified?
+  entries = builtins.readDir packages;
 
-  # Modifies existing packages
-  modifications = final: prev: {
-    # wechat
-    wechat = prev.wechat.overrideAttrs (old: {
-      src = prev.fetchurl {
+  # Convert directory entries to package definitions
+  makePackage =
+    name: type:
+    let
+      # Remove .nix extension for package name
+      pkgName =
+        if type == "regular" && builtins.match ".*\\.nix$" name != null then
+          builtins.replaceStrings [ ".nix" ] [ "" ] name
+        else
+          name;
+    in
+    {
+      name = pkgName;
+      value = self.callPackage (packages + "/${name}") { };
+    };
+
+  # Import everything in packages directory
+  packageOverlays = builtins.listToAttrs (
+    builtins.attrValues (builtins.mapAttrs makePackage entries)
+  );
+
+in
+packageOverlays
+// {
+  wechat = super.wechat.override {
+    fetchurl =
+      { ... }:
+      super.fetchurl {
         url = "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage";
-        hash = "sha256-gBWcNQ1o1AZfNsmu1Vi1Kilqv3YbR+wqOod4XYAeVKo=";
+        hash = "sha256-+r5Ebu40GVGG2m2lmCFQ/JkiDsN/u7XEtnLrB98602w=";
       };
-    });
   };
 }
