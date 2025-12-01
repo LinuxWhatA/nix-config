@@ -2,12 +2,12 @@
   description = "NixOS configuration of LinuxWhatA";
 
   inputs = {
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    nixos-unified.url = "github:srid/nixos-unified";
+    flake-parts.url = "git+https://github.com/hercules-ci/flake-parts";
+    nixos-unified.url = "git+https://github.com/srid/nixos-unified";
     nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixpkgs-unstable";
     home-manager.url = "git+https://gitee.com/mirrors/home-manager-nix";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-hardware.url = "git+https://gitee.com/mirrors/nixos-hardware";
+    hardware.url = "git+https://gitee.com/mirrors/nixos-hardware";
     impermanence.url = "github:nix-community/impermanence";
     disko.url = "git+https://gitcode.com/gh_mirrors/di/disko.git";
     disko.inputs.nixpkgs.follows = "nixpkgs";

@@ -1,7 +1,10 @@
+{ pkgs, ... }:
+
 let
-  preFile = builtins.fetchGit {
+  preFile = pkgs.fetchgit {
     url = "https://github.com/yokoffing/Betterfox";
     rev = "3b159ac8fbb3d5921db8ff1763aa51cff12ea1ec";
+    hash = "sha256-sZEgmCrAm0SnRoFmn8glScII07Kvpa6cYdC6jHHQmMI=";
   };
 in
 {
