@@ -8,25 +8,26 @@
     home-manager.url = "git+https://gitee.com/mirrors/home-manager-nix";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     hardware.url = "git+https://gitee.com/mirrors/nixos-hardware";
-    impermanence.url = "github:nix-community/impermanence";
+    impermanence.url = "git+https://github.com/nix-community/impermanence";
     disko.url = "git+https://gitcode.com/gh_mirrors/di/disko.git";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     plasma-manager.url = "git+https://gitcode.com/gh_mirrors/pl/plasma-manager";
     plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
     plasma-manager.inputs.home-manager.follows = "home-manager";
+    nixos-wsl = {
+      url = "git+https://github.com/nix-community/NixOS-WSL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Software inputs
-    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.url = "git+https://github.com/nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
     inputs@{ self, ... }:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
+      systems = [ "x86_64-linux" ];
       imports = (with builtins; map (fn: ./modules/flake/${fn}) (attrNames (readDir ./modules/flake)));
 
       perSystem =

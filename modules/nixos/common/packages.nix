@@ -21,7 +21,10 @@
     starship = {
       enable = true;
       presets = [ "nerd-font-symbols" ];
-      settings.add_newline = false;
+      settings = {
+        add_newline = false;
+        git_status.ignore_submodules = true;
+      };
     };
   };
   users.defaultUserShell = pkgs.zsh;

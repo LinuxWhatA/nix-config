@@ -20,6 +20,22 @@
         "url": "https://gitcode.com/gh_mirrors/di/disko.git"
       }
     },
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1761588595,
+        "narHash": "sha256-XKUZz9zewJNUj46b4AJdiRZJAvSZ0Dqj2BNfXvFlJC4=",
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "f387cd2afec9419c8ee37694406ca490c3f34ee5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": "nixpkgs-lib"
@@ -77,15 +93,15 @@
       "locked": {
         "lastModified": 1737831083,
         "narHash": "sha256-LJggUHbpyeDvNagTUrdhe/pRVp4pnS6wVKALS782gRI=",
-        "owner": "nix-community",
-        "repo": "impermanence",
+        "ref": "refs/heads/master",
         "rev": "4b3e914cdf97a5b536a889e939fb2fd2b043a170",
-        "type": "github"
+        "revCount": 179,
+        "type": "git",
+        "url": "https://github.com/nix-community/impermanence"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "impermanence",
-        "type": "github"
+        "type": "git",
+        "url": "https://github.com/nix-community/impermanence"
       }
     },
     "nix-index-database": {
@@ -97,15 +113,15 @@
       "locked": {
         "lastModified": 1764475780,
         "narHash": "sha256-77jL5H5x51ksLiOUDjY0ZK8e2T4ZXLhj3ap8ETvknWI=",
-        "owner": "nix-community",
-        "repo": "nix-index-database",
+        "ref": "refs/heads/main",
         "rev": "5a3ff8c1a09003f399f43d5742d893c0b1ab8af0",
-        "type": "github"
+        "revCount": 540,
+        "type": "git",
+        "url": "https://github.com/nix-community/nix-index-database"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "nix-index-database",
-        "type": "github"
+        "type": "git",
+        "url": "https://github.com/nix-community/nix-index-database"
       }
     },
     "nixos-unified": {
@@ -121,6 +137,27 @@
       "original": {
         "type": "git",
         "url": "https://github.com/srid/nixos-unified"
+      }
+    },
+    "nixos-wsl": {
+      "inputs": {
+        "flake-compat": "flake-compat",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1764072830,
+        "narHash": "sha256-ezkjlUCohD9o9c47Ey0/I4CamSS0QEORTqGvyGqMud0=",
+        "ref": "refs/heads/main",
+        "rev": "c7832dd786175e20f2697179e0e03efadffe4201",
+        "revCount": 690,
+        "type": "git",
+        "url": "https://github.com/nix-community/NixOS-WSL"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/nix-community/NixOS-WSL"
       }
     },
     "nixpkgs": {
@@ -186,6 +223,7 @@
         "impermanence": "impermanence",
         "nix-index-database": "nix-index-database",
         "nixos-unified": "nixos-unified",
+        "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs",
         "plasma-manager": "plasma-manager"
       }
