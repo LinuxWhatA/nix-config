@@ -1,3 +1,5 @@
+{ lib, config, ... }:
+
 {
   # Increase open file limit for sudoers
   security.pam.loginLimits = [
@@ -16,7 +18,7 @@
   ];
 
   security.sudo-rs = {
-    enable = true;
+    enable = lib.mkIf (!config.system.build ? isoImage) true;
     extraConfig = "Defaults env_reset,timestamp_timeout=60";
   };
 }
