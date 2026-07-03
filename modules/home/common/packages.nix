@@ -3,7 +3,6 @@
 {
   home.packages = with pkgs; [
     # Unix tools
-    ripgrep # Better `grep`
     fd
     sd
     gnumake
@@ -16,8 +15,8 @@
     # Nix dev
     nh
     nixd
+    nixfmt
     nix-info
-    nixfmt-rfc-style
 
     # Custom Program
     fhs
@@ -25,14 +24,6 @@
     patchedpython
     winePackages.stagingFull
     winetricks
-    vlc
-    scrcpy
-    wechat
-    fsearch
-    xunlei-uos
-    moonlight-qt
-    wpsoffice-cn
-    qbittorrent-enhanced
   ];
 
   programs = {
@@ -40,10 +31,9 @@
       enable = true;
       enableZshIntegration = true;
     };
-    nix-index-database.comma.enable = true;
+    # nix-index-database.comma.enable = true;
     fzf.enable = true;
     jq.enable = true;
     htop.enable = true;
-    btop.enable = true;
   };
 }

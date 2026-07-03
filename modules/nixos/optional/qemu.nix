@@ -1,13 +1,14 @@
 { flake, pkgs, ... }:
 
 {
-  virtualisation.libvirtd = {
-    enable = true;
-  };
+  virtualisation.libvirtd.enable = true;
+  # virtualisation.libvirtd.swtpm.enable = true;
   programs.virt-manager.enable = true;
+  boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 
   environment.systemPackages = with pkgs; [
     virtiofsd
+    bridge-utils
   ];
 
   networking.firewall = {
@@ -24,5 +25,9 @@
     ];
   };
 
-  users.users.${flake.config.me.username}.extraGroups = [ "libvirtd" ];
+  users.users.${flake.config.me.username}.extraGroups = [
+    "kvm"
+    "libvirt"
+    "libvirtd"
+  ];
 }

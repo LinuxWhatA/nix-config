@@ -5,6 +5,7 @@ let
 in
 {
   imports = [
+    self.homeModules.gui
     self.homeModules.default
   ];
 

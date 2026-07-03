@@ -1,15 +1,16 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
   preFile = pkgs.fetchgit {
-    url = "https://github.com/yokoffing/Betterfox";
-    rev = "3b159ac8fbb3d5921db8ff1763aa51cff12ea1ec";
-    hash = "sha256-sZEgmCrAm0SnRoFmn8glScII07Kvpa6cYdC6jHHQmMI=";
+    url = "https://gitcode.com/GitHub_Trending/be/Betterfox";
+    rev = "c97bc0639609f35ff9d65522e3ddb03dac69e938";
+    hash = "sha256-1eC6DowuP9PzaLxh1t2FKzUeJFw/ppimXIiwyJsRKwc=";
   };
 in
 {
   programs.firefox = {
     enable = true;
+    configPath = "${config.xdg.configHome}/mozilla/firefox";
     languagePacks = [ "zh-CN" ];
     profiles.lwa = {
       search = {

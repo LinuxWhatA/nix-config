@@ -8,7 +8,7 @@ in
 pkgs.buildFHSEnv {
   name = "fhs";
   includeClosures = true;
-  targetPkgs = pkgs: with pkgs; [ icu ] ++ base.targetPkgs pkgs;
+  targetPkgs = pkgs: with pkgs; [ icu libepoxy ] ++ base.targetPkgs pkgs;
   multiPkgs = base.multiPkgs;
   profile = ''
     export IN_NIX_SHELL=impure

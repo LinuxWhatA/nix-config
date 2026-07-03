@@ -20,6 +20,7 @@
       ];
       directories = [
         "/etc/NetworkManager/system-connections"
+        "/var/lib/libvirt"
         "/var/lib/fprint"
         "/var/lib/systemd"
         "/var/lib/nixos"

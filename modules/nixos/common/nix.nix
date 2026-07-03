@@ -15,6 +15,12 @@ in
       allowBroken = true;
       allowUnsupportedSystem = true;
       allowUnfree = true;
+      allowed-uris = [
+        "https://mirror.nju.edu.cn"
+        "https://mirror.sjtu.edu.cn"
+        "https://mirrors.ustc.edu.cn"
+        "https://mirrors.tuna.tsinghua.edu.cn"
+      ];
     };
     overlays = lib.attrValues self.overlays;
   };

@@ -2,26 +2,32 @@
   description = "NixOS configuration of LinuxWhatA";
 
   inputs = {
-    flake-parts.url = "git+https://github.com/hercules-ci/flake-parts";
-    nixos-unified.url = "git+https://github.com/srid/nixos-unified";
-    nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixpkgs-unstable";
-    home-manager.url = "git+https://gitee.com/mirrors/home-manager-nix";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nixpkgs.url = "git+https://git.nju.edu.cn/nix-mirror/nixpkgs?ref=nixpkgs-unstable&shallow=1";
+    flake-parts.url = "git+https://gitcode.com/gh_mirrors/fl/flake-parts";
+    nixos-unified.url = "git+https://gitee.com/linuxwhata/nixos-unified";
     hardware.url = "git+https://gitee.com/mirrors/nixos-hardware";
-    impermanence.url = "git+https://github.com/nix-community/impermanence";
-    disko.url = "git+https://gitcode.com/gh_mirrors/di/disko.git";
-    disko.inputs.nixpkgs.follows = "nixpkgs";
-    plasma-manager.url = "git+https://gitcode.com/gh_mirrors/pl/plasma-manager";
-    plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
-    plasma-manager.inputs.home-manager.follows = "home-manager";
-    nixos-wsl = {
-      url = "git+https://github.com/nix-community/NixOS-WSL";
+    impermanence.url = "git+https://git.nju.edu.cn/nix-mirror/impermanence";
+    home-manager = {
+      url = "git+https://gitee.com/mirrors/home-manager-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Software inputs
-    nix-index-database.url = "git+https://github.com/nix-community/nix-index-database";
-    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+    disko = {
+      url = "git+https://gitcode.com/gh_mirrors/di/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    plasma-manager = {
+      url = "git+https://gitcode.com/gh_mirrors/pl/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+    nixos-wsl = {
+      url = "git+https://git.nju.edu.cn/nix-mirror/NixOS-WSL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    winapps = {
+      url = "git+https://gitee.com/mirrors/winapps";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

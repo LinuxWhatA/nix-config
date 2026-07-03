@@ -1,13 +1,13 @@
 {
   lib,
-  inputs,
+  flake,
   modulesPath,
   ...
 }:
 
 rec {
   imports = [
-    inputs.disko.nixosModules.disko
+    flake.inputs.disko.nixosModules.disko
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
@@ -96,19 +96,17 @@ rec {
 
   fileSystems."/mnt/Files" = {
     device = "/dev/disk/by-label/Files";
-    fsType = "ntfs";
+    fsType = "ntfs3";
     options = [
-      "users"
-      "nodev"
-      "nofail"
-      "nocase"
-      "nosuid"
-      "uid=1000"
-      "gid=100"
-      "umask=000"
-      "x-gvfs-show"
-      "big_writes"
-      "windows_names"
+      "defaults"
+      "nodev" # 禁止设备文件
+      "nosuid" # 禁止 suid 位
+      "nofail" # 启动时挂载失败不卡系统
+      "uid=1000" # 映射所有者为你的用户
+      "gid=100" # 映射组为 users 组
+      "umask=000" # 所有用户可读可写可执行
+      "x-gvfs-show" # 在文件管理器中显示盘符
+      # "noacsrules" # 忽略 Windows ACL
     ];
   };
 

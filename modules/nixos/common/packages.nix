@@ -1,20 +1,26 @@
 { flake, pkgs, ... }:
 
 {
-  environment.systemPackages = with pkgs; [
-    file
-    tree
-    lsof
-    wget
-    net-tools
-  ];
+  environment.systemPackages =
+    with pkgs;
+    [
+      file
+      tree
+      lsof
+      wget
+      net-tools
+      android-tools
+    ]
+    ++ [
+      flake.inputs.winapps.packages."${pkgs.system}".winapps
+      flake.inputs.winapps.packages."${pkgs.system}".winapps-launcher
+    ];
 
   programs = {
     zsh.enable = true;
     zsh.promptInit = ''
       [ "$UID" -eq 0 ] && source /home/${flake.config.me.username}/.zshrc
     '';
-    adb.enable = true;
     appimage.enable = true;
     appimage.binfmt = true;
     zoxide.enable = true;

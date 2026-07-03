@@ -17,9 +17,22 @@
     enable = true;
   };
   # https://wiki.nixos.org/wiki/Bluetooth#USB_device_needs_to_be_unplugged/re-plugged_after_suspends
-  powerManagement.powerUpCommands = ''
-    ${pkgs.usbutils}/bin/usbreset USB2.0-BT
-  '';
+  systemd.services.reset-bluetooth-after-suspend = {
+    description = "Reset Bluetooth USB device after system resume";
+    after = [ "sleep.target" ];
+    wantedBy = [ "sleep.target" ];
+    
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.writeScript "reset-bluetooth.sh" ''
+        #!/${pkgs.bash}/bin/bash
+        # 自动查找所有蓝牙设备并重置
+        for dev in $(${pkgs.usbutils}/bin/lsusb | grep -i bluetooth | awk '{print $6}'); do
+          ${pkgs.usbutils}/bin/usbreset "$dev"
+        done
+      ''}";
+    };
+  };
 
   hardware.graphics = {
     enable = true;
