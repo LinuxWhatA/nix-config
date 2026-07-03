@@ -12,6 +12,7 @@ in
       home-manager.backupFileExtension = "hm-backup";
       home-manager.users.${config.me.username} = { };
       home-manager.sharedModules = [
+      	self.homeModules.gui
         self.homeModules.default
       ];
     }
