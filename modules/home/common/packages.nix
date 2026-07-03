@@ -20,6 +20,7 @@
 
     # Custom Program
     fhs
+    cdrtools
     proton-run
     patchedpython
     winePackages.stagingFull

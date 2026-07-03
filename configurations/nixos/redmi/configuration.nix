@@ -35,6 +35,6 @@
   };
 
   nixpkgs.hostPlatform = "x86_64-linux";
-  networking.hostName = "naix";
-  system.stateVersion = "25.11";
+  networking.hostName = "redmi";
+  system.stateVersion = "26.11";
 }

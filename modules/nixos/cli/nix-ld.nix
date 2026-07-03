@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   programs.nix-ld = {
@@ -9,5 +9,5 @@
     ];
   };
 
-  services.envfs.enable = true;
+  services.envfs.enable = lib.mkForce true;
 }

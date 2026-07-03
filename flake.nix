@@ -24,10 +24,6 @@
       url = "git+https://git.nju.edu.cn/nix-mirror/NixOS-WSL";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    winapps = {
-      url = "git+https://gitee.com/mirrors/winapps";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =

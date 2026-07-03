@@ -10,10 +10,6 @@
       wget
       net-tools
       android-tools
-    ]
-    ++ [
-      flake.inputs.winapps.packages."${pkgs.system}".winapps
-      flake.inputs.winapps.packages."${pkgs.system}".winapps-launcher
     ];
 
   programs = {

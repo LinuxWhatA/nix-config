@@ -1,7 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   fonts = {
+    fontconfig.enable = lib.mkForce true;
     enableDefaultPackages = true;
     packages = with pkgs; [
       noto-fonts
