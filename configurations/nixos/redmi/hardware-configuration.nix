@@ -11,20 +11,24 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules = [ ];
+  boot.initrd.availableKernelModules = [
+    "nvme"
+    "xhci_pci"
+    "usb_storage"
+    "sd_mod"
+  ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
   disko.devices.disk.main = {
     imageSize = "32G";
     type = "disk";
-    device = "/dev/sda";
+    device = "/dev/nvme0n1";
     content = {
       type = "gpt";
       partitions = {
         ESP = {
-          priority = 1;
           size = "512M";
           type = "EF00";
           content = {
@@ -34,18 +38,24 @@
             mountOptions = [ "umask=0077" ];
           };
         };
-        nixos = {
+        NixOS = {
           size = "100%";
           content = {
             type = "btrfs";
-            extraArgs = [ "-Lnixos" ];
+            extraArgs = [ "-LNixOS" ];
             subvolumes = {
               "/home" = {
-                mountOptions = [ "compress=zstd" ];
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
                 mountpoint = "/home";
               };
               "/persist" = {
-                mountOptions = [ "compress=zstd" ];
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
                 mountpoint = "/persist";
               };
               "/nix" = {
