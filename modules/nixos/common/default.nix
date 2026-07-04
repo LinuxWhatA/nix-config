@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, flake, ... }:
 {
   imports =
     with builtins;
@@ -7,7 +7,7 @@
   nixpkgs.config.allowUnfree = true;
 
   services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "lwa";
+  services.displayManager.autoLogin.user = flake.config.me.username;
 
   networking.networkmanager = {
     enable = true;
@@ -21,7 +21,7 @@
     description = "Reset Bluetooth USB device after system resume";
     after = [ "sleep.target" ];
     wantedBy = [ "sleep.target" ];
-    
+
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.writeScript "reset-bluetooth.sh" ''

@@ -31,7 +31,6 @@ let
   packageOverlays = builtins.listToAttrs (
     builtins.attrValues (builtins.mapAttrs makePackage entries)
   );
-
 in
 packageOverlays
 // {
@@ -39,7 +38,7 @@ packageOverlays
     fetchurl =
       { ... }:
       super.fetchurl {
-        url = "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage";
+        url = "file://${flake.inputs.wechat}";
         hash = "sha256-vTTkuFm1LhAqVvuynIfYdROPf19nfCQIOGhw6Z+dOeo=";
       };
   };

@@ -1,4 +1,4 @@
-{ flake, ... }:
+{ flake, lib,... }:
 
 let
   inherit (flake) inputs;
@@ -14,5 +14,5 @@ in
   xdg.userDirs.createDirectories = true;
   xdg.userDirs.setSessionVariables = false;
 
-  home.stateVersion = "25.11";
+  home.stateVersion = lib.mkDefault "25.11";
 }

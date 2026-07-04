@@ -1,7 +1,6 @@
 { flake, pkgs, ... }:
 
 {
-  imports = [ ./default.nix ];
   services.displayManager.sddm = {
     enable = true;
     theme = "breeze";

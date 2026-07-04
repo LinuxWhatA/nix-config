@@ -11,9 +11,7 @@ in
       home-manager.useGlobalPkgs = true;
       home-manager.backupFileExtension = "hm-backup";
       home-manager.users.${config.me.username} = { };
-      home-manager.sharedModules = [
-        self.homeModules.default
-      ];
+      home-manager.sharedModules = [ self.homeModules.default ];
     }
   ];
 }

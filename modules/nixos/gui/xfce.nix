@@ -1,7 +1,6 @@
 { ... }:
 
 {
-  imports = [ ./default.nix ];
   services.xserver = {
     enable = true;
     desktopManager = {

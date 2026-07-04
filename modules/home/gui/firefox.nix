@@ -1,23 +1,16 @@
-{ config, pkgs, ... }:
+{ config, flake, ... }:
 
-let
-  preFile = pkgs.fetchgit {
-    url = "https://gitcode.com/GitHub_Trending/be/Betterfox";
-    rev = "c97bc0639609f35ff9d65522e3ddb03dac69e938";
-    hash = "sha256-1eC6DowuP9PzaLxh1t2FKzUeJFw/ppimXIiwyJsRKwc=";
-  };
-in
 {
   programs.firefox = {
     enable = true;
     configPath = "${config.xdg.configHome}/mozilla/firefox";
     languagePacks = [ "zh-CN" ];
-    profiles.lwa = {
+    profiles.default = {
       search = {
         force = true;
         default = "bing";
       };
-      preConfig = builtins.readFile "${preFile}/user.js";
+      preConfig = builtins.readFile "${flake.inputs.betterfox}/user.js";
       settings = {
         "sidebar.revamp" = true; # 侧栏
         "sidebar.verticalTabs" = true; # 垂直标签页

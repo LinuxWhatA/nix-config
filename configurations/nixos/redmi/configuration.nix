@@ -1,9 +1,4 @@
-{
-  flake,
-  pkgs,
-  config,
-  ...
-}:
+{ flake, pkgs, ... }:
 
 {
   imports = [
@@ -24,9 +19,7 @@
   };
 
   boot = {
-    # ISO 构建时使用 7.0 内核
-    kernelPackages =
-      if config.system.build ? isoImage then pkgs.linuxPackages_7_0 else pkgs.linuxPackages_zen;
+    kernelPackages = pkgs.linuxPackages_zen;
     binfmt.emulatedSystems = [
       "aarch64-linux"
       "i686-linux"

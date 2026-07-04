@@ -24,6 +24,14 @@
       url = "git+https://git.nju.edu.cn/nix-mirror/NixOS-WSL";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    betterfox = {
+      url = "git+https://gitcode.com/GitHub_Trending/be/Betterfox";
+      flake = false;
+    };
+    wechat = {
+      url = "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage";
+      flake = false;
+    };
   };
 
   outputs =

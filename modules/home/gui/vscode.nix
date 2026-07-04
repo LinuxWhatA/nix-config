@@ -1,4 +1,9 @@
-{ osConfig, pkgs, ... }:
+{
+  flake,
+  pkgs,
+  hostname,
+  ...
+}:
 
 {
   programs.vscode = {
@@ -31,7 +36,6 @@
         "terminal.integrated.fontFamily" = "'MesloLGS NF'";
         "[nix]" = {
           "editor.tabSize" = 2;
-          "editor.defaultFormatter" = "jnoortheen.nix-ide";
         };
         "nix.serverPath" = "nixd";
         "nix.enableLanguageServer" = true;
@@ -42,7 +46,10 @@
             };
             options = {
               nixos = {
-                expr = ''(builtins.getFlake "${../../..}").nixosConfigurations.${osConfig.networking.hostName}.options'';
+                expr = ''(builtins.getFlake "${flake.inputs.self}").nixosConfigurations.${hostname}.options'';
+              };
+              home-manager = {
+                expr = ''(builtins.getFlake "${flake.inputs.self}").legacyPackages.${pkgs.stdenv.hostPlatform.system}.homeConfigurations."${flake.config.me.username}@${hostname}".options'';
               };
             };
           };

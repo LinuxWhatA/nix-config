@@ -5,6 +5,7 @@
     vlc
     scrcpy
     wechat
+    flclash
     fsearch
     xunlei-uos
     moonlight-qt

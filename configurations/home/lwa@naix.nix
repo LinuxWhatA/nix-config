@@ -5,9 +5,11 @@ let
 in
 {
   imports = [
+    self.homeModules.gui
     self.homeModules.default
   ];
 
   home.username = "lwa";
+  _module.args.hostname = "naix";
   home.stateVersion = "25.11";
 }

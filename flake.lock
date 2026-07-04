@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "betterfox": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783030351,
+        "narHash": "sha256-QfisBzeoc8nUrgk/+PTvG9JATsVRWo7RDbohlxkNc+A=",
+        "ref": "refs/heads/main",
+        "rev": "7558fdc9c5aa4483d3010584fd0c2ea9f7e47c5e",
+        "revCount": 692,
+        "type": "git",
+        "url": "https://gitcode.com/GitHub_Trending/be/Betterfox"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitcode.com/GitHub_Trending/be/Betterfox"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -59,11 +75,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1782379505,
-        "narHash": "sha256-zPvPiU+a7pqtH47xrtZLNRABJKpOjfZQclDbcvNtH+I=",
+        "lastModified": 1782562157,
+        "narHash": "sha256-a7+T6QSeowynwZ1ZJJbP8T8ntAytvrui8kFGJmIZt2c=",
         "ref": "refs/heads/master",
-        "rev": "603d3afd1b6145bd66e97ae38a34d91c95df70cf",
-        "revCount": 2804,
+        "rev": "a9cf7546a938c737b079e738de73934a13de9784",
+        "revCount": 2806,
         "type": "git",
         "url": "https://gitee.com/mirrors/nixos-hardware"
       },
@@ -79,11 +95,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782423922,
-        "narHash": "sha256-qPNd6lUohHP5gcJhqQ7rLV87RwIx0xYR2A4Frb9Zjc4=",
+        "lastModified": 1783024095,
+        "narHash": "sha256-oE+TNK98Pl7nHW4VU1oBvUKD5JR45U+py/NJmLoTNHI=",
         "ref": "refs/heads/master",
-        "rev": "5d320ab301cfaaca7d32514f13815d19d109f5f4",
-        "revCount": 6992,
+        "rev": "a4d410db95a6416d1008049330bd86b85b5db45a",
+        "revCount": 7020,
         "type": "git",
         "url": "https://gitee.com/mirrors/home-manager-nix"
       },
@@ -214,10 +230,10 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1782918843,
-        "narHash": "sha256-ETYnV9U7Sr+A45dohzZdfCZKOss4qrTkO+wgNZNvEc0=",
+        "lastModified": 1782948114,
+        "narHash": "sha256-AXmz9ho4Lud5CsbrZsuSVwpQZ4o5FgZ1chxBn5cJ8+0=",
         "ref": "nixpkgs-unstable",
-        "rev": "e8273b29fe1390ec8d4603f2477357555291432e",
+        "rev": "9e92285f211dad236540fd617d7e30e0b99bc0e1",
         "shallow": true,
         "type": "git",
         "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs"
@@ -254,6 +270,7 @@
     },
     "root": {
       "inputs": {
+        "betterfox": "betterfox",
         "disko": "disko",
         "flake-parts": "flake-parts",
         "hardware": "hardware",
@@ -262,7 +279,20 @@
         "nixos-unified": "nixos-unified",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_3",
-        "plasma-manager": "plasma-manager"
+        "plasma-manager": "plasma-manager",
+        "wechat": "wechat"
+      }
+    },
+    "wechat": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-IKG9WvjhpIjR49F2SgmpMopl5UAg2W8DnpkorG0Oulk=",
+        "type": "file",
+        "url": "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage"
       }
     }
   },

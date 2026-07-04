@@ -9,5 +9,6 @@ in
   ];
 
   home.username = "lwa";
+  _module.args.hostname = "wsl";
   home.stateVersion = "26.11";
 }
