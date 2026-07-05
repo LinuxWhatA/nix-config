@@ -1,4 +1,5 @@
 {
+  imports = [ ./default.nix ];
   # Enable the COSMIC login manager
   services.displayManager.cosmic-greeter.enable = true;
   # Enable the COSMIC desktop environment

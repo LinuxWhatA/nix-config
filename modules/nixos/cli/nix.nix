@@ -51,9 +51,5 @@ in
         "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
       ];
     };
-
-    gc = {
-      automatic = true;
-    };
   };
 }

@@ -10,12 +10,6 @@ in
   imports = [
     ./configuration.nix
     inputs.nixos-wsl.nixosModules.wsl
-    (self + /modules/nixos/common/nix.nix)
-    (self + /modules/nixos/common/vim.nix)
-    (self + /modules/nixos/common/packages.nix)
+    self.nixosModules.default
   ];
-
-  users.users.lwa = {
-    openssh.authorizedKeys.keys = [ flake.config.me.sshKey ];
-  };
 }

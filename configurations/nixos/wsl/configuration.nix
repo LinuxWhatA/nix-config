@@ -16,14 +16,6 @@
   programs.zsh.promptInit = "cd";
 
   users.mutableUsers = true;
-  users.users.lwa = {
-    isNormalUser = true;
-    shell = pkgs.zsh;
-    extraGroups = [
-      "wheel"
-      "networkmanager"
-    ];
-  };
 
   nix.settings.experimental-features = [ "flakes" "nix-command" "ca-derivations" ];
   nixpkgs.hostPlatform = "x86_64-linux";

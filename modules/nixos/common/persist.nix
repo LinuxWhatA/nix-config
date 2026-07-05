@@ -20,6 +20,7 @@
       ];
       directories = [
         "/etc/NetworkManager/system-connections"
+        "/var/lib/bluetooth"
         "/var/lib/libvirt"
         "/var/lib/fprint"
         "/var/lib/systemd"

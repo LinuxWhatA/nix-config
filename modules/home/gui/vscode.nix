@@ -1,10 +1,14 @@
 {
-  flake,
   pkgs,
-  hostname,
+  flake,
+  config,
+  osConfig,
   ...
 }:
 
+let
+  hostname = osConfig.networking.hostName or config._module.args.hostname;
+in
 {
   programs.vscode = {
     enable = true;
