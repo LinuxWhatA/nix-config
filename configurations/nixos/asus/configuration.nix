@@ -23,6 +23,8 @@
     efi.canTouchEfiVariables = true;
   };
 
+  services.thermald.enable = true; # 温控
+
   nixpkgs.hostPlatform = "x86_64-linux";
   networking.hostName = "asus";
   system.stateVersion = "25.11";

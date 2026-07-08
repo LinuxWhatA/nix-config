@@ -17,6 +17,7 @@ in
 
     self.nixosModules.default
     (self + /modules/nixos/gui/gnome.nix)
+    (self + /modules/nixos/optional/qemu.nix)
     ./grub.nix
     ./configuration.nix
   ];

@@ -8,6 +8,7 @@
     flclash
     fsearch
     xunlei-uos
+    motrix-next
     moonlight-qt
     wpsoffice-cn
     qbittorrent-enhanced
