@@ -3,11 +3,7 @@
 {
   networking.stevenblack = {
     enable = true;
-    block = [
-      "fakenews"
-      "gambling"
-      "porn"
-    ];
+    block = [];
   };
 
   networking.extraHosts = lib.mkDefault '''';

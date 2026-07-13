@@ -16,8 +16,8 @@ in
       allowUnfree = true;
       allowed-uris = [
         "https://mirror.nju.edu.cn"
-        "https://mirror.sjtu.edu.cn"
         "https://mirrors.ustc.edu.cn"
+        "https://mirror.sjtu.edu.cn"
         # "https://mirrors.tuna.tsinghua.edu.cn"
       ];
     };
@@ -45,9 +45,9 @@ in
       warn-dirty = false;
 
       substituters = lib.mkForce [
-        "https://mirror.sjtu.edu.cn/nix-channels/store"
-        "https://mirrors.ustc.edu.cn/nix-channels/store"
         "https://mirror.nju.edu.cn/nix-channels/store"
+        "https://mirrors.ustc.edu.cn/nix-channels/store"
+        "https://mirror.sjtu.edu.cn/nix-channels/store"
         # "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
       ];
     };

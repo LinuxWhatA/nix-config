@@ -1,16 +1,17 @@
 { flake, pkgs, ... }:
 
 {
-  environment.systemPackages =
-    with pkgs;
-    [
-      file
-      tree
-      lsof
-      wget
-      net-tools
-      android-tools
-    ];
+  imports = [
+    flake.inputs.nix-index-database.nixosModules.default
+  ];
+  environment.systemPackages = with pkgs; [
+    file
+    tree
+    lsof
+    wget
+    net-tools
+    android-tools
+  ];
 
   programs = {
     zsh.enable = true;
@@ -28,6 +29,7 @@
         git_status.ignore_submodules = true;
       };
     };
+    nix-index-database.enable = true;
   };
   users.defaultUserShell = pkgs.zsh;
 

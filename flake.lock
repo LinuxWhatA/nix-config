@@ -37,24 +37,25 @@
       }
     },
     "flake-compat": {
-      "flake": false,
       "locked": {
         "lastModified": 1767039857,
         "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
-        "owner": "edolstra",
-        "repo": "flake-compat",
+        "ref": "refs/heads/master",
         "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
-        "type": "github"
+        "revCount": 91,
+        "type": "git",
+        "url": "https://git.nju.edu.cn/nix-mirror/flake-compat"
       },
       "original": {
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "type": "github"
+        "type": "git",
+        "url": "https://git.nju.edu.cn/nix-mirror/flake-compat"
       }
     },
     "flake-parts": {
       "inputs": {
-        "nixpkgs-lib": "nixpkgs-lib"
+        "nixpkgs-lib": [
+          "nixpkgs-lib"
+        ]
       },
       "locked": {
         "lastModified": 1782949081,
@@ -72,7 +73,9 @@
     },
     "hardware": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1782562157,
@@ -108,31 +111,14 @@
         "url": "https://gitee.com/mirrors/home-manager-nix"
       }
     },
-    "home-manager_2": {
-      "inputs": {
-        "nixpkgs": [
-          "impermanence",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1768598210,
-        "narHash": "sha256-kkgA32s/f4jaa4UG+2f8C225Qvclxnqs76mf8zvTVPg=",
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "rev": "c47b2cc64a629f8e075de52e4742de688f930dc6",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "type": "github"
-      }
-    },
     "impermanence": {
       "inputs": {
-        "home-manager": "home-manager_2",
-        "nixpkgs": "nixpkgs_2"
+        "home-manager": [
+          "home-manager"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1769548169,
@@ -146,6 +132,52 @@
       "original": {
         "type": "git",
         "url": "https://git.nju.edu.cn/nix-mirror/impermanence"
+      }
+    },
+    "nix-alien": {
+      "inputs": {
+        "flake-compat": [
+          "flake-compat"
+        ],
+        "nix-index-database": [
+          "nix-index-database"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782206964,
+        "narHash": "sha256-n6nn0A3U3FnHWa9Y+dWNiuQnMDrcndQplgE0ooiexG8=",
+        "ref": "refs/heads/master",
+        "rev": "4fc9de6d1f215cf1679da04cf8749e085dd027d7",
+        "revCount": 424,
+        "type": "git",
+        "url": "https://gitcode.com/gh_mirrors/ni/nix-alien"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitcode.com/gh_mirrors/ni/nix-alien"
+      }
+    },
+    "nix-index-database": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783863649,
+        "narHash": "sha256-hwHHWIIbz48ISRHCH9hubrG0Zfor0Ug1F1z02lmDFTE=",
+        "ref": "refs/heads/main",
+        "rev": "1b36497668af76aaefba408c27b13882904c63c8",
+        "revCount": 619,
+        "type": "git",
+        "url": "https://gitcode.com/gh_mirrors/ni/nix-index-database"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitcode.com/gh_mirrors/ni/nix-index-database"
       }
     },
     "nixos-unified": {
@@ -165,7 +197,9 @@
     },
     "nixos-wsl": {
       "inputs": {
-        "flake-compat": "flake-compat",
+        "flake-compat": [
+          "flake-compat"
+        ],
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -186,50 +220,6 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1767892417,
-        "narHash": "sha256-8bW3q88CEg2u4hSP66Vf4lpbLonHz7hqDNBMcCY7E9U=",
-        "rev": "3497aa5c9457a9d88d71fa93a4a8368816fbeeba",
-        "type": "tarball",
-        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.05pre924538.3497aa5c9457/nixexprs.tar.xz"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
-      }
-    },
-    "nixpkgs-lib": {
-      "locked": {
-        "lastModified": 1782614948,
-        "narHash": "sha256-ePjCwr1sNm9NYUqywL7QfK3JnlS015msC+eBu2zKlp8=",
-        "owner": "nix-community",
-        "repo": "nixpkgs.lib",
-        "rev": "db3f255737b94216eb71cce308e2912cf6bc2d7c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "nixpkgs.lib",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1768564909,
-        "narHash": "sha256-Kell/SpJYVkHWMvnhqJz/8DqQg2b6PguxVWOuadbHCc=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "e4bae1bd10c9c57b2cf517953ab70060a828ee6f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_3": {
-      "locked": {
         "lastModified": 1782948114,
         "narHash": "sha256-AXmz9ho4Lud5CsbrZsuSVwpQZ4o5FgZ1chxBn5cJ8+0=",
         "ref": "nixpkgs-unstable",
@@ -243,6 +233,21 @@
         "shallow": true,
         "type": "git",
         "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "lastModified": 1783821755,
+        "narHash": "sha256-eMPX9S6MKPyUnaOgeRfrG7OKUiAlc1AlcRinMbSB0WA=",
+        "ref": "refs/heads/master",
+        "rev": "228ab8523d81526e57a6ca342e1a919fb6d246a8",
+        "revCount": 22376,
+        "type": "git",
+        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.lib"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.lib"
       }
     },
     "plasma-manager": {
@@ -272,13 +277,17 @@
       "inputs": {
         "betterfox": "betterfox",
         "disko": "disko",
+        "flake-compat": "flake-compat",
         "flake-parts": "flake-parts",
         "hardware": "hardware",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
+        "nix-alien": "nix-alien",
+        "nix-index-database": "nix-index-database",
         "nixos-unified": "nixos-unified",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-lib": "nixpkgs-lib",
         "plasma-manager": "plasma-manager",
         "wechat": "wechat"
       }

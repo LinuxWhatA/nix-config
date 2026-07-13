@@ -42,4 +42,9 @@ packageOverlays
         hash = "sha256-vTTkuFm1LhAqVvuynIfYdROPf19nfCQIOGhw6Z+dOeo=";
       };
   };
+  nix-alien = flake.inputs.nix-alien.packages.x86_64-linux.nix-alien;
+  proton-run = super.writeShellScriptBin "proton-run" ''
+    export PROTONPATH="${super.pkgs.proton-ge-bin.steamcompattool}"
+    exec ${super.pkgs.umu-launcher}/bin/umu-run "$@"
+  '';
 }

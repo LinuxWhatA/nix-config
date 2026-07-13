@@ -16,11 +16,11 @@
 let
   DevSidecar-unwrapped = stdenv.mkDerivation rec {
     pname = "dev-sidecar";
-    version = "2.1.1";
+    version = "2.2.0";
 
     src = fetchurl {
       url = "https://github.com/docmirror/dev-sidecar/releases/download/v${version}/DevSidecar-${version}-linux-x86_64.deb";
-      hash = "sha256-yA+PpyMy72rcdMEx4pfBOT8LYUgY/sMSCr6zXevUVPo=";
+      hash = "sha256-zsWIoTdvOEmh+1L2VoHcOEcOuw9ZaUVxpPZAX/Vl3cE=";
     };
 
     nativeBuildInputs = [ dpkg openssl ];

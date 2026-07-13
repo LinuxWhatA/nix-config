@@ -13,18 +13,19 @@
     vulkan-tools
 
     # Nix dev
-    nh
     nixd
     nixfmt
     nix-info
+    nix-alien
 
     # Custom Program
     fhs
     cdrtools
-    proton-run
     patchedpython
-    winePackages.stagingFull
+    proton-run
+    umu-launcher
     winetricks
+    winePackages.stagingFull
   ];
 
   programs = {
