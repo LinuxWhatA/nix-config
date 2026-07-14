@@ -17,12 +17,11 @@
     "usb_storage"
     "sd_mod"
   ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "ntfs3" ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
   disko.devices.disk.main = {
-    imageSize = "32G";
     type = "disk";
     device = "/dev/nvme0n1";
     content = {
@@ -68,7 +67,7 @@
               "/swap" = {
                 mountOptions = [ "noatime" ];
                 mountpoint = "/swap";
-                swap.swapfile.size = "8G";
+                swap.swapfile.size = "16G";
               };
             };
           };
@@ -89,7 +88,7 @@
 
   fileSystems."/mnt/TiPlus5000" = {
     device = "/dev/disk/by-label/TiPlus5000";
-    fsType = "ntfs";
+    fsType = "ntfs3";
     options = [
       "defaults"
       "nodev" # 禁止设备文件
@@ -97,9 +96,9 @@
       "nofail" # 启动时挂载失败不卡系统
       "uid=1000" # 映射所有者为你的用户
       "gid=100" # 映射组为 users 组
-      "umask=000" # 所有用户可读可写可执行
+      "dmask=0000" # 目录777
+      "fmask=0000" # 文件777
       "x-gvfs-show" # 在文件管理器中显示盘符
-      # "noacsrules" # 忽略 Windows ACL
     ];
   };
 

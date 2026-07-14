@@ -31,6 +31,7 @@
       ];
     };
   };
+  boot.tmp.cleanOnBoot = true;
   programs.fuse.userAllowOther = true;
 
   system.activationScripts.persistent-dirs.text =

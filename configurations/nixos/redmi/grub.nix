@@ -2,6 +2,7 @@
 
 {
   boot.loader = {
+    timeout = 5;
     efi.canTouchEfiVariables = true;
     grub = {
       enable = true;
@@ -29,6 +30,14 @@
             linux16 /ntloader uuid=''${dev_uuid} vhd=/OS/windows.vhd
             initrd16 /initrd.cpio
           fi;
+        }
+
+        menuentry "WePE" --class windows {
+          search --no-floppy -s -f /ntloader
+          search --no-floppy -s dev -f /OS/WEPE64.WIM
+          probe -s dev_uuid -u $dev
+          linux /ntloader uuid=''${dev_uuid} file=/OS/WEPE64.WIM
+          initrd /initrd.cpio
         }
 
         menuentry "Halt" {
