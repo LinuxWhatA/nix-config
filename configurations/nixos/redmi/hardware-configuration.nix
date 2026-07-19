@@ -91,6 +91,7 @@
     fsType = "ntfs3";
     options = [
       "defaults"
+      "force"
       "nodev" # 禁止设备文件
       "nosuid" # 禁止 suid 位
       "nofail" # 启动时挂载失败不卡系统

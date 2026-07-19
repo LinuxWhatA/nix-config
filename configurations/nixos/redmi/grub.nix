@@ -13,35 +13,27 @@
       gfxmodeEfi = "1024x768";
       configurationLimit = 10;
       theme = "${pkgs.grub-cyberre-theme}/grub/themes/CyberRe";
-      extraFiles = {
-        "ntloader" = "${pkgs.ntloader}/ntloader";
-        "initrd.cpio" = "${pkgs.ntloader}/initrd.cpio";
-      };
+      extraInstallCommands = ''
+        cp -rf ${pkgs.a1ive-grub}/* /boot/grub
+        mv /boot/grub/grubx64.efi /boot/EFI/NixOS-boot/
+      '';
       extraEntries = ''
         menuentry "Windows VHD" --class windows {
-          savedefault
-          search --no-floppy -s -f /ntloader
-          search --no-floppy -s dev -f /OS/Windows.vhd
-          probe -s dev_uuid -u $dev
-          if [ "''${grub_platform}" = "efi" ]; then
-            linux /ntloader uuid=''${dev_uuid} vhd=/OS/windows.vhd
-            initrd /initrd.cpio
-          else
-            linux16 /ntloader uuid=''${dev_uuid} vhd=/OS/windows.vhd
-            initrd16 /initrd.cpio
-          fi;
+          search -s -f /OS/Windows.vhd
+          ntboot --vhd --efi="''${prefix}/bootmgfw.efi" "/OS/Windows.vhd";
         }
 
         menuentry "WePE" --class windows {
-          search --no-floppy -s -f /ntloader
-          search --no-floppy -s dev -f /OS/WEPE64.WIM
-          probe -s dev_uuid -u $dev
-          linux /ntloader uuid=''${dev_uuid} file=/OS/WEPE64.WIM
-          initrd /initrd.cpio
+          search -s -f /OS/WePE_64_V2.3.iso
+          map -f /OS/WePE_64_V2.3.iso;
         }
 
-        menuentry "Halt" {
-          halt
+        menuentry "Reboot (R)" --hotkey "r" {
+            reboot;
+        }
+
+        menuentry "Halt (H)" --hotkey "h" {
+            halt;
         }
       '';
     };

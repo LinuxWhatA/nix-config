@@ -11,15 +11,9 @@ in
 {
   nixpkgs = {
     config = {
+      allowUnfree = true;
       allowBroken = true;
       allowUnsupportedSystem = true;
-      allowUnfree = true;
-      allowed-uris = [
-        "https://mirror.nju.edu.cn"
-        "https://mirrors.ustc.edu.cn"
-        "https://mirror.sjtu.edu.cn"
-        # "https://mirrors.tuna.tsinghua.edu.cn"
-      ];
     };
     overlays = lib.attrValues self.overlays;
   };
@@ -41,6 +35,7 @@ in
         "flakes"
         "nix-command"
         "ca-derivations"
+        "configurable-impure-env"
       ];
       warn-dirty = false;
 

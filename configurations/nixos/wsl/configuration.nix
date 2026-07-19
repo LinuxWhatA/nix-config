@@ -17,7 +17,7 @@
 
   users.mutableUsers = true;
 
-  nix.settings.experimental-features = [ "flakes" "nix-command" "ca-derivations" ];
+  nix.settings.experimental-features = [ "flakes" "nix-command" "ca-derivations" "configurable-impure-env" ];
   nixpkgs.hostPlatform = "x86_64-linux";
   networking.hostName = "wsl";
   system.stateVersion = "25.05";
