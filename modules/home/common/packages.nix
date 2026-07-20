@@ -29,11 +29,7 @@
   ];
 
   programs = {
-    nix-index = {
-      enable = true;
-      enableZshIntegration = true;
-    };
-    # nix-index-database.comma.enable = true;
+    nix-index-database.comma.enable = true;
     fzf.enable = true;
     jq.enable = true;
     htop.enable = true;

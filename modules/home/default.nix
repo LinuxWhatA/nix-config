@@ -6,7 +6,7 @@ let
 in
 {
   imports = [
-    # inputs.nix-index-database.homeModules.nix-index
+    inputs.nix-index-database.homeModules.nix-index
     self.homeModules.common
   ];
 
