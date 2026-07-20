@@ -1,5 +1,3 @@
-# See /modules/nixos/* for actual settings
-# This file is just *top-level* configuration.
 { flake, ... }:
 
 let
@@ -15,10 +13,10 @@ in
     inputs.hardware.nixosModules.common-cpu-amd-pstate
     inputs.hardware.nixosModules.common-cpu-amd-zenpower
 
+    ./grub.nix
+    ./configuration.nix
     self.nixosModules.default
     (self + /modules/nixos/gui/gnome.nix)
     (self + /modules/nixos/optional/qemu.nix)
-    ./grub.nix
-    ./configuration.nix
   ];
 }

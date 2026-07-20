@@ -1,6 +1,4 @@
-# See /modules/nixos/* for actual settings
-# This file is just *top-level* configuration.
-{ flake, pkgs, lib, ... }:
+{ flake, ... }:
 
 let
   inherit (flake) inputs;
@@ -9,7 +7,8 @@ in
 {
   imports = [
     ./configuration.nix
-    inputs.nixos-wsl.nixosModules.wsl
     self.nixosModules.default
+    inputs.nixos-wsl.nixosModules.wsl
+    (self + /modules/nixos/cli/nix.nix)
   ];
 }

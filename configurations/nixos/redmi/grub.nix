@@ -19,6 +19,7 @@
       '';
       extraEntries = ''
         menuentry "Windows VHD" --class windows {
+          savedefault
           search -s -f /OS/Windows.vhd
           ntboot --vhd --efi="''${prefix}/bootmgfw.efi" "/OS/Windows.vhd";
         }

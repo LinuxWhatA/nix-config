@@ -1,14 +1,12 @@
 {
   lib,
   flake,
-  modulesPath,
   ...
 }:
 
 rec {
   imports = [
     flake.inputs.disko.nixosModules.disko
-    (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
   boot.initrd.availableKernelModules = [
