@@ -6,15 +6,20 @@
     enable = true;
     theme = "breeze";
     wayland.enable = true;
-    # enableHidpi = true;
+    enableHidpi = true;
     settings = {
       General.DisplayServer = "wayland";
+      Autologin = {
+        Session = "plasma.desktop";
+        User = flake.config.me.username;
+      };
     };
   };
   services.desktopManager.plasma6.enable = true;
   programs.kdeconnect.enable = true;
 
   home-manager.users.${flake.config.me.username} = {
+    imports = [ flake.inputs.plasma-manager.homeModules.plasma-manager ];
     home.packages = [ pkgs.plasma-applet-netspeed-widget ];
 
     programs.plasma = {
