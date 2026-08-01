@@ -47,4 +47,8 @@ packageOverlays
     export PROTONPATH="${super.pkgs.proton-ge-bin.steamcompattool}"
     exec ${super.pkgs.umu-launcher}/bin/umu-run "$@"
   '';
+  dwproton-run = super.writeShellScriptBin "dwproton-run" ''
+    export PROTONPATH="${super.pkgs.dwproton-bin.steamcompattool}"
+    exec ${super.pkgs.umu-launcher}/bin/umu-run "$@"
+  '';
 }

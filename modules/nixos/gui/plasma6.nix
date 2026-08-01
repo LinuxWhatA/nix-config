@@ -18,6 +18,15 @@
   services.desktopManager.plasma6.enable = true;
   programs.kdeconnect.enable = true;
 
+  xdg.portal = {
+    enable = true;
+    extraPortals = [
+      pkgs.kdePackages.xdg-desktop-portal-kde
+    ];
+  };
+
+  xdg.portal.config."plasma".default = [ "kde" ];
+
   home-manager.users.${flake.config.me.username} = {
     imports = [ flake.inputs.plasma-manager.homeModules.plasma-manager ];
     home.packages = [ pkgs.plasma-applet-netspeed-widget ];

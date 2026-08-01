@@ -14,6 +14,11 @@
     source = "${pkgs.proton-ge-bin.steamcompattool}";
   };
 
+  home.file.".config/heroic/tools/proton/DWProton" = {
+    force = true;
+    source = "${pkgs.dwproton-bin.steamcompattool}";
+  };
+
   home.activation.heroicSettings =
     let
       config = builtins.toJSON {

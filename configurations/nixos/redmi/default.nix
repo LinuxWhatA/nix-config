@@ -16,7 +16,7 @@ in
     ./grub.nix
     ./configuration.nix
     self.nixosModules.default
-    (self + /modules/nixos/gui/gnome.nix)
+    (self + /modules/nixos/gui/plasma6.nix)
     (self + /modules/nixos/optional/qemu.nix)
   ];
 }
