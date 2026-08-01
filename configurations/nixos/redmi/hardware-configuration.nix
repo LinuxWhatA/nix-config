@@ -18,6 +18,10 @@
   boot.initrd.kernelModules = [ "ntfs3" ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
+  boot.kernelParams = [
+    "amdgpu.dcdebugmask=0x10"
+    "amdgpu.abmlevel=0"
+  ];
 
   disko.devices.disk.main = {
     type = "disk";

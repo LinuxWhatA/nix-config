@@ -18,5 +18,6 @@ in
     self.nixosModules.default
     (self + /modules/nixos/gui/plasma6.nix)
     (self + /modules/nixos/optional/qemu.nix)
+    (self + /modules/nixos/optional/clash.nix)
   ];
 }

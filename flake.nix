@@ -64,11 +64,11 @@
       imports = (with builtins; map (fn: ./modules/flake/${fn}) (attrNames (readDir ./modules/flake)));
 
       perSystem =
-        { lib, system, ... }:
+        { system, ... }:
         let
           pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = lib.attrValues self.overlays;
+            overlays = builtins.attrValues self.overlays;
             config.allowUnfree = true;
           };
         in

@@ -51,10 +51,4 @@ in
       ];
     };
   };
-
-  systemd.services.nix-daemon.environment = {
-    http_proxy = "http://127.0.0.1:7890";
-    https_proxy = "http://127.0.0.1:7890";
-    no_proxy = "localhost,127.0.0.1,::1";
-  };
 }

@@ -25,8 +25,6 @@
     proton-run
     dwproton-run
     umu-launcher
-    winetricks
-    winePackages.stagingFull
   ];
 
   programs = {

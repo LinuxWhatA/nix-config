@@ -220,10 +220,10 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1785301185,
-        "narHash": "sha256-eoS3KQTO0aPWXZvIaRbRAzSSHW3l5wdMFXtT1ISfoKA=",
+        "lastModified": 1785483748,
+        "narHash": "sha256-M4HXpLsR7iFTNQfD/q+zK8/QeRYztYVDVIdIgCVGGZ0=",
         "ref": "nixpkgs-unstable",
-        "rev": "9bc02893134c733dd85de46ee4fb2fac696b5529",
+        "rev": "59ea0b1c043c463e39fcb3cfb9a5c8bcf0777c72",
         "shallow": true,
         "type": "git",
         "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs"
@@ -295,7 +295,7 @@
     "wechat": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-IKG9WvjhpIjR49F2SgmpMopl5UAg2W8DnpkorG0Oulk=",
+        "narHash": "sha256-SucQpHHs2xW7LNhEi/4il2v1J/YeJfQOpDebpBu+IgE=",
         "type": "file",
         "url": "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage"
       },

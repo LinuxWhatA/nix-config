@@ -7,7 +7,7 @@ in
 {
   imports = [
     inputs.nix-index-database.homeModules.nix-index
-    self.homeModules.common
+    self.homeModules.cli
   ];
 
   xdg.userDirs.enable = true;
