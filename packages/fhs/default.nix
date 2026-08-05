@@ -1,16 +1,19 @@
 {
-  pkgs ? import <nixpkgs> { },
+  buildFHSEnv,
+  appimageTools,
+  zsh,
+  icu,
+  libepoxy,
+  webkitgtk_4_1,
+  libappindicator,
+  libayatana-appindicator,
 }:
 
-let
-  base = pkgs.appimageTools.defaultFhsEnvArgs;
-in
-pkgs.buildFHSEnv {
+buildFHSEnv {
   name = "fhs";
   includeClosures = true;
   targetPkgs =
     pkgs:
-    with pkgs;
     [
       icu
       libepoxy
@@ -18,11 +21,12 @@ pkgs.buildFHSEnv {
       libappindicator
       libayatana-appindicator
     ]
-    ++ base.targetPkgs pkgs;
-  multiPkgs = base.multiPkgs;
+    ++ appimageTools.defaultFhsEnvArgs.targetPkgs pkgs;
+  multiPkgs = appimageTools.defaultFhsEnvArgs.multiPkgs;
   profile = ''
     export IN_NIX_SHELL=impure
-    export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib"
+    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/run/opengl-driver/lib:/run/opengl-driver-32/lib"
   '';
-  runScript = "zsh";
+  runScript = "${zsh}/bin/zsh";
+  extraOutputsToInstall = [ "dev" ];
 }

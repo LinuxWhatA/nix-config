@@ -6,4 +6,5 @@
   services.desktopManager.cosmic.enable = true;
   # 允许全局访问剪贴板（不安全）
   environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
+  services.system76-scheduler.enable = true;
 }

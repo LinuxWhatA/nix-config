@@ -16,6 +16,7 @@
     };
   };
   services.desktopManager.plasma6.enable = true;
+  environment.plasma6.excludePackages = with pkgs; [ kdePackages.elisa ];
   programs.kdeconnect.enable = true;
 
   xdg.portal = {
@@ -23,9 +24,8 @@
     extraPortals = [
       pkgs.kdePackages.xdg-desktop-portal-kde
     ];
+    config.plasma.default = [ "kde" ];
   };
-
-  xdg.portal.config."plasma".default = [ "kde" ];
 
   home-manager.users.${flake.config.me.username} = {
     imports = [ flake.inputs.plasma-manager.homeModules.plasma-manager ];

@@ -75,7 +75,12 @@
         {
           _module.args.pkgs = pkgs;
           packages = {
-            inherit (pkgs) wechat proton-run;
+            inherit (pkgs)
+              wechat
+              proton-run
+              motrix-next
+              wpsoffice-cn
+              ;
           };
         };
     };

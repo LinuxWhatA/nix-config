@@ -19,8 +19,10 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
   boot.kernelParams = [
-    "amdgpu.dcdebugmask=0x10"
     "amdgpu.abmlevel=0"
+    "acpi_osi=Linux"
+    "acpi.ec_no_wakeup=1"
+    "no_console_suspend"
   ];
 
   disko.devices.disk.main = {

@@ -10,7 +10,6 @@
     loader.timeout = lib.mkDefault 3;
     kernelParams = [
       "quiet"
-      "splash"
       "plymouth.nolog"
     ];
     consoleLogLevel = 0;

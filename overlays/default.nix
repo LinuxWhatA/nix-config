@@ -39,7 +39,7 @@ packageOverlays
       { ... }:
       super.fetchurl {
         url = "file://${flake.inputs.wechat}";
-        hash = "sha256-vTTkuFm1LhAqVvuynIfYdROPf19nfCQIOGhw6Z+dOeo=";
+        hash = "sha256-RX26ArkbAxzdRBLu4HT7v/udnQax5Q/Bgi00hw4RSZA=";
       };
   };
   nix-alien = flake.inputs.nix-alien.packages.x86_64-linux.nix-alien;
@@ -51,4 +51,24 @@ packageOverlays
     export PROTONPATH="${super.pkgs.dwproton-bin.steamcompattool}"
     exec ${super.pkgs.umu-launcher}/bin/umu-run "$@"
   '';
+  motrix-next = super.pkgs.symlinkJoin {
+    name = super.motrix-next.name;
+    paths = [ super.motrix-next ];
+    postBuild = ''
+      for f in $out/share/applications/*.desktop; do
+        sed 's/^Categories=/Categories=Network;/' "$f" > "$f.bak"
+        mv "$f.bak" "$f"
+      done
+    '';
+  };
+  wpsoffice-cn = super.pkgs.symlinkJoin {
+    name = super.wpsoffice-cn.name;
+    paths = [ super.wpsoffice-cn ];
+    postBuild = ''
+      for f in $out/share/applications/*.desktop; do
+        sed 's/^Categories=/Categories=Office;/' "$f" > "$f.bak"
+        mv "$f.bak" "$f"
+      done
+    '';
+  };
 }

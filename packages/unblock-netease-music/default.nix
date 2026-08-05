@@ -10,13 +10,13 @@
 
 stdenv.mkDerivation rec {
   pname = "unblock-netease-music";
-  version = "0.27.8-unstable-2024-12-17";
+  version = "0.28.0";
 
   src = fetchFromGitHub {
     owner = "UnblockNeteaseMusic";
     repo = "server";
-    rev = "b6ed5790037716282dd0b1b956c11614e4426ebe";
-    hash = "sha256-jDEigvQgD133nZGwb0SXwRQrBzPjhmifQBd6X0cnutQ=";
+    rev = "v${version}";
+    hash = "sha256-OqwsQ3kPlC/cjNOBXIiIV5rD3luHnJ4kLCqwTd2xhoA=";
   };
 
   nativeBuildInputs = [
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/bin $out/lib
+    mkdir -p $out/{bin,lib}
     cp -r * $out/lib
     makeWrapper "${nodejs}/bin/node" "$out/bin/unblock-netease-music" \
       --prefix PATH : ${lib.makeBinPath [ yt-dlp ]} \
