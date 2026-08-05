@@ -1,18 +1,5 @@
-{ pkgs, flake, ... }:
+{ pkgs, ... }:
 {
-  imports =
-    with builtins;
-    map (fn: ./${fn}) (filter (fn: fn != "default.nix") (attrNames (readDir ./.)));
-
-  nixpkgs.config.allowUnfree = true;
-
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = flake.config.me.username;
-
-  networking.networkmanager = {
-    enable = true;
-  };
-
   hardware.bluetooth = {
     enable = true;
   };
@@ -32,20 +19,10 @@
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.writeScript "reset-bluetooth.sh" ''
-        #!/${pkgs.bash}/bin/bash
-        # 自动查找所有蓝牙设备并重置
         for dev in $(${pkgs.usbutils}/bin/lsusb | grep -i bluetooth | ${pkgs.gawk}/bin/awk '{print $6}'); do
           ${pkgs.usbutils}/bin/usbreset "$dev"
         done
       ''}";
     };
   };
-
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
-
-  boot.kernel.sysctl."kernel.sysrq" = 1;
-  hardware.enableRedistributableFirmware = true;
 }

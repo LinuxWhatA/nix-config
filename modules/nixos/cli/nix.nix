@@ -9,6 +9,7 @@ let
   inherit (inputs) self;
 in
 {
+  environment.etc."nixos".source = flake.inputs.self;
   nixpkgs = {
     config = {
       allowUnfree = true;
