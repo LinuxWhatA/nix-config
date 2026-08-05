@@ -1,3 +1,4 @@
+# Nix 工具（nh / nix-index 等）
 { flake, ... }:
 
 {

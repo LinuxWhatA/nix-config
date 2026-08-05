@@ -1,3 +1,4 @@
+# GNOME 桌面 —— 主机配置一行导入：(self + /modules/nixos/desktop/gnome.nix)
 {
   flake,
   pkgs,
@@ -5,7 +6,9 @@
   ...
 }:
 {
-  imports = [ ./default.nix ];
+  # 桌面需要用户态 GUI 模块
+  home-manager.sharedModules = [ flake.inputs.self.homeModules.gui ];
+
   services.desktopManager.gnome.enable = true;
   services.displayManager.gdm.enable = true;
   services.displayManager.gdm.autoSuspend = false;

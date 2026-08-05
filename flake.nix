@@ -2,6 +2,7 @@
   description = "NixOS configuration of LinuxWhatA";
 
   inputs = {
+    # 原则性 inputs
     nixpkgs.url = "git+https://git.nju.edu.cn/nix-mirror/nixpkgs?ref=nixpkgs-unstable&shallow=1";
     nixpkgs-lib.url = "git+https://git.nju.edu.cn/nix-mirror/nixpkgs.lib";
     flake-compat.url = "git+https://git.nju.edu.cn/nix-mirror/flake-compat";
@@ -10,6 +11,12 @@
       inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     };
     nixos-unified.url = "git+https://gitee.com/linuxwhata/nixos-unified";
+    home-manager = {
+      url = "git+https://gitee.com/mirrors/home-manager-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # 功能 inputs
     hardware = {
       url = "git+https://gitee.com/mirrors/nixos-hardware";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -18,10 +25,6 @@
       url = "git+https://git.nju.edu.cn/nix-mirror/impermanence";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
-    };
-    home-manager = {
-      url = "git+https://gitee.com/mirrors/home-manager-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     disko = {
       url = "git+https://gitcode.com/gh_mirrors/di/disko";
@@ -57,31 +60,9 @@
     };
   };
 
+  # 自动连线：modules/flake 自动导入，configurations/* 自动生成所有 outputs
   outputs =
-    inputs@{ self, ... }:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" ];
-      imports = (with builtins; map (fn: ./modules/flake/${fn}) (attrNames (readDir ./modules/flake)));
-
-      perSystem =
-        { system, ... }:
-        let
-          pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = builtins.attrValues self.overlays;
-            config.allowUnfree = true;
-          };
-        in
-        {
-          _module.args.pkgs = pkgs;
-          packages = {
-            inherit (pkgs)
-              wechat
-              proton-run
-              motrix-next
-              wpsoffice-cn
-              ;
-          };
-        };
-    };
+    inputs:
+    inputs.nixos-unified.lib.mkFlake
+      { inherit inputs; root = ./.; };
 }

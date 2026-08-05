@@ -15,7 +15,6 @@ in
     profiles.default.extensions = with pkgs.vscode-extensions; [
       mkhl.direnv
       ms-python.python
-      continue.continue
       jnoortheen.nix-ide
       ms-python.black-formatter
       ms-ceintl.vscode-language-pack-zh-hans

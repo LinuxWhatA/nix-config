@@ -12,7 +12,7 @@
       vram = true;
       hud_compact = true;
 
-      # Hide until toggled
+      # 默认隐藏，按键切换显示
       no_display = true;
 
       toggle_hud = "Shift_L+F1";

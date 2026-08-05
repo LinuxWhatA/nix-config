@@ -1,59 +1,45 @@
+# overlays/default.nix —— 把 packages/ 下的自定义包注入 nixpkgs
+# 新增包 = packages/ 下建目录 + default.nix，目录名即包名，自动注入
 { flake, ... }:
 
 let
   inherit (flake) inputs;
-  inherit (inputs) self;
-  packages = self + /packages;
 in
-self: super:
-let
-  # Auto-import all packages from the packages directory
-  # TODO: Upstream this to nixos0-unified?
-  entries = builtins.readDir packages;
-
-  # Convert directory entries to package definitions
-  makePackage =
-    name: type:
-    let
-      # Remove .nix extension for package name
-      pkgName =
-        if type == "regular" && builtins.match ".*\\.nix$" name != null then
-          builtins.replaceStrings [ ".nix" ] [ "" ] name
-        else
-          name;
-    in
-    {
-      name = pkgName;
-      value = self.callPackage (packages + "/${name}") { };
-    };
-
-  # Import everything in packages directory
-  packageOverlays = builtins.listToAttrs (
-    builtins.attrValues (builtins.mapAttrs makePackage entries)
-  );
-in
-packageOverlays
+final: prev:
+(builtins.listToAttrs (
+  map (name: {
+    inherit name;
+    value = prev.callPackage ../packages/${name} { };
+  }) (builtins.attrNames (builtins.readDir ../packages))
+))
 // {
-  wechat = super.wechat.override {
+  # 微信 AppImage（hash 随文件更新）
+  wechat = prev.wechat.override {
     fetchurl =
       { ... }:
-      super.fetchurl {
-        url = "file://${flake.inputs.wechat}";
+      prev.fetchurl {
+        url = "file://${inputs.wechat}";
         hash = "sha256-RX26ArkbAxzdRBLu4HT7v/udnQax5Q/Bgi00hw4RSZA=";
       };
   };
-  nix-alien = flake.inputs.nix-alien.packages.x86_64-linux.nix-alien;
-  proton-run = super.writeShellScriptBin "proton-run" ''
-    export PROTONPATH="${super.pkgs.proton-ge-bin.steamcompattool}"
-    exec ${super.pkgs.umu-launcher}/bin/umu-run "$@"
+
+  # 直接来自 flake 输入的包
+  nix-alien = inputs.nix-alien.packages.x86_64-linux.nix-alien;
+
+  # Steam 兼容层启动脚本
+  proton-run = prev.writeShellScriptBin "proton-run" ''
+    export PROTONPATH="${prev.proton-ge-bin.steamcompattool}"
+    exec ${prev.umu-launcher}/bin/umu-run "$@"
   '';
-  dwproton-run = super.writeShellScriptBin "dwproton-run" ''
-    export PROTONPATH="${super.pkgs.dwproton-bin.steamcompattool}"
-    exec ${super.pkgs.umu-launcher}/bin/umu-run "$@"
+  dwproton-run = prev.writeShellScriptBin "dwproton-run" ''
+    export PROTONPATH="${prev.dwproton-bin.steamcompattool}"
+    exec ${prev.umu-launcher}/bin/umu-run "$@"
   '';
-  motrix-next = super.pkgs.symlinkJoin {
-    name = super.motrix-next.name;
-    paths = [ super.motrix-next ];
+
+  # 上游包修补（归类到应用菜单）
+  motrix-next = prev.symlinkJoin {
+    name = prev.motrix-next.name;
+    paths = [ prev.motrix-next ];
     postBuild = ''
       for f in $out/share/applications/*.desktop; do
         sed 's/^Categories=/Categories=Network;/' "$f" > "$f.bak"
@@ -61,9 +47,9 @@ packageOverlays
       done
     '';
   };
-  wpsoffice-cn = super.pkgs.symlinkJoin {
-    name = super.wpsoffice-cn.name;
-    paths = [ super.wpsoffice-cn ];
+  wpsoffice-cn = prev.symlinkJoin {
+    name = prev.wpsoffice-cn.name;
+    paths = [ prev.wpsoffice-cn ];
     postBuild = ''
       for f in $out/share/applications/*.desktop; do
         sed 's/^Categories=/Categories=Office;/' "$f" > "$f.bak"

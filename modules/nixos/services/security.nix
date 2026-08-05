@@ -1,7 +1,7 @@
 { lib, config, ... }:
 
 {
-  # Increase open file limit for sudoers
+  # 提高 sudoer 的文件描述符上限
   security.pam.loginLimits = [
     {
       domain = "@wheel";

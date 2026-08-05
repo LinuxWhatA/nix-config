@@ -1,3 +1,4 @@
+# Shell 配置（zsh）
 {
   programs = {
     zsh = {

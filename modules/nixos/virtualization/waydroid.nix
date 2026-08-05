@@ -1,3 +1,4 @@
+# WayDroid —— 主机配置一行导入：(self + /modules/nixos/virtualization/waydroid.nix)
 { pkgs, ... }:
 
 {

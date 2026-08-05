@@ -7,8 +7,8 @@
 }:
 
 let
-  # Sops needs acess to the keys before the persist dirs are even mounted; so
-  # just persisting the keys won't work, we must point at /persist
+  # Sops 需要在 persist 目录挂载前就拿到密钥，
+  # 因此仅持久化密钥不够，必须直接指向 /persist
   hasOptinPersistence = config.environment.persistence ? "/persist";
 in
 {
@@ -32,11 +32,11 @@ in
       PasswordAuthentication = false;
       PermitRootLogin = "no";
 
-      # Automatically remove stale sockets
+      # 自动移除过期 socket
       StreamLocalBindUnlink = "yes";
-      # Allow forwarding ports to everywhere
+      # 允许端口转发到任意目标
       GatewayPorts = "clientspecified";
-      # Let WAYLAND_DISPLAY be forwarded
+      # 允许转发 WAYLAND_DISPLAY 环境变量
       AcceptEnv = [ "WAYLAND_DISPLAY" ];
       X11Forwarding = true;
     };

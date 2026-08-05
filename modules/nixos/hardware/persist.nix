@@ -27,7 +27,7 @@
         "/var/lib/nixos"
         "/var/log"
         "/srv"
-        "/tmp" # Prevent OOM during compilation
+        "/tmp" # 防止编译期间 OOM
       ];
     };
   };

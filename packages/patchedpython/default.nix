@@ -5,7 +5,7 @@
 }:
 
 let
-  # We currently take all libraries from systemd and nix as the default
+  # 当前默认载入 systemd 与 nix 的库
   # https://github.com/NixOS/nixpkgs/blob/c339c066b893e5683830ba870b1ccd3bbea88ece/nixos/modules/programs/nix-ld.nix#L44
   pythonldlibpath = lib.makeLibraryPath (
     with pkgs;
@@ -26,7 +26,7 @@ let
       systemd
     ]
   );
-  # Darwin requires a different library path prefix
+  # Darwin 需要不同的库路径前缀
   wrapPrefix = if (!pkgs.stdenv.isDarwin) then "LD_LIBRARY_PATH" else "DYLD_LIBRARY_PATH";
 
   pip = pkgs.writeShellScriptBin "pip" ''
