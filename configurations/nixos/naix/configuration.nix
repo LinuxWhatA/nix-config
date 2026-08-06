@@ -1,4 +1,4 @@
-{ flake, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -18,5 +18,5 @@
 
   nixpkgs.hostPlatform = "x86_64-linux";
   networking.hostName = "naix";
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.11";
 }

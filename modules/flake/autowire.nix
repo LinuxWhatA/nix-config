@@ -2,7 +2,6 @@
 #
 # 规则：
 #   configurations/nixos/*.nix → nixosConfigurations   （NixOS + home-manager）
-#   configurations/home/*.nix  → legacyPackages.homeConfigurations
 #   modules/nixos/*.nix        → nixosModules
 #   modules/home/*.nix         → homeModules
 #   overlays/*.nix             → overlays
@@ -46,13 +45,6 @@ let
         };
     };
 
-  # 独立 home-manager 配置（home-manager switch --flake .#user@host）
-  mkHomeConfiguration = pkgs: mod: inputs.home-manager.lib.homeManagerConfiguration {
-    inherit pkgs;
-    extraSpecialArgs = specialArgsFor.common;
-    modules = [ homeModules.common mod ];
-  };
-
   # 目录扫描：顶层 *.nix 或含 default.nix 的子目录，取文件名作为属性名。
   # f 返回 null 则跳过。
   mapAttrsMaybe = f: attrs:
@@ -90,8 +82,6 @@ in
   };
 
   perSystem = { pkgs, ... }: {
-    legacyPackages.homeConfigurations =
-      forAllNixFiles "${self}/configurations/home" (fn: mkHomeConfiguration pkgs fn);
     packages =
       forAllNixFiles "${self}/packages" (fn: pkgs.callPackage fn { });
   };

@@ -2,11 +2,11 @@
 
 ## 介绍
 
-一个基于 flake-parts 的 NixOS 配置项目，通过本地 `modules/flake/autowire.nix` 自动生成 NixOS 系统配置和 Home Manager 用户环境。
+一个基于 flake-parts 的 NixOS 配置项目，通过本地 `modules/flake/autowire.nix` 自动生成 NixOS 系统配置，Home Manager 用户环境由系统内嵌托管。
 
 项目结构清晰，包含以下主要功能模块：
 
-- **系统配置**：支持不同硬件设备（如 ASUS、Naix、Redmi）的 NixOS 系统配置，还包括 WSL（Windows Subsystem for Linux）配置。
+- **系统配置**：支持不同硬件设备（naix、redmi）的 NixOS 系统配置，以及 WSL（Windows Subsystem for Linux）配置。
 - **通用模块**：提供适用于 NixOS 和 Home Manager 的通用配置模块，如字体、SSH、包管理、GUI 支持等。
 - **可选功能**：包括 Docker、NVIDIA 驱动、QEMU、RustDesk、ToDesk、VirtualBox、Waydroid、XRDP 等可选模块。
 - **自定义包**：包含自定义 Nix 包，如 ntloader、grub-cyberre-theme、winfonts、uudeck 等。
@@ -19,30 +19,24 @@
 - `README.md` 和 `.envrc`：项目说明和开发环境配置。
 
 ### 系统配置
-- `configurations/nixos/`：包含不同设备的 NixOS 配置，如 ASUS、Naix、NixOS、Redmi 和 WSL。
-- `configurations/home/`：Home Manager 用户环境配置，针对不同设备有不同配置。
+- `configurations/nixos/`：按设备（naix、redmi、wsl）组织的 NixOS 配置，每台设备由 `default.nix` 组合清单 + 分类模块构成，Home Manager 用户环境内嵌于系统配置中。
 
 ### 模块
 - `modules/nixos/`：NixOS 模块，包括：
-  - `cli/`：命令行相关模块（字体、Locale、Nix 配置、 Pipewire、SSH 等）
-  - `common/`：通用模块（开发工具、Steam、Sunshine、UUDeck、v2raya 等）
-  - `gui/`：桌面环境模块（COSMIC、GNOME、Plasma6、XFCE）
-  - `optional/`：可选模块（Docker、NVIDIA 470、QEMU、RustDesk、ToDesk、VirtualBox、Waydroid、XRDP）
-- `modules/home/`：Home Manager 模块，用于用户环境配置：
-  - `common/`：通用模块（direnv、Git、Zsh 包管理）
-  - `gui/`：GUI 应用模块（Firefox、Heroic、MangoHud、VSCode）
+  - `cli/`：命令行模块（字体、Locale、Nix、Pipewire、OpenSSH、Vim 等）
+  - `desktop/`：桌面环境（COSMIC、GNOME、Plasma6、Wayfire、XFCE）与系统界面（getty、locale）
+  - `gui/`：桌面应用（Clash、Dev-Sidecar、Plymouth、Steam）
+  - `hardware/`：硬件（蓝牙、NVIDIA 470、persist、swap 等）
+  - `services/`：服务（home/网络/安全、NFS、RustDesk、Sunshine、ToDesk、UUDeck、v2raya、Xrdp 等）
+  - `virtualization/`：虚拟化（Docker、QEMU、VirtualBox、Waydroid）
+- `modules/home/`：Home Manager 模块，由系统托管注入：
+  - `default.nix`：用户基础（xdg 目录、stateVersion、nix-index）
+  - `cli/`：命令行日常（direnv、git、nix、shell、包）
+  - `gui/`：图形应用（Firefox、Heroic、MangoHud、opencode、VSCode）
 - `modules/flake/`：flake-parts 模块（`autowire.nix` 负责目录结构自动接线）。
 
 ### 自定义包
-- `packages/`：包含多个自定义 Nix 包定义：
-  - `dev-sidecar/`：开发辅助工具
-  - `fcitx-sogoupinyin/`：搜狗输入法
-  - `grub-cyberre-theme/`：GRUB 主题
-  - `ntloader/`：NT 加载器
-  - `winfonts/`：Windows 字体
-  - `uudeck/`：UUDeck 工具
-  - `shells/`：各种编程语言环境（C++、Go、Rust）
-  - 以及其他实用工具
+- `packages/`：自定义 Nix 包（a1ive-grub、dev-sidecar、fcitx5-pinyin 自定义词典、fhs、grub-cyberre-theme、ntloader、patchedpython、plasma-applet-netspeed-widget、plymouth-550w-theme、unblock-netease-music、uudeck、winfonts）。
 
 ## 使用说明
 
@@ -63,20 +57,15 @@
    direnv allow
    ```
 
-3. 构建指定配置：
+3. 构建并切换指定配置（Home Manager 用户环境随系统一并部署）：
    ```bash
-   # 构建 NixOS 配置
    sudo nixos-rebuild switch --flake .#主机名
-
-   # 构建 Home Manager 配置
-   home-manager switch --flake .#用户名@主机名
    ```
 
 ### 自定义
 
-- 修改 `configurations/nixos/` 下的设备配置以适配您的硬件。
-- 修改 `configurations/home/` 下的用户配置以满足个人需求。
-- 通过 `modules/` 中的模块扩展功能，按需启用可选模块。
+- 修改 `configurations/nixos/<设备>/` 下的设备配置以适配您的硬件（`default.nix` 为组合清单，一行一个模块）。
+- 通过 `modules/` 中的模块扩展功能，按需启用。
 
 ## 许可证
 

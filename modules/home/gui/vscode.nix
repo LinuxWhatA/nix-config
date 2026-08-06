@@ -1,14 +1,10 @@
 {
   pkgs,
   flake,
-  config,
   osConfig,
   ...
 }:
 
-let
-  hostname = osConfig.networking.hostName or config._module.args.hostname;
-in
 {
   programs.vscode = {
     enable = true;
@@ -50,10 +46,7 @@ in
             };
             options = {
               nixos = {
-                expr = ''(builtins.getFlake "${flake.inputs.self}").nixosConfigurations.${hostname}.options'';
-              };
-              home-manager = {
-                expr = ''(builtins.getFlake "${flake.inputs.self}").legacyPackages.${pkgs.stdenv.hostPlatform.system}.homeConfigurations."${flake.config.me.username}@${hostname}".options'';
+                expr = ''(builtins.getFlake "${flake.inputs.self}").nixosConfigurations.${osConfig.networking.hostName}.options'';
               };
             };
           };
