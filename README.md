@@ -2,7 +2,7 @@
 
 ## 介绍
 
-一个基于 [juspay/nixos-unified-template](https://github.com/juspay/nixos-unified-template) 构建的 NixOS 配置项目，支持 NixOS 系统配置和 Home Manager 用户环境管理。
+一个基于 flake-parts 的 NixOS 配置项目，通过本地 `modules/flake/autowire.nix` 自动生成 NixOS 系统配置和 Home Manager 用户环境。
 
 项目结构清晰，包含以下主要功能模块：
 
@@ -31,7 +31,7 @@
 - `modules/home/`：Home Manager 模块，用于用户环境配置：
   - `common/`：通用模块（direnv、Git、Zsh 包管理）
   - `gui/`：GUI 应用模块（Firefox、Heroic、MangoHud、VSCode）
-- `modules/flake/`：flake-parts 模块。
+- `modules/flake/`：flake-parts 模块（`autowire.nix` 负责目录结构自动接线）。
 
 ### 自定义包
 - `packages/`：包含多个自定义 Nix 包定义：

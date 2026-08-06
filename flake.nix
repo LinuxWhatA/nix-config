@@ -10,7 +10,6 @@
       url = "git+https://gitcode.com/gh_mirrors/fl/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     };
-    nixos-unified.url = "git+https://gitee.com/linuxwhata/nixos-unified";
     home-manager = {
       url = "git+https://gitee.com/mirrors/home-manager-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -60,9 +59,12 @@
     };
   };
 
-  # 自动连线：modules/flake 自动导入，configurations/* 自动生成所有 outputs
+  # 自动接线：modules/flake 下的所有 .nix 文件自动作为 flake-parts 模块导入，
+  # 其中 autowire.nix 负责根据目录结构自动生成全部 outputs。
   outputs =
     inputs:
-    inputs.nixos-unified.lib.mkFlake
-      { inherit inputs; root = ./.; };
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [ "x86_64-linux" ];
+      imports = map (f: ./modules/flake/${f}) (builtins.attrNames (builtins.readDir ./modules/flake));
+    };
 }

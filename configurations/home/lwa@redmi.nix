@@ -13,6 +13,7 @@ in
   imports = [
     self.homeModules.default
     self.homeModules.cli
+    self.homeModules.gui
   ];
 
   home.username = "lwa";
