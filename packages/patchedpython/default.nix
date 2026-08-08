@@ -1,33 +1,13 @@
 {
   lib,
+  pkgs,
   python3,
-  pkgs ? import <nixpkgs> { },
 }:
 
 let
-  # 当前默认载入 systemd 与 nix 的库
-  # https://github.com/NixOS/nixpkgs/blob/c339c066b893e5683830ba870b1ccd3bbea88ece/nixos/modules/programs/nix-ld.nix#L44
-  pythonldlibpath = lib.makeLibraryPath (
-    with pkgs;
-    [
-      zlib
-      zstd
-      stdenv.cc.cc
-      curl
-      openssl
-      attr
-      libssh
-      bzip2
-      libxml2
-      acl
-      libsodium
-      util-linux
-      xz
-      systemd
-    ]
-  );
-  # Darwin 需要不同的库路径前缀
-  wrapPrefix = if (!pkgs.stdenv.isDarwin) then "LD_LIBRARY_PATH" else "DYLD_LIBRARY_PATH";
+  # 复用 AppImage 默认 FHS 环境的目标包清单
+  # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/appimage/default.nix
+  pythonldlibpath = lib.makeLibraryPath (pkgs.appimageTools.defaultFhsEnvArgs.targetPkgs pkgs);
 
   pip = pkgs.writeShellScriptBin "pip" ''
     set -e
@@ -48,6 +28,6 @@ pkgs.symlinkJoin {
   ];
   buildInputs = [ pkgs.makeWrapper ];
   postBuild = ''
-    wrapProgram "$out/bin/python3" --prefix ${wrapPrefix} : "${pythonldlibpath}"
+    wrapProgram "$out/bin/python3" --prefix LD_LIBRARY_PATH : "${pythonldlibpath}"
   '';
 }
