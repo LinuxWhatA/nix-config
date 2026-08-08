@@ -2,7 +2,7 @@
 
 let
   # 源码编译的 a1 GRUB（grub-mkimage + x86_64-efi 模块 + builtin.txt + bootmgfw.efi）
-  a1ive = pkgs.a1ive-grub2;
+  a1ive = pkgs.a1ive-grub;
 in
 {
   boot.loader = {
