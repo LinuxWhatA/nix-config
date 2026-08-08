@@ -35,6 +35,7 @@ in
     (self + /modules/nixos/cli/packages.nix)
     (self + /modules/nixos/cli/pipewire.nix)
     (self + /modules/nixos/cli/vim.nix)
+    (self + /modules/nixos/cli/zsh.nix)
 
     # 桌面应用（gui/）
     (self + /modules/nixos/gui/clash.nix)

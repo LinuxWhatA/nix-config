@@ -36,7 +36,7 @@
 - `modules/flake/`：flake-parts 模块（`autowire.nix` 负责目录结构自动接线）。
 
 ### 自定义包
-- `packages/`：自定义 Nix 包（a1ive-grub、dev-sidecar、fcitx5-pinyin 自定义词典、fhs、grub-cyberre-theme、ntloader、patchedpython、plasma-applet-netspeed-widget、plymouth-550w-theme、unblock-netease-music、uudeck、winfonts）。
+- `packages/`：自定义 Nix 包。
 
 ## 使用说明
 

@@ -28,12 +28,30 @@ in
     (self + /modules/nixos/desktop/getty.nix)
     (self + /modules/nixos/hardware/persist.nix)
 
-    # 桌面环境（desktop/，互斥，只导入所需）
-    (self + /modules/nixos/desktop/gnome.nix)
+    # 开发环境（cli/）
+    (self + /modules/nixos/cli/fonts.nix)
+    (self + /modules/nixos/cli/nix-ld.nix)
+    (self + /modules/nixos/cli/openssh.nix)
+    (self + /modules/nixos/cli/packages.nix)
+    (self + /modules/nixos/cli/pipewire.nix)
+    (self + /modules/nixos/cli/vim.nix)
+    (self + /modules/nixos/cli/zsh.nix)
+
+    # 桌面应用（gui/）
+    (self + /modules/nixos/gui/clash.nix)
+    (self + /modules/nixos/gui/plymouth.nix)
+    (self + /modules/nixos/gui/steam.nix)
+
+    # 硬件（hardware/）
+    (self + /modules/nixos/hardware/hardware.nix)
+    (self + /modules/nixos/hardware/bluetooth.nix)
 
     # 虚拟化（virtualization/）
     (self + /modules/nixos/virtualization/qemu.nix)
     (self + /modules/nixos/virtualization/waydroid.nix)
+
+    # 桌面环境（desktop/，互斥，只导入所需）
+    (self + /modules/nixos/desktop/plasma6.nix)
 
     # 主机定制
     ./grub.nix
