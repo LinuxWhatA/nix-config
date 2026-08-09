@@ -2,9 +2,8 @@
 { inputs, self, ... }:
 
 {
-  systems = [ "x86_64-linux" ];
-
-  perSystem = { system, ... }:
+  perSystem =
+    { system, ... }:
     let
       # 把 packages/ 下的自定义包挂进 nixpkgs
       pkgs = import inputs.nixpkgs {

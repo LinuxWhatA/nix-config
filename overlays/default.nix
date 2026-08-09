@@ -6,6 +6,29 @@ let
   inherit (flake) inputs;
 in
 final: prev:
+let
+  # 给桌面应用补上 .desktop 的应用菜单归类（简单的上游修补）
+  withCategory =
+    category: pkg:
+    prev.symlinkJoin {
+      name = pkg.name;
+      paths = [ pkg ];
+      postBuild = ''
+        for f in $out/share/applications/*.desktop; do
+          sed 's/^Categories=/Categories=${category};/' "$f" > "$f.bak"
+          mv "$f.bak" "$f"
+        done
+      '';
+    };
+
+  # Steam 兼容层启动脚本：设 PROTONPATH 后交给 umu-run
+  mkProtonRun =
+    name: compat:
+    prev.writeShellScriptBin name ''
+      export PROTONPATH="${compat}"
+      exec ${prev.umu-launcher}/bin/umu-run "$@"
+    '';
+in
 (builtins.listToAttrs (
   map (name: {
     inherit name;
@@ -27,34 +50,10 @@ final: prev:
   nix-alien = inputs.nix-alien.packages.x86_64-linux.nix-alien;
 
   # Steam 兼容层启动脚本
-  proton-run = prev.writeShellScriptBin "proton-run" ''
-    export PROTONPATH="${prev.proton-ge-bin.steamcompattool}"
-    exec ${prev.umu-launcher}/bin/umu-run "$@"
-  '';
-  dwproton-run = prev.writeShellScriptBin "dwproton-run" ''
-    export PROTONPATH="${prev.dwproton-bin.steamcompattool}"
-    exec ${prev.umu-launcher}/bin/umu-run "$@"
-  '';
+  proton-run = mkProtonRun "proton-run" prev.proton-ge-bin.steamcompattool;
+  dwproton-run = mkProtonRun "dwproton-run" prev.dwproton-bin.steamcompattool;
 
   # 上游包修补（归类到应用菜单）
-  motrix-next = prev.symlinkJoin {
-    name = prev.motrix-next.name;
-    paths = [ prev.motrix-next ];
-    postBuild = ''
-      for f in $out/share/applications/*.desktop; do
-        sed 's/^Categories=/Categories=Network;/' "$f" > "$f.bak"
-        mv "$f.bak" "$f"
-      done
-    '';
-  };
-  wpsoffice-cn = prev.symlinkJoin {
-    name = prev.wpsoffice-cn.name;
-    paths = [ prev.wpsoffice-cn ];
-    postBuild = ''
-      for f in $out/share/applications/*.desktop; do
-        sed 's/^Categories=/Categories=Office;/' "$f" > "$f.bak"
-        mv "$f.bak" "$f"
-      done
-    '';
-  };
+  motrix-next = withCategory "Network" prev.motrix-next;
+  wpsoffice-cn = withCategory "Office" prev.wpsoffice-cn;
 }

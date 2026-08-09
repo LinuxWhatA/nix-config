@@ -11,8 +11,7 @@ let
   # 因此仅持久化密钥不够，必须直接指向 /persist。
   # 未导入 impermanence 时 persistence 选项不存在，需先探测
   hasOptinPersistence =
-    (config.environment ? persistence)
-    && (config.environment.persistence ? "/persist");
+    (config.environment ? persistence) && (config.environment.persistence ? "/persist");
 in
 {
   users.users.root.openssh.authorizedKeys.keys = [ flake.config.me.sshKey ];

@@ -19,13 +19,12 @@
   pkg-config,
   help2man,
   buildPackages,
-  efiSupport ? true,
 }:
 
 let
   # bootstrap.conf 中固定的 gnulib 版本（GRUB 2.11 时代）
   gnulib = fetchgit {
-    url = "https://github.com/coreutils/gnulib.git";
+    url = "https://git.savannah.gnu.org/git/gnulib.git";
     rev = "d271f868a8df9bbec29049d01e056481b7a1a263";
     hash = "sha256-AON1MEfEbSTZMeDDwawRDUD22/4+jIiWYnk35xg7ZSk=";
   };
@@ -48,7 +47,6 @@ stdenv.mkDerivation {
     python3
     pkg-config
     gettext
-    freetype
     autoconf
     automake
     libtool
@@ -67,42 +65,26 @@ stdenv.mkDerivation {
   NIX_CFLAGS_COMPILE = [ "-std=gnu11" ];
 
   preConfigure = ''
-    unset CPP
-
     patchShebangs .
-
-    GNULIB_REVISION=$(. bootstrap.conf; echo $GNULIB_REVISION)
-    if [ "$GNULIB_REVISION" != ${gnulib.rev} ]; then
-      echo "This version of a1ive-grub requires a different gnulib revision!"
-      echo "We have: ${gnulib.rev}"
-      echo "GRUB needs: $GNULIB_REVISION"
-      exit 1
-    fi
 
     cp -r ${gnulib} $NIX_BUILD_TOP/gnulib-writable
     chmod -R u+w $NIX_BUILD_TOP/gnulib-writable
 
     ./bootstrap --no-git --gnulib-srcdir=$NIX_BUILD_TOP/gnulib-writable
 
-    substituteInPlace ./configure --replace '/usr/share/fonts/unifont' '${unifont}/share/fonts'
+    substituteInPlace ./configure --replace-fail /usr/share/fonts/unifont ${unifont}/share/fonts
   '';
 
   configureFlags = [
     "--disable-werror"
-  ]
-  ++ lib.optionals efiSupport [
     "--with-platform=efi"
     "--target=x86_64"
-    "--program-prefix="
   ];
-
-  doCheck = false;
-  enableParallelBuilding = true;
 
   postInstall = ''
     sed -i $out/lib/grub/*/modinfo.sh -e "/grub_target_cppflags=/ s|'.*'|' '|"
     substituteInPlace $out/lib/grub/*/modinfo.sh \
-      --replace ${buildPackages.bash} "/usr/bin/bash"
+      --replace ${buildPackages.bash} ${bash}/bin/bash
 
     cp -f $src/makepkg/arch/x64/builtin.txt $out/builtin.txt
     cp -f ${./bootmgfw.efi} $out/bootmgfw.efi

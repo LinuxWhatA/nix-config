@@ -17,6 +17,7 @@ in
       gfxmodeEfi = "1024x768";
       configurationLimit = 10;
       theme = "${pkgs.grub-cyberre-theme}/grub/themes/CyberRe";
+      extraConfig = "set enable_progress_indicator=0";
       extraInstallCommands = ''
         # a1 模块与字体（源码编译产物）
         cp -rf ${a1ive}/lib/grub/x86_64-efi /boot/grub/

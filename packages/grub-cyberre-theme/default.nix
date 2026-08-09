@@ -2,7 +2,6 @@
   stdenvNoCC,
   lib,
   fetchFromGitHub,
-  ...
 }:
 
 stdenvNoCC.mkDerivation {

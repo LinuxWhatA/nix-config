@@ -14,7 +14,7 @@
 }:
 
 let
-  DevSidecar-unwrapped = stdenv.mkDerivation rec {
+  dev-sidecar-unwrapped = stdenv.mkDerivation rec {
     pname = "dev-sidecar";
     version = "2.2.0";
 
@@ -23,7 +23,10 @@ let
       hash = "sha256-zsWIoTdvOEmh+1L2VoHcOEcOuw9ZaUVxpPZAX/Vl3cE=";
     };
 
-    nativeBuildInputs = [ dpkg openssl ];
+    nativeBuildInputs = [
+      dpkg
+      openssl
+    ];
     unpackPhase = "dpkg-deb -x $src $out";
 
     installPhase = ''
@@ -36,14 +39,14 @@ let
   };
 in
 buildFHSEnv {
-  inherit (DevSidecar-unwrapped) pname version;
+  inherit (dev-sidecar-unwrapped) pname version;
   runScript = writeShellScript "run-DevSidecar" ''
-    exec ${DevSidecar-unwrapped}/opt/dev-sidecar/@docmirrordev-sidecar-gui "$@"
+    exec ${dev-sidecar-unwrapped}/opt/dev-sidecar/@docmirrordev-sidecar-gui "$@"
   '';
   extraInstallCommands = ''
-    ln -s ${DevSidecar-unwrapped}/dev-sidecar.ca.crt $out/dev-sidecar.ca.crt
-    ln -s ${DevSidecar-unwrapped}/dev-sidecar.ca.key.pem $out/dev-sidecar.ca.key.pem
-    ln -s ${DevSidecar-unwrapped}/usr/share $out/share
+    ln -s ${dev-sidecar-unwrapped}/dev-sidecar.ca.crt $out/dev-sidecar.ca.crt
+    ln -s ${dev-sidecar-unwrapped}/dev-sidecar.ca.key.pem $out/dev-sidecar.ca.key.pem
+    ln -s ${dev-sidecar-unwrapped}/usr/share $out/share
   '';
 
   includeClosures = true;

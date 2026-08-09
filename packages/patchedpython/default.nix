@@ -12,11 +12,11 @@ let
   pip = pkgs.writeShellScriptBin "pip" ''
     set -e
     pip=~/.venv/bin/pip3
-    if [ ! -f $pip ]; then
-      python3 -m venv ~/.venv --copies
+    if [ ! -f "$pip" ]; then
+      ${python3}/bin/python3 -m venv ~/.venv --copies
       $pip config set global.index-url https://mirrors.cernet.edu.cn/pypi/web/simple
     fi
-    exec $pip $@
+    exec $pip "$@"
   '';
 in
 

@@ -21,7 +21,7 @@ in
     (self + /modules/nixos/hardware/swap.nix)
   ];
 
-  # 系统内 home-manager 按需注入用户模块
+  # 系统内 home-manager 用户模块
   home-manager.users.lwa.imports = [
     self.homeModules.default
     self.homeModules.cli

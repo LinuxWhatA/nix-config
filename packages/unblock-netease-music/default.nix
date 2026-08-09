@@ -26,8 +26,6 @@ stdenv.mkDerivation rec {
   ];
 
   installPhase = ''
-    runHook preInstall
-
     mkdir -p $out/{bin,lib}
     cp -r * $out/lib
     makeWrapper "${nodejs}/bin/node" "$out/bin/unblock-netease-music" \
@@ -36,9 +34,7 @@ stdenv.mkDerivation rec {
 
     # CA certificate: $out/lib/ca.crt
     cd $out/lib
-    bash $out/lib/generate-cert.sh
-
-    runHook postInstall
+    bash ./generate-cert.sh
   '';
 
   meta = {
