@@ -9,6 +9,7 @@
     tree
     lsof
     wget
+    psmisc
     net-tools
     android-tools
   ];

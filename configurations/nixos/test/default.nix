@@ -1,3 +1,4 @@
+# test 为模块测试机，并非可部署主机
 { flake, ... }:
 
 let
@@ -9,7 +10,10 @@ in
     ../redmi/grub.nix
     ./configuration.nix
 
-    (self + /modules/nixos/base)
+    (self + /modules/nixos/base/nix.nix)
+    (self + /modules/nixos/base/zsh.nix)
+    (self + /modules/nixos/base/users.nix)
+    (self + /modules/nixos/base/openssh.nix)
   ];
 
   # 特例：test 主机自定义用户模块（不随 home.nix 默认）

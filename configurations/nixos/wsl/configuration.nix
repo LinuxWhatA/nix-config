@@ -14,4 +14,6 @@
   nixpkgs.hostPlatform = "x86_64-linux";
   networking.hostName = "wsl";
   system.stateVersion = "26.11";
+
+  home-manager.users.lwa.home.stateVersion = "26.11";
 }
