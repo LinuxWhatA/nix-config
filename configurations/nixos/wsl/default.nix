@@ -19,6 +19,15 @@ in
     (self + /modules/nixos/desktop/locale.nix)
     (self + /modules/nixos/services/security.nix)
     (self + /modules/nixos/hardware/swap.nix)
+
+    # 开发环境（cli/）
+    (self + /modules/nixos/cli/fonts.nix)
+    (self + /modules/nixos/cli/nix-ld.nix)
+    (self + /modules/nixos/cli/openssh.nix)
+    (self + /modules/nixos/cli/packages.nix)
+    (self + /modules/nixos/cli/pipewire.nix)
+    (self + /modules/nixos/cli/vim.nix)
+    (self + /modules/nixos/cli/zsh.nix)
   ];
 
   # 系统内 home-manager 用户模块

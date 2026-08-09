@@ -9,10 +9,6 @@
     };
   };
 
-  programs.nh.enable = true;
-  programs.git.enable = true;
-  programs.zsh.promptInit = "cd";
-
   users.mutableUsers = true;
 
   nixpkgs.hostPlatform = "x86_64-linux";
