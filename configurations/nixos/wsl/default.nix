@@ -13,21 +13,14 @@ in
     ./configuration.nix
     inputs.nixos-wsl.nixosModules.wsl
 
-    # 基础（WSL 按需取舍：无 getty/persist/networking）
-    (self + /modules/nixos/services/home.nix)
-    (self + /modules/nixos/cli/nix.nix)
-    (self + /modules/nixos/desktop/locale.nix)
-    (self + /modules/nixos/services/security.nix)
-    (self + /modules/nixos/hardware/swap.nix)
+    # 基础（base/，整目录导入；WSL 无 getty/persist/networking）
+    (self + /modules/nixos/base)
 
     # 开发环境（cli/）
     (self + /modules/nixos/cli/fonts.nix)
     (self + /modules/nixos/cli/nix-ld.nix)
-    (self + /modules/nixos/cli/openssh.nix)
     (self + /modules/nixos/cli/packages.nix)
     (self + /modules/nixos/cli/pipewire.nix)
-    (self + /modules/nixos/cli/vim.nix)
-    (self + /modules/nixos/cli/zsh.nix)
   ];
 
   # 系统内 home-manager 用户模块

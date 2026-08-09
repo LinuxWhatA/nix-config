@@ -18,24 +18,19 @@ in
     inputs.hardware.nixosModules.common-cpu-amd-pstate
     inputs.hardware.nixosModules.common-cpu-amd-zenpower
 
-    # 基础（逐项导入，主机按需取舍）
-    (self + /modules/nixos/services/home.nix)
-    (self + /modules/nixos/cli/nix.nix)
-    (self + /modules/nixos/desktop/locale.nix)
+    # 基础（base/，整目录导入）
+    (self + /modules/nixos/base)
+
+    # 网络 / 显示 / 持久化（按主机取舍）
     (self + /modules/nixos/services/networking.nix)
-    (self + /modules/nixos/services/security.nix)
-    (self + /modules/nixos/hardware/swap.nix)
     (self + /modules/nixos/desktop/getty.nix)
     (self + /modules/nixos/hardware/persist.nix)
 
     # 开发环境（cli/）
     (self + /modules/nixos/cli/fonts.nix)
     (self + /modules/nixos/cli/nix-ld.nix)
-    (self + /modules/nixos/cli/openssh.nix)
     (self + /modules/nixos/cli/packages.nix)
     (self + /modules/nixos/cli/pipewire.nix)
-    (self + /modules/nixos/cli/vim.nix)
-    (self + /modules/nixos/cli/zsh.nix)
 
     # 桌面应用（gui/）
     (self + /modules/nixos/gui/clash.nix)

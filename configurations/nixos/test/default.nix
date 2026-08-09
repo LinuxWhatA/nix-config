@@ -9,10 +9,7 @@ in
     ../redmi/grub.nix
     ./configuration.nix
 
-    (self + /modules/nixos/cli/nix.nix)
-    (self + /modules/nixos/cli/zsh.nix)
-    (self + /modules/nixos/cli/openssh.nix)
-    (self + /modules/nixos/services/home.nix)
+    (self + /modules/nixos/base)
   ];
 
   # 特例：test 主机自定义用户模块（不随 home.nix 默认）
