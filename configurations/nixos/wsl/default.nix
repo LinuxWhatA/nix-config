@@ -16,11 +16,8 @@ in
     # 基础（base/，整目录导入；WSL 无 getty/persist/networking）
     (self + /modules/nixos/base)
 
-    # 开发环境（cli/）
-    (self + /modules/nixos/cli/fonts.nix)
-    (self + /modules/nixos/cli/nix-ld.nix)
-    (self + /modules/nixos/cli/packages.nix)
-    (self + /modules/nixos/cli/pipewire.nix)
+    # 音频（services/）
+    (self + /modules/nixos/services/pipewire.nix)
   ];
 
   # 系统内 home-manager 用户模块

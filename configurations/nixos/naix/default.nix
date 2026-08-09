@@ -21,16 +21,11 @@ in
     # 基础（base/，整目录导入）
     (self + /modules/nixos/base)
 
-    # 网络 / 显示 / 持久化（按主机取舍）
+    # 网络 / 音频 / 显示 / 持久化（按主机取舍）
     (self + /modules/nixos/services/networking.nix)
-    (self + /modules/nixos/desktop/getty.nix)
+    (self + /modules/nixos/services/pipewire.nix)
+    (self + /modules/nixos/desktop/console.nix)
     (self + /modules/nixos/hardware/persist.nix)
-
-    # 开发环境（cli/）
-    (self + /modules/nixos/cli/fonts.nix)
-    (self + /modules/nixos/cli/nix-ld.nix)
-    (self + /modules/nixos/cli/packages.nix)
-    (self + /modules/nixos/cli/pipewire.nix)
 
     # 桌面应用（gui/）
     (self + /modules/nixos/gui/clash.nix)
@@ -38,7 +33,7 @@ in
     (self + /modules/nixos/gui/steam.nix)
 
     # 硬件（hardware/）
-    (self + /modules/nixos/hardware/hardware.nix)
+    (self + /modules/nixos/hardware/graphics.nix)
     (self + /modules/nixos/hardware/bluetooth.nix)
 
     # 虚拟化（virtualization/）

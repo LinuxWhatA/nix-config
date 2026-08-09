@@ -1,22 +1,16 @@
-{ pkgs, ... }:
+# redmi 的 GRUB 差异项（公共部分见 modules/nixos/hardware/grub.nix）
+{ flake, pkgs, ... }:
 
 let
   # 源码编译的 a1 GRUB（grub-mkimage + x86_64-efi 模块 + builtin.txt + bootmgfw.efi）
   a1ive = pkgs.a1ive-grub;
 in
 {
+  imports = [ (flake.inputs.self + /modules/nixos/hardware/grub.nix) ];
+
   boot.loader = {
     timeout = 5;
-    efi.canTouchEfiVariables = true;
     grub = {
-      enable = true;
-      efiSupport = true;
-      device = "nodev";
-      default = "saved";
-      splashImage = null;
-      gfxmodeEfi = "1024x768";
-      configurationLimit = 10;
-      theme = "${pkgs.grub-cyberre-theme}/grub/themes/CyberRe";
       extraConfig = "set enable_progress_indicator=0";
       extraInstallCommands = ''
         # a1 模块与字体（源码编译产物）
