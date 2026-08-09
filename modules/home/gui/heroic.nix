@@ -1,5 +1,8 @@
-{ pkgs, ... }:
+{ flake, pkgs, ... }:
 
+let
+  mergeJson = (import (flake.inputs.self + /lib/merge-json.nix) { inherit pkgs; }).mergeJson;
+in
 {
   home.packages = with pkgs; [
     (heroic.override {
@@ -19,18 +22,11 @@
     source = "${pkgs.dwproton-bin.steamcompattool}";
   };
 
-  home.activation.heroicSettings =
-    let
-      config = builtins.toJSON {
-        defaultSettings = {
-          checkForUpdatesOnStartup = false;
-        };
+  home.activation.heroicSettings = mergeJson ".config/heroic/config.json" (
+    builtins.toJSON {
+      defaultSettings = {
+        checkForUpdatesOnStartup = false;
       };
-    in
-    ''
-      file="$HOME/.config/heroic/config.json"
-      [ -f $file ] || (mkdir -p $(dirname $file) && echo "{}" > $file)
-      json=$(${pkgs.fixjson}/bin/fixjson --minify $file)
-      echo $json '${config}' | ${pkgs.jq}/bin/jq -s add > $file
-    '';
+    }
+  );
 }
