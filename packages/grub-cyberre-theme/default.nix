@@ -20,7 +20,9 @@ stdenvNoCC.mkDerivation {
   '';
 
   meta = {
+    description = "CyberRe cyberpunk-style GRUB2 theme from CyberReFresh";
     homepage = "https://github.com/metgen/CyberReFresh";
+    license = lib.licenses.mit;
     platforms = lib.platforms.all;
   };
 }

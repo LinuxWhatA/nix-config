@@ -6,7 +6,7 @@
 
 stdenvNoCC.mkDerivation {
   pname = "fcitx5-pinyin-custom-pinyin-dictionary";
-  version = "20260101";
+  version = "2026-01-01-unstable";
 
   src = fetchurl {
     url = "file://${./CustomPinyinDictionary_Fcitx.dict}";
@@ -20,7 +20,6 @@ stdenvNoCC.mkDerivation {
   meta = {
     description = "Fcitx5 自建拼音输入法词库，百万常用词汇量";
     homepage = "https://github.com/wuhgit/CustomPinyinDictionary";
-    license = lib.licenses.free;
     platforms = lib.platforms.all;
   };
 }
