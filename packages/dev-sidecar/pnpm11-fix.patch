@@ -1,0 +1,235 @@
+diff --git a/packages/core/package.json b/packages/core/package.json
+index fbd029d..1a0b7d8 100644
+--- a/packages/core/package.json
++++ b/packages/core/package.json
+@@ -25,7 +25,8 @@
+     "node-powershell": "^4.0.0",
+     "request": "^2.88.2",
+     "spawn-sync": "^2.0.0",
+-    "winreg": "^1.2.5"
++    "winreg": "^1.2.5",
++    "@docmirror/mitmproxy": "workspace:*"
+   },
+   "devDependencies": {
+     "chai": "^4.5.0",
+diff --git a/packages/gui/package.json b/packages/gui/package.json
+index d34a857..2ba9ca1 100644
+--- a/packages/gui/package.json
++++ b/packages/gui/package.json
+@@ -44,7 +44,9 @@
+     "sass-loader": "^16.0.7",
+     "tiny-emitter": "^2.1.0",
+     "vue": "^3.5.33",
+-    "vue-router": "^4.6.4"
++    "vue-router": "^4.6.4",
++    "@ant-design/icons-vue": "^7.0.1",
++    "request": "^2.88.2"
+   },
+   "devDependencies": {
+     "@babel/core": "^7.29.0",
+diff --git a/packages/mitmproxy/package.json b/packages/mitmproxy/package.json
+index 4e9b5d5..bd8231e 100644
+--- a/packages/mitmproxy/package.json
++++ b/packages/mitmproxy/package.json
+@@ -25,6 +25,12 @@
+     "node-forge": "^1.4.0",
+     "stream-throttle": "^0.1.3",
+     "through2": "^4.0.2",
+-    "tunnel-agent": "^0.6.0"
++    "tunnel-agent": "^0.6.0",
++    "colors": "^1.4.0",
++    "crypto-js": "^4.2.0",
++    "babel-polyfill": "^6.26.0",
++    "dns-packet": "^5.6.1",
++    "random-int": "^1.0.0",
++    "request": "^2.88.2"
+   }
+ }
+diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
+index 6f3e023..4708931 100644
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -41,6 +41,9 @@ importers:
+ 
+   packages/core:
+     dependencies:
++      '@docmirror/mitmproxy':
++        specifier: workspace:*
++        version: link:../mitmproxy
+       '@starknt/sysproxy':
+         specifier: ^0.0.3
+         version: 0.0.3
+@@ -81,6 +84,9 @@ importers:
+ 
+   packages/gui:
+     dependencies:
++      '@ant-design/icons-vue':
++        specifier: ^7.0.1
++        version: 7.0.1(vue@3.5.33(typescript@5.9.3))
+       '@docmirror/dev-sidecar':
+         specifier: workspace:*
+         version: link:../core
+@@ -126,6 +132,9 @@ importers:
+       minimist:
+         specifier: '>=1.2.6'
+         version: 1.2.8
++      request:
++        specifier: ^2.88.2
++        version: 2.88.2
+       request-progress:
+         specifier: ^3.0.0
+         version: 3.0.0
+@@ -202,12 +211,24 @@ importers:
+       axios:
+         specifier: '>=1.18.1'
+         version: 1.18.1
++      babel-polyfill:
++        specifier: ^6.26.0
++        version: 6.26.0
+       baidu-aip-sdk:
+         specifier: ^4.16.16
+         version: 4.16.16
++      colors:
++        specifier: ^1.4.0
++        version: 1.4.0
++      crypto-js:
++        specifier: ^4.2.0
++        version: 4.2.0
+       dns-over-http:
+         specifier: ^0.2.0
+         version: 0.2.0
++      dns-packet:
++        specifier: '>=5.6.1'
++        version: 5.6.1
+       is-browser:
+         specifier: ^2.1.0
+         version: 2.1.0
+@@ -223,6 +244,12 @@ importers:
+       node-forge:
+         specifier: ^1.4.0
+         version: 1.4.0
++      random-int:
++        specifier: ^1.0.0
++        version: 1.0.0
++      request:
++        specifier: ^2.88.2
++        version: 2.88.2
+       stream-throttle:
+         specifier: ^0.1.3
+         version: 0.1.3
+@@ -2292,6 +2319,10 @@ packages:
+     peerDependencies:
+       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
+ 
++  babel-polyfill@6.26.0:
++    resolution: {integrity: sha512-F2rZGQnAdaHWQ8YAoeRbukc7HS9QgdgeyJ0rQDd485v9opwuPvjpPFcOOT/WmkKTdgy9ESgSPXDcTNpzrGr6iQ==}
++  babel-runtime@6.26.0:
++    resolution: {integrity: sha512-ITKNuq2wKlW1fJg9sSW52eepoYgZBggvOAHC0u/CYu/qxQ9EVzThCgR69BnSXLHjy2f7SY5zaQ4yt7H9ZVxY2g==}
+   baidu-aip-sdk@4.16.16:
+     resolution: {integrity: sha512-dXjeQrd/eJIXDzBXNKArZZyFxf2boUI+XKEqb7yLUwnNiHJT3xDmHz30Oobe1LxOFFsvdH5pm72+pzi6MbXgmw==}
+ 
+@@ -2638,6 +2669,9 @@ packages:
+   colorette@2.0.20:
+     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
+ 
++  colors@1.4.0:
++    resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
++    engines: {node: '>=0.1.90'}
+   combined-stream@1.0.8:
+     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
+     engines: {node: '>= 0.8'}
+@@ -2916,6 +2950,9 @@ packages:
+   core-js-compat@3.49.0:
+     resolution: {integrity: sha512-VQXt1jr9cBz03b331DFDCCP90b3fanciLkgiOoy8SBHy06gNf+vQ1A3WFLqG7I8TipYIKeYK9wxd0tUrvHcOZA==}
+ 
++  core-js@2.5.0:
++    resolution: {integrity: sha512-mAPLSnIVZAwVEf8OZtnNcF2BL1d6DHV3EvIWj46UDBYNAqLxx7mLLpQxe8/1vtrkzt1KIyjmOqOG3pa+bZf7Fw==}
++    deprecated: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+   core-js@3.49.0:
+     resolution: {integrity: sha512-es1U2+YTtzpwkxVLwAFdSpaIMyQaq0PBgm3YD1W3Qpsn1NAmO3KSgZfu+oGSWVu6NvLHoHCV/aYcsE5wiB7ALg==}
+ 
+@@ -2957,6 +2994,9 @@ packages:
+     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
+     engines: {node: '>= 8'}
+ 
++  crypto-js@4.2.0:
++    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
++    deprecated: Active development of CryptoJS has been discontinued. This library is no longer maintained.
+   css-declaration-sorter@6.4.1:
+     resolution: {integrity: sha512-rtdthzxKuyq6IzqX6jEcIzQF/YqccluefyCYheovBOLhFT/drQA9zj/UbRAa9J7C0o6EG6u3E6g+vKkay7/k3g==}
+     engines: {node: ^10 || ^12 || >=14}
+@@ -5820,6 +5860,8 @@ packages:
+   regenerate@1.4.2:
+     resolution: {integrity: sha512-zrceR/XhGYU/d/opr2EKO7aRHUeiBI8qjtfHqADTwZd6Szfy16la6kqD0MIUs5z5hx6AaKa+PixpPrR289+I0A==}
+ 
++  regenerator-runtime@0.11.1:
++    resolution: {integrity: sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==}
+   regenerator-runtime@0.13.11:
+     resolution: {integrity: sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==}
+ 
+@@ -9720,6 +9762,13 @@ snapshots:
+     transitivePeerDependencies:
+       - supports-color
+ 
++  babel-polyfill@6.26.0:
++    dependencies:
++      babel-runtime: 6.26.0
++  babel-runtime@6.26.0:
++    dependencies:
++      core-js: 2.5.0
++      regenerator-runtime: 0.11.1
+   baidu-aip-sdk@4.16.16:
+     dependencies:
+       debug: 2.6.9
+@@ -10116,6 +10165,7 @@ snapshots:
+ 
+   colorette@2.0.20: {}
+ 
++  colors@1.4.0: {}
+   combined-stream@1.0.8:
+     dependencies:
+       delayed-stream: 1.0.0
+@@ -10240,6 +10290,7 @@ snapshots:
+ 
+   core-util-is@1.0.3: {}
+ 
++  core-js@2.5.0: {}
+   cors@2.8.6:
+     dependencies:
+       object-assign: 4.1.1
+@@ -10278,6 +10329,7 @@ snapshots:
+       shebang-command: 2.0.0
+       which: 2.0.2
+ 
++  crypto-js@4.2.0: {}
+   css-declaration-sorter@6.4.1(postcss@8.5.10):
+     dependencies:
+       postcss: 8.5.10
+@@ -13510,6 +13562,7 @@ snapshots:
+ 
+   regenerator-runtime@0.13.11: {}
+ 
++  regenerator-runtime@0.11.1: {}
+   regexp-ast-analysis@0.7.1:
+     dependencies:
+       '@eslint-community/regexpp': 4.12.2
+diff --git a/pnpm-workspace.yaml b/pnpm-workspace.yaml
+index 07e62ab..0d5074c 100644
+--- a/pnpm-workspace.yaml
++++ b/pnpm-workspace.yaml
+@@ -3,3 +3,15 @@ packages:
+   - packages/*
+   # exclude packages that are inside test directories
+   - '!**/test/**'
++
++overrides:
++  axios: '>=1.18.1'
++  brace-expansion: '>=2.1.0'
++  cross-spawn: '>=7.0.5'
++  dns-packet: '>=5.6.1'
++  form-data: '>=4.0.6'
++  hoek: npm:@hapi/hoek@>=10.0.0
++  ip: '>=2.0.1'
++  minimist: '>=1.2.6'
++  qs: '>=6.15.3'
++  tough-cookie: '>=4.1.3 <5.0.0'
