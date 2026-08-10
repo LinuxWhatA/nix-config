@@ -20,7 +20,6 @@
   boot.extraModulePackages = [ ];
   boot.kernelParams = [
     "amdgpu.abmlevel=0"
-    "acpi_osi=Linux"
     "acpi.ec_no_wakeup=1"
     "no_console_suspend"
   ];
