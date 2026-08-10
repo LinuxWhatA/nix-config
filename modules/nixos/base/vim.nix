@@ -11,7 +11,6 @@
           vim-nix
           vim-lastplace
         ];
-        opt = [ ];
       };
       vimrcConfig.customRC = ''
         " 不兼容模式

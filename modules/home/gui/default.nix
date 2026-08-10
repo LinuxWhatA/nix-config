@@ -1,5 +1,5 @@
 {
-  imports =
-    with builtins;
-    map (fn: ./${fn}) (filter (fn: fn != "default.nix") (attrNames (readDir ./.)));
+  imports = map (fn: ./${fn}) (
+    builtins.filter (fn: fn != "default.nix") (builtins.attrNames (builtins.readDir ./.))
+  );
 }

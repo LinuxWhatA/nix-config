@@ -2,7 +2,7 @@
 {
   wsl = {
     enable = true;
-    defaultUser = "lwa";
+    defaultUser = flake.config.me.username;
     interop.register = true; # 解决 binfmt 冲突
     wslConf.interop = {
       enabled = true; # 启用互操作功能

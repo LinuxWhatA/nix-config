@@ -1,7 +1,4 @@
-{ lib, config, ... }:
-
 {
-  # 提高 sudoer 的文件描述符上限
   security.pam.loginLimits = [
     {
       domain = "@wheel";
@@ -18,7 +15,7 @@
   ];
 
   security.sudo-rs = {
-    enable = lib.mkIf (!config.system.build ? isoImage) true;
+    enable = true;
     extraConfig = "Defaults env_reset,timestamp_timeout=60";
   };
 }

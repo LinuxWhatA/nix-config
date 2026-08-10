@@ -1,4 +1,4 @@
-# 轻量 autowiring（替代外部 nixos-unified.flakeModules.autoWire）
+# 目录扫描自动生成 flake outputs，同时提供统一 specialArgs
 #
 # 规则：
 #   configurations/nixos/*.nix → nixosConfigurations  （NixOS + home-manager）
@@ -7,8 +7,6 @@
 #   overlays/*.nix             → overlays
 #   packages/*.nix             → packages
 #
-# 同时提供统一 specialArgs：flake = { self, inputs, config }，
-# 使配置里可以直接写 { flake, ... } 拿到 inputs / self / config.me。仅支持 Linux。
 {
   self,
   inputs,
@@ -17,17 +15,14 @@
   ...
 }:
 let
-  # 传给 NixOS / home-manager 模块的 specialArgs
   specialArgs = {
     flake = { inherit self inputs config; };
   };
 
-  # home-manager 通用默认值（home-manager 2.x 不再自动设置 homeDirectory）
   homeCommon = { config, lib, ... }: {
     home.homeDirectory = lib.mkDefault "/home/${config.home.username}";
   };
 
-  # NixOS 系统 + 内置 home-manager 接线
   mkNixosSystem =
     mod:
     inputs.nixpkgs.lib.nixosSystem {
@@ -44,8 +39,6 @@ let
       ];
     };
 
-  # 目录扫描：顶层 *.nix 或含 default.nix 的子目录，取文件名/目录名作为属性名。
-  # f 返回 null 则跳过。
   scan =
     dir: f:
     if builtins.pathExists dir then
