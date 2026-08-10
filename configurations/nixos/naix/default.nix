@@ -49,7 +49,7 @@ in
   ];
 
   # 系统内 home-manager 用户模块（gui 由 DE 模块自带注入）
-  home-manager.users.lwa.imports = [
+  home-manager.users.${flake.config.me.username}.imports = [
     self.homeModules.default
     self.homeModules.cli
   ];

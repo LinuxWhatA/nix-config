@@ -3,14 +3,9 @@
 #   - home-manager 系统内托管
 #   - 注：用户模块注入必须在各主机各自的 home-manager.users.<name>.imports 中
 #     写明（HM 的该选项不接受 mkDefault/mkForce 包装，无法集中设默认值）
-{ flake, lib, pkgs, ... }:
-let
-  inherit (flake) config inputs;
-  inherit (inputs) self;
-  user = config.me.username;
-in
+{ flake, pkgs, ... }:
 {
-  users.users.${user} = {
+  users.users.${flake.config.me.username} = {
     isNormalUser = true;
     shell = pkgs.zsh;
     extraGroups = [
@@ -21,5 +16,4 @@ in
   };
 
   home-manager.backupFileExtension = "hm-backup";
-  home-manager.sharedModules = [ self.homeModules.default ];
 }

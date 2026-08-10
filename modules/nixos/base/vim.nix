@@ -4,7 +4,7 @@
   programs.vim = {
     enable = true;
     defaultEditor = true;
-    package = (pkgs.vim-full.override { }).customize {
+    package = pkgs.vim-full.customize {
       name = "vim";
       vimrcConfig.packages.myplugins = with pkgs.vimPlugins; {
         start = [

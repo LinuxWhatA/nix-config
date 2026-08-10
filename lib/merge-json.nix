@@ -10,8 +10,8 @@
 {
   mergeJson = file: json: ''
     file="$HOME/${file}"
-    [ -f $file ] || (mkdir -p $(dirname $file) && echo "{}" > $file)
-    json=$(${pkgs.fixjson}/bin/fixjson --minify $file)
-    echo '${json}' "$json" | ${pkgs.jq}/bin/jq -s add > $file
+    [ -f "$file" ] || (mkdir -p "$(dirname "$file")" && echo "{}" > "$file")
+    json=$(${pkgs.fixjson}/bin/fixjson --minify "$file")
+    echo '${json}' "$json" | ${pkgs.jq}/bin/jq -s add > "$file"
   '';
 }

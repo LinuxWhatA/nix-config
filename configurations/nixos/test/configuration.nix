@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ flake, pkgs, ... }:
 
 {
   imports = [
@@ -12,5 +12,5 @@
   networking.hostName = "test";
   system.stateVersion = "26.11";
 
-  home-manager.users.lwa.home.stateVersion = "26.11";
+  home-manager.users.${flake.config.me.username}.home.stateVersion = "26.11";
 }

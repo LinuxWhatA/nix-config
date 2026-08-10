@@ -10,7 +10,7 @@
     ];
     settings.user = {
       name = flake.config.me.fullname;
-      mail = flake.config.me.email;
+      email = flake.config.me.email;
     };
   };
 }
