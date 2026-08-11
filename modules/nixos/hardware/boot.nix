@@ -8,6 +8,9 @@
     "i686-linux"
   ];
   boot.supportedFilesystems = [ "ntfs" ];
+  boot.kernel.sysctl = {
+    "fs.inotify.max_user_watches" = 524288;
+  };
 
   users.mutableUsers = lib.mkDefault true;
 }
