@@ -18,6 +18,5 @@ in
     self.homeModules.default
     (self + /modules/home/cli/nh.nix)
     (self + /modules/home/cli/git.nix)
-    (self + /modules/home/cli/zsh.nix)
   ];
 }
