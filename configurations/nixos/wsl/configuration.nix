@@ -12,6 +12,9 @@
   systemd.services.systemd-binfmt.enable = false;
   services.envfs.enable = lib.mkForce false;
 
+  # 避免 tarball 构建时 /etc/nixos 指向只读的 nix store 导致写 configuration.nix 失败
+  environment.etc."nixos".enable = false;
+
   users.mutableUsers = true;
 
   nixpkgs.hostPlatform = "x86_64-linux";
