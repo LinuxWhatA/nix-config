@@ -9,5 +9,5 @@
     ];
   };
 
-  services.envfs.enable = lib.mkForce true;
+  services.envfs.enable = lib.mkDefault true;
 }

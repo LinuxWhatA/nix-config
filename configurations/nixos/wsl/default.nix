@@ -9,11 +9,12 @@ in
     ./configuration.nix
     inputs.nixos-wsl.nixosModules.wsl
     (self + /modules/nixos/base)
-    (self + /modules/nixos/services/pipewire.nix)
   ];
 
   home-manager.users.${flake.config.me.username}.imports = [
     self.homeModules.default
-    self.homeModules.cli
+    (self + /modules/home/cli/nh.nix)
+    (self + /modules/home/cli/git.nix)
+    (self + /modules/home/gui/opencode.nix)
   ];
 }
