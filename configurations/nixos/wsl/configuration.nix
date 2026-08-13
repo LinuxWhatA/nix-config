@@ -17,6 +17,8 @@
 
   users.mutableUsers = true;
 
+  environment.systemPackages = [ pkgs.sni-host ];
+
   nixpkgs.hostPlatform = "x86_64-linux";
   networking.hostName = "wsl";
   system.stateVersion = "26.11";
