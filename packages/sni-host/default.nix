@@ -14,13 +14,14 @@
   writeScriptBin,
 }:
 let
+  src = lib.cleanSource ./src;
   pyEnv = python3.withPackages (ps: [
     ps.dbus-next # D-Bus (GLib-free)
     ps.pillow # IconPixmap ARGB32 → PNG
   ]);
 in
 writeScriptBin "sni-host" ''
-  exec ${pyEnv}/bin/python3 ${./src/sni_host.py} "$@"
+  exec ${pyEnv}/bin/python3 ${src}/sni_host.py "$@"
 ''
 // {
   meta = {

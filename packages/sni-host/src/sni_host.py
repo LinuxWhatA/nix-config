@@ -4,339 +4,99 @@
 WSLg tray bridge - WSL/Linux side
 =================================
 
-Implements the idea from microsoft/wslg#158: a Linux app that registers itself
-as a StatusNotifierHost on the session bus, watches every StatusNotifierItem
-(tray icon) registered by GTK/Qt apps, and forwards them over a localhost TCP
-socket to tray_host.py running on Windows, which paints real icons in the
-Windows notification area and routes mouse/menu events back.
+Registers as a StatusNotifierHost on the session bus and forwards every
+StatusNotifierItem (tray icon) over a localhost TCP socket to main.py
+running on Windows, which paints real icons in the Windows notification area
+and routes clicks/menu events back.
 
-WSLg ships no StatusNotifierWatcher, so when none exists on the bus this
-bridge also provides one itself (org.kde./org.freedesktop.StatusNotifier
-Watcher), letting tray apps register with us in the first place.  On a
-desktop session with a real watcher it instead acts as a plain host.
-
-Run inside a WSL2 distro with WSLg (packaged in nix-config as
-`wslg-tray-bridge` -> command `sni-host`):
+WSLg ships no StatusNotifierWatcher (microsoft/wslg#158), so when none exists
+on the bus this bridge also provides one itself (exported via dbus-next);
+on a desktop session with a real watcher it acts as a plain host.
 
     sni-host [--port 17632]
 
 If python.exe / cmd.exe is found on PATH (WSL interop), the Windows
-companion is launched automatically.  Otherwise start it manually on the
-Windows side (see the separate `wslg-tray-bridge` Windows project):
+companion is launched automatically.  Otherwise start it manually on Windows:
 
     pip install pystray Pillow
-    python tray_host.py --port 17632
+    python main.py --port 17632
 """
 
-from __future__ import annotations
-
-import sys
 import argparse
 import asyncio
 import base64
-import io
 import json
 import logging
 import os
 import shutil
-import signal
+import signal as os_signal
 import subprocess
+import sys
 import time
-from typing import Any, Dict, List, Optional, Set, Tuple
 
-from dbus_next import ErrorType, Message, MessageType, Variant
-from dbus_next.aio import MessageBus
-from PIL import Image
+from dbus_next import (  # pyright: ignore[reportPrivateImportUsage]
+    Message,  # pyright: ignore[reportPrivateImportUsage]
+    MessageType,  # pyright: ignore[reportPrivateImportUsage]
+    Variant,  # pyright: ignore[reportPrivateImportUsage]
+)
+from dbus_next.aio import MessageBus  # pyright: ignore[reportPrivateImportUsage]
+from dbus_next.constants import NameFlag, RequestNameReply
+from sni_spec import (
+    DBUS_IFACE,
+    ITEM_PATH,
+    MENU_IFACES,
+    PROPS_IFACE,
+    PROTOCOL_VERSION,
+    SNI_IFACE,
+    WATCHER_IFACE,
+    WATCHER_NAMES,
+    WATCHER_PATH,
+    Watcher,
+    find_menu_node,
+    icon_png,
+    parse_layout_node,
+    resolve_bus_address,
+)
 
 log = logging.getLogger("sni-host")
 
-SNI_IFACE = "org.kde.StatusNotifierItem"
-PROPS_IFACE = "org.freedesktop.DBus.Properties"
-DBUS_IFACE = "org.freedesktop.DBus"
-WATCHER_IFACE = "org.kde.StatusNotifierWatcher"
-
-# "com.canical.dbusmenu" (missing the second 'n') is the legacy KDE spelling;
-# try every spelling in order until one answers GetLayout.
-MENU_IFACES = (
-    "com.canonical.dbusmenu",
-    "com.ayatana.dbusmenu",
-    "com.canical.dbusmenu",
-)
-
-WATCHER_CANDIDATES = (
-    "org.kde.StatusNotifierWatcher",
-    "org.freedesktop.StatusNotifierWatcher",
-    "org.ayatana.StatusNotifierWatcher",
-)
-
-ITEM_OBJECT_PATH = "/StatusNotifierItem"
 HOST_NAME_PREFIX = "org.kde.StatusNotifierHost-wslg-tray-bridge"
-PROTOCOL_VERSION = 1
-
-WATCHER_NAMES = (
-    "org.kde.StatusNotifierWatcher",
-    "org.freedesktop.StatusNotifierWatcher",
-)
-
-WATCHER_INTROSPECT = """<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" \
-"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
-<node>
-  <interface name="org.kde.StatusNotifierWatcher">
-    <method name="RegisterStatusNotifierItem">
-      <arg type="s" direction="in" name="service"/>
-    </method>
-    <method name="RegisterStatusNotifierHost">
-      <arg type="s" direction="in" name="service"/>
-    </method>
-    <property name="RegisteredStatusNotifierItems" type="as" access="read"/>
-    <property name="IsStatusNotifierHostRegistered" type="b" access="read"/>
-    <property name="ProtocolVersion" type="i" access="read"/>
-    <signal name="StatusNotifierItemRegistered"><arg type="s"/></signal>
-    <signal name="StatusNotifierItemUnregistered"><arg type="s"/></signal>
-    <signal name="StatusNotifierHostRegistered"/>
-    <signal name="StatusNotifierHostUnregistered"/>
-  </interface>
-</node>
-"""
-
-
-class OwnWatcher:
-    """Minimal StatusNotifierWatcher, behind a raw message handler.
-
-    WSLg ships no tray watcher (microsooft/wslg#158), so we provide one:
-    tray apps register their StatusNotifierItems against us and we forward
-    them through the normal host path to Windows.  If a real desktop watcher
-    exists, claiming fails and we simply act as a host, as before.
-    """
-
-    def __init__(self, bridge: "Bridge"):
-        self.bridge = bridge
-        self.bus = bridge.bus
-        self.items: Dict[str, str] = {}  # service -> object path
-        self.hosts: Set[str] = set()
-        self.names: List[str] = []
-
-    async def claim(self) -> List[str]:
-        for name in WATCHER_NAMES:
-            reply = await self.bridge.dbus_call(
-                "org.freedesktop.DBus",
-                "/org/freedesktop/DBus",
-                DBUS_IFACE,
-                "RequestName",
-                "su",
-                [name, 0],
-            )
-            if reply and reply[0] in (1, 4):  # PRIMARY_OWNER / ALREADY_OWNER
-                self.names.append(name)
-        if not self.names:
-            return []
-        self.bus.add_message_handler(self.handle)
-        try:
-            await self.bridge.dbus_call(
-                "org.freedesktop.DBus",
-                "/org/freedesktop/DBus",
-                DBUS_IFACE,
-                "AddMatch",
-                "s",
-                [
-                    "type='signal',sender='org.freedesktop.DBus',"
-                    "interface='org.freedesktop.DBus',member='NameOwnerChanged',"
-                    "path='/org/freedesktop/DBus'"
-                ],
-            )
-        except Exception:
-            pass
-        return self.names
-
-    def handle(self, msg: Message):
-        if msg.message_type == MessageType.SIGNAL:
-            if (
-                msg.sender == "org.freedesktop.DBus"
-                and msg.interface == DBUS_IFACE
-                and msg.member == "NameOwnerChanged"
-            ):
-                name, _old, new = msg.body
-                if name in self.items and not new:
-                    del self.items[name]
-                    self.emit("StatusNotifierItemUnregistered", "s", [name])
-                    self.bridge._spawn(self.bridge.on_item_unregistered(name))
-            return None
-        if (
-            msg.message_type != MessageType.METHOD_CALL
-            or msg.path != "/StatusNotifierWatcher"
-        ):
-            return None
-        if (
-            msg.interface == "org.freedesktop.DBus.Introspectable"
-            and msg.member == "Introspect"
-            and msg.signature == ""
-        ):
-            return Message.new_method_return(msg, "s", [WATCHER_INTROSPECT])
-        if msg.interface == PROPS_IFACE:
-            props = {
-                "RegisteredStatusNotifierItems": Variant("as", list(self.items)),
-                "IsStatusNotifierHostRegistered": Variant("b", bool(self.hosts)),
-                "ProtocolVersion": Variant("i", 0),
-            }
-            if msg.member == "GetAll" and msg.signature == "s":
-                return Message.new_method_return(msg, "a{sv}", [props])
-            if msg.member == "Get" and msg.signature == "ss":
-                prop = props.get(msg.body[1])
-                if prop is not None:
-                    return Message.new_method_return(msg, "v", [prop])
-                return Message.new_error(
-                    msg, ErrorType.UNKNOWN_PROPERTY, f'no such property "{msg.body[1]}"'
-                )
-            return None
-        if msg.interface == WATCHER_IFACE:
-            if msg.member == "RegisterStatusNotifierItem" and msg.signature == "s":
-                service = msg.body[0]
-                path = ITEM_OBJECT_PATH
-                if service.startswith("/"):
-                    path, service = service, msg.sender
-                if service and service not in self.items:
-                    self.items[service] = path
-                    self.emit("StatusNotifierItemRegistered", "s", [service])
-                    self.bridge._spawn(self.bridge.on_item_registered(service, path))
-                return Message.new_method_return(msg, "", [])
-            if msg.member == "RegisterStatusNotifierHost" and msg.signature == "s":
-                self.hosts.add(msg.body[0])
-                self.emit("StatusNotifierHostRegistered", "", [])
-                for service in list(self.items):
-                    self.emit("StatusNotifierItemRegistered", "s", [service])
-                return Message.new_method_return(msg, "", [])
-        return None
-
-    def emit(self, member: str, signature: str, body) -> None:
-        self.bus.send(
-            Message(
-                message_type=MessageType.SIGNAL,
-                path="/StatusNotifierWatcher",
-                interface=WATCHER_IFACE,
-                member=member,
-                signature=signature,
-                body=body,
-            )
-        )
-
-
-def resolve_bus_address() -> Optional[str]:
-    addr = os.environ.get("DBUS_SESSION_BUS_ADDRESS")
-    if addr:
-        return addr
-    for candidate in (
-        "unix:path=/mnt/wslg/runtime-dir/bus",
-        f"unix:path=/run/user/{os.getuid()}/bus",
-    ):
-        if os.path.exists(candidate[len("unix:path=") :]):
-            return candidate
-    return None
-
-
-def pixmap_to_png(width: int, height: int, data: bytes) -> bytes:
-    """Convert a(ibay) ARGB32 pixmap data to PNG, as required by the SNI spec."""
-    img = Image.frombytes("RGBA", (width, height), bytes(data), "raw", "ARGB")
-    buf = io.BytesIO()
-    img.save(buf, format="PNG")
-    return buf.getvalue()
-
-
-def best_pixmap_png(pixmaps: Optional[list]) -> Optional[bytes]:
-    """Pick the largest member of an IconPixmap/ToolTip a(iiay) array."""
-    best: Optional[Tuple[int, int, bytes]] = None
-    for w, h, data in pixmaps or []:
-        if not data or w <= 0 or h <= 0:
-            continue
-        if best is None or w * h > best[0] * best[1]:
-            best = (w, h, data)
-    if best is None:
-        return None
-    try:
-        return pixmap_to_png(*best)
-    except Exception:
-        log.exception("failed to convert pixmap")
-        return None
-
-
-def parse_layout_node(node: Tuple[Any, Dict[Any, Any], List[Any]]) -> Dict[str, Any]:
-    """Convert a com.canonical.dbusmenu GetLayout node into a plain dict."""
-    node_id, props, children = node
-    p: Dict[str, Any] = {}
-    for k, v in props.items():
-        p[k] = v.value if isinstance(v, Variant) else v
-    out: Dict[str, Any] = {
-        "id": int(node_id),
-        "label": str(p.get("label") or ""),
-        "type": p.get("type") or "standard",
-        "enabled": bool(p.get("enabled", True)),
-        "visible": bool(p.get("visible", True)),
-        "children": [],
-    }
-    tt = p.get("toggle-type")
-    if tt in ("checkmark", "radio"):
-        out["checked"] = bool(p.get("toggle-state", 0))
-        out["radio"] = tt == "radio"
-    ic = p.get("icon-data")
-    if isinstance(ic, (bytes, bytearray)) and ic:
-        out["icon_png"] = base64.b64encode(bytes(ic)).decode("ascii")
-    for ch in children or []:
-        inner = ch.value if isinstance(ch, Variant) else ch
-        if isinstance(inner, (tuple, list)):
-            out["children"].append(parse_layout_node(inner))
-    return out
-
-
-def find_menu_node(nodes: List[Dict[str, Any]], label: str) -> Optional[Dict[str, Any]]:
-    """Depth-first lookup of a menu node by label, recursing into submenus."""
-    for node in nodes or []:
-        if node.get("label") == label:
-            return node
-        hit = find_menu_node(node.get("children") or [], label)
-        if hit is not None:
-            return hit
-    return None
+POLL_GRACE = 5  # failed polls before a never-responding item is dropped
 
 
 class Item:
-    """One StatusNotifierItem living on `service` (its well-known bus name)."""
+    """One StatusNotifierItem living on `service` (its bus name)."""
 
-    def __init__(self, service: str, path: str = ITEM_OBJECT_PATH):
+    def __init__(self, service: str, path: str = ITEM_PATH):
         self.service = service
         self.path = path
-        self.props: Dict[str, Any] = {}
-        self.title = ""
-        self.tooltip = ""
-        self.status = ""
-        self.icon_png: Optional[bytes] = None
-        self.menu_path: Optional[str] = None
-        self.menu_iface: Optional[str] = None
+        self.props: dict = {}
+        self.title = self.tooltip = self.status = ""
+        self.icon_png: bytes | None = None
+        self.menu_path: str | None = None
+        self.menu_iface: str | None = None
         self.menu_ok = False
-        self.menu_cache: List[Dict[str, Any]] = []
-        self.poller: Optional[asyncio.Task] = None
+        self.menu_cache: list = []
+        self.poller: asyncio.Task | None = None
 
 
 class Bridge:
-    def __init__(self, port: int):
+    def __init__(self, port: int, bus: MessageBus):
         self.port = port
-        self.bus: Optional[MessageBus] = None
-        self.bus_address: Optional[str] = None
+        self.bus = bus
+        self.bus_address: str | None = None
         self.host_name = f"{HOST_NAME_PREFIX}-{os.getpid()}"
-        self.watcher: Optional[Tuple[str, str]] = None
-        self.own_watcher: Optional[OwnWatcher] = None
-        self.items: Dict[str, Item] = {}
-        self.clients: Set[asyncio.StreamWriter] = set()
-        self.server: Optional[asyncio.Server] = None
+        self.watcher: tuple[str, str] | None = None  # (name, path) of the live watcher
+        self.watcher_own: Watcher | None = None  # our own Watcher, when we are it
+        self.items: dict[str, Item] = {}
+        self.clients: set[asyncio.StreamWriter] = set()
+        self.server: asyncio.Server | None = None
+        # hook the raw message stream once; it stays harmless in external
+        # watcher mode (on_bus_message only acts on our own Watcher)
+        self.bus.add_message_handler(self.on_bus_message)
 
-    # ------------------------------------------------------------------ dbus
-    async def dbus_call(
-        self,
-        destination: str,
-        path: str,
-        interface: str,
-        member: str,
-        signature: str,
-        body: List[Any],
-    ):
+    # ---------------------------------------------------------------- helpers
+    async def dbus_call(self, destination, path, interface, member, signature, body):
         reply = await self.bus.call(
             Message(
                 destination=destination,
@@ -347,8 +107,9 @@ class Bridge:
                 body=body,
             )
         )
+        if reply is None:
+            raise RuntimeError("no reply from %s.%s" % (destination, member))
         if reply.message_type == MessageType.ERROR:
-            # newer dbus-next returns error replies instead of raising
             text = str(reply.body[0]) if reply.body else ""
             raise RuntimeError(
                 f"{reply.error_name}: {text}"
@@ -357,107 +118,112 @@ class Bridge:
             )
         return reply.body
 
-    async def find_watcher(self) -> bool:
-        for name in WATCHER_CANDIDATES:
-            try:
-                reply = await self.dbus_call(
-                    "org.freedesktop.DBus",
-                    "/org/freedesktop/DBus",
-                    DBUS_IFACE,
-                    "NameHasOwner",
-                    "s",
-                    [name],
-                )
-                if reply and reply[0]:
-                    self.watcher = (name, "/StatusNotifierWatcher")
-                    log.info("found StatusNotifierWatcher at %s", name)
-                    return True
-            except Exception:
-                continue
-        try:
-            names = (
-                await self.dbus_call(
-                    "org.freedesktop.DBus",
-                    "/org/freedesktop/DBus",
-                    DBUS_IFACE,
-                    "ListNames",
-                    "",
-                    [],
-                )
-            )[0]
-            for name in names:
-                name = str(name)
-                if (
-                    "StatusNotifier" in name
-                    and "watcher" in name.lower()
-                    and "item" not in name.lower()
-                ):
-                    self.watcher = (name, "/StatusNotifierWatcher")
-                    log.info("found StatusNotifierWatcher at %s", name)
-                    return True
-        except Exception:
-            pass
-        return False
-
-    async def claim_own_watcher(self) -> bool:
-        watcher = OwnWatcher(self)
-        claimed = await watcher.claim()
-        if not claimed:
-            return False
-        self.own_watcher = watcher
-        self.watcher = (claimed[0], "/StatusNotifierWatcher")
-        log.info("no external tray watcher; acting as our own (%s)", ", ".join(claimed))
-        return True
-
-    async def bootstrap(self) -> bool:
-        """Get the tray pipeline going: find a watcher or become one."""
-        if self.watcher:
-            return True
-        if not (await self.find_watcher()) and not (await self.claim_own_watcher()):
-            return False
-        await self.export_host_name()
-        await self.register_host()
-        await self.setup_watcher_signals()
-        if self.own_watcher:
-            for service, path in list(self.own_watcher.items.items()):
-                self._spawn(self.on_item_registered(service, path))
-        return True
-
-    async def diagnose(self) -> None:
-        hints = []
-        if os.path.exists("/mnt/wslg"):
-            hints.append(
-                "this is WSLg, which has no StatusNotifierWatcher; "
-                "the bridge can act as one (keep waiting)"
-            )
-        names = []
-        try:
-            names = (
-                await self.dbus_call(
-                    "org.freedesktop.DBus",
-                    "/org/freedesktop/DBus",
-                    DBUS_IFACE,
-                    "ListNames",
-                    "",
-                    [],
-                )
-            )[0]
-        except Exception:
-            pass
-        sni = [n for n in names if "StatusNotifier" in str(n)]
-        if sni:
-            hints.append(f"StatusNotifier services present: {sni}")
-        log.warning(
-            "waiting for a tray watcher on %s%s",
-            self.bus_address,
-            (
-                f" ({'; '.join(hints)})"
-                if hints
-                else " -- start a desktop session or restart your tray apps"
-            ),
+    async def call(self, item, member, signature, body):
+        """Call an SNI method on an item."""
+        await self.dbus_call(
+            item.service, item.path, SNI_IFACE, member, signature, body
         )
 
-    async def export_host_name(self) -> None:
+    def _spawn(self, coro) -> None:
+        asyncio.create_task(self._safe(coro))
+
+    async def _safe(self, coro) -> None:
+        try:
+            await coro
+        except Exception:
+            log.exception("background task failed")
+
+    # ------------------------------------------------------------------ dbus
+    def on_bus_message(self, msg: Message):
+        """Pieces dbus-next can't express triggerlessly: appindicator-style
+        registrations (an object path instead of a service name, which needs
+        the caller's unique bus name) and liveness cleanup of registered
+        items via NameOwnerChanged."""
+        if (
+            msg.message_type == MessageType.SIGNAL
+            and msg.sender == "org.freedesktop.DBus"
+            and msg.interface == DBUS_IFACE
+            and msg.member == "NameOwnerChanged"
+        ):
+            name, _old, new = msg.body
+            if self.watcher_own and not new:
+                if name in self.watcher_own.items:
+                    self.watcher_own.unregister(name)
+                elif name in self.watcher_own.hosts:
+                    self.watcher_own.unregister_host(name)
+        elif (
+            msg.message_type == MessageType.METHOD_CALL
+            and msg.path == WATCHER_PATH
+            and msg.interface == WATCHER_IFACE
+            and msg.member == "RegisterStatusNotifierItem"
+            and msg.signature == "s"
+        ):
+            service = msg.body[0]
+            if (
+                isinstance(service, str)
+                and service.startswith("/")
+                and self.watcher_own
+            ):
+                self.watcher_own.register(msg.sender, service)
+                return Message.new_method_return(msg, "", [])
+        return None
+
+    async def _list_names(self) -> list[str] | None:
+        try:
+            reply = await self.dbus_call(
+                "org.freedesktop.DBus",
+                "/org/freedesktop/DBus",
+                DBUS_IFACE,
+                "ListNames",
+                "",
+                [],
+            )
+            return [str(n) for n in reply[0]]
+        except Exception:
+            return None
+
+    async def find_watcher(self) -> str | None:
+        """Name of any live StatusNotifierWatcher, or None."""
+        for name in await self._list_names() or []:
+            if name.endswith(".StatusNotifierWatcher"):
+                return name
+        return None
+
+    async def claim_watcher(self) -> bool:
+        """Become the watcher: claim every free watcher name and serve the
+        interface (one export covers all claimed names; Qtile does the same
+        with one service instance per name)."""
+        attempt = Watcher(self)
+        owned = []
+        for name in WATCHER_NAMES:
+            reply = await self.bus.request_name(name, NameFlag.DO_NOT_QUEUE)
+            if reply in (
+                RequestNameReply.PRIMARY_OWNER,
+                RequestNameReply.ALREADY_OWNER,
+            ):
+                owned.append(name)
+            elif name == WATCHER_NAMES[0]:
+                return False  # the preferred watcher name is taken by someone else
+        if not owned:
+            return False
+        self.bus.export(WATCHER_PATH, attempt)
+        self.watcher_own = attempt
+        self.watcher = (owned[0], WATCHER_PATH)
+        log.info("no tray watcher found; providing our own at %s", owned)
+        await self.dbus_call(
+            "org.freedesktop.DBus",
+            "/org/freedesktop/DBus",
+            DBUS_IFACE,
+            "AddMatch",
+            "s",
+            [
+                "type='signal',sender='org.freedesktop.DBus',"
+                "member='NameOwnerChanged',path='/org/freedesktop/DBus'"
+            ],
+        )
+        return True
+
+    async def register_host(self) -> None:
         try:
             await self.dbus_call(
                 "org.freedesktop.DBus",
@@ -465,13 +231,12 @@ class Bridge:
                 DBUS_IFACE,
                 "RequestName",
                 "su",
-                [self.host_name, 4],
+                [self.host_name, NameFlag.DO_NOT_QUEUE.value],
             )
         except Exception:
-
             log.debug("could not own %s, will use raw unique name", self.host_name)
-
-    async def register_host(self) -> None:
+        if self.watcher is None:
+            return
         name, path = self.watcher
         await self.dbus_call(
             name,
@@ -484,28 +249,30 @@ class Bridge:
         log.info("registered StatusNotifierHost %s", self.host_name)
 
     async def setup_watcher_signals(self) -> None:
+        """Follow an external watcher: subscribe to its signals, replay its items."""
+        if self.watcher is None:
+            return
         name, path = self.watcher
         obj = self.bus.get_proxy_object(
             name, path, await self.bus.introspect(name, path)
         )
         iface = obj.get_interface(WATCHER_IFACE)
-        for sig, handler in (
+        for attr, handler in (
             (
-                "status_notifier_item_registered",
+                "on_status_notifier_item_registered",
                 lambda s: self._spawn(self.on_item_registered(str(s))),
             ),
             (
-                "status_notifier_item_unregistered",
+                "on_status_notifier_item_unregistered",
                 lambda s: self._spawn(self.on_item_unregistered(str(s))),
             ),
             (
-                "status_notifier_host_registered",
+                "on_status_notifier_host_registered",
                 lambda: log.info("another tray host registered"),
             ),
         ):
-            listener = getattr(iface, f"on_{sig}", None)
-            if listener is not None:
-                listener(handler)
+            if getattr(iface, attr, None):
+                getattr(iface, attr)(handler)
         reply = await self.dbus_call(
             name, path, PROPS_IFACE, "GetAll", "s", [WATCHER_IFACE]
         )
@@ -514,10 +281,39 @@ class Bridge:
             for service in existing.value:
                 self._spawn(self.on_item_registered(service))
 
+    async def bootstrap(self) -> bool:
+        """Get the tray pipeline going: find a watcher or become one."""
+        if self.watcher:
+            return True
+        name = await self.find_watcher()
+        if name:
+            self.watcher = (name, WATCHER_PATH)
+            log.info("found StatusNotifierWatcher at %s", name)
+        elif not await self.claim_watcher():
+            return False
+        await self.register_host()
+        if not self.watcher_own:
+            await self.setup_watcher_signals()
+        return True
+
+    async def diagnose(self) -> None:
+        hints = []
+        if os.path.exists("/mnt/wslg"):
+            hints.append(
+                "this is WSLg, which has no StatusNotifierWatcher; "
+                "the bridge can act as one (keep waiting)"
+            )
+        sni = [n for n in await self._list_names() or [] if "StatusNotifier" in n]
+        if sni:
+            hints.append(f"StatusNotifier services present: {sni}")
+        log.warning(
+            "waiting for a tray watcher on %s%s",
+            self.bus_address,
+            f" ({'; '.join(hints)})" if hints else "",
+        )
+
     # ----------------------------------------------------------- item handling
-    async def on_item_registered(
-        self, service: str, path: str = ITEM_OBJECT_PATH
-    ) -> None:
+    async def on_item_registered(self, service: str, path: str = ITEM_PATH) -> None:
         if service in self.items:
             return
         item = Item(service, path)
@@ -527,8 +323,7 @@ class Bridge:
             return
         self.broadcast(self.add_message(item))
         await self.refresh_menu(item, force=True)
-        await self.setup_item_monitors(item)
-        await self.monitor_menu(item)
+        await self.monitor(item)
         log.info("tray item: %s (%s)", item.title or service, service)
 
     async def on_item_unregistered(self, service: str) -> None:
@@ -545,8 +340,6 @@ class Bridge:
             reply = await self.dbus_call(
                 item.service, item.path, PROPS_IFACE, "GetAll", "s", [SNI_IFACE]
             )
-            if not reply:
-                return False
             props = {
                 k: v.value if isinstance(v, Variant) else v for k, v in reply[0].items()
             }
@@ -556,47 +349,38 @@ class Bridge:
         first = not item.props
         item.props = props
 
-        png = best_pixmap_png(props.get("IconPixmap"))
-        if not png:
-            icon_name = props.get("IconName")
-            if icon_name and str(icon_name).startswith("/") and os.path.exists(str(icon_name)):
-                try:
-                    with open(str(icon_name), "rb") as f:
-                        png = f.read()
-                except Exception:
-                    png = None
-        tooltip = ""
+        icon = icon_png(props)
         tt = props.get("ToolTip")
-        if isinstance(tt, (tuple, list)) and len(tt) >= 2:
-            tooltip = str(tt[1] or "")
+        tooltip = (
+            str(tt[2] or "")
+            if isinstance(tt, (tuple, list)) and len(tt) >= 3  # (s, a(iiay), s, s)
+            else ""
+        )
+        title, status = str(props.get("Title") or ""), str(props.get("Status") or "")
 
-        changes: Dict[str, Any] = {}
-        if png != item.icon_png:
-            changes["icon"] = base64.b64encode(png).decode("ascii") if png else None
-        if (props.get("Title") or "") != item.title:
-            changes["title"] = props.get("Title") or ""
+        changes: dict = {}
+        if icon != item.icon_png:
+            changes["icon"] = base64.b64encode(icon).decode("ascii") if icon else None
+        if title != item.title:
+            changes["title"] = title
         if tooltip != item.tooltip:
             changes["tooltip"] = tooltip
-        if (props.get("Status") or "") != item.status:
-            changes["status"] = props.get("Status") or ""
-
+        if status != item.status:
+            changes["status"] = status
         item.icon_png, item.title, item.tooltip, item.status = (
-            png,
-            props.get("Title") or "",
+            icon,
+            title,
             tooltip,
-            props.get("Status") or "",
+            status,
         )
 
-        if "Menu" in props and props.get("Menu"):
-            new_menu = str(props["Menu"])
-            if new_menu != item.menu_path:
-                item.menu_path = new_menu
-                item.menu_ok = False
-                if not first:
-                    await self.refresh_menu(item, force=True)
-        else:
-            item.menu_path = None
-            item.menu_ok = False
+        menu = props.get("Menu") or None
+        if menu and menu != item.menu_path:
+            item.menu_path, item.menu_ok = menu, False
+            if not first:
+                await self.refresh_menu(item, force=True)
+        elif not menu and item.menu_path:
+            item.menu_path, item.menu_ok = None, False
 
         if push and changes:
             self.broadcast({"t": "update", "key": item.service, **changes})
@@ -611,12 +395,7 @@ class Bridge:
             try:
                 if about_to_show:
                     reply = await self.dbus_call(
-                        item.service,
-                        item.menu_path,
-                        iface,
-                        "AboutToShow",
-                        "i",
-                        [0],
+                        item.service, item.menu_path, iface, "AboutToShow", "i", [0]
                     )
                     if not (reply and len(reply) and reply[0]):
                         return
@@ -629,15 +408,14 @@ class Bridge:
                     [0, -1, []],
                 )
                 node = body[1] if body and len(body) > 1 else None
-                children = node[2] if isinstance(node, (tuple, list)) and len(node) > 2 else []
+                children = (
+                    node[2] if isinstance(node, (tuple, list)) and len(node) > 2 else []
+                )
                 tree = [
-                    parse_layout_node(
-                        n.value if isinstance(n, Variant) else n
-                    )
+                    parse_layout_node(n.value if isinstance(n, Variant) else n)
                     for n in children
                 ]
             except Exception:
-                log.exception("bad menu layout from %s", item.service)
                 continue
             item.menu_cache, item.menu_iface, item.menu_ok = tree, iface, True
             self.broadcast({"t": "menu", "key": item.service, "menu": tree})
@@ -648,7 +426,10 @@ class Bridge:
             self.broadcast({"t": "menu", "key": item.service, "menu": []})
         log.debug("no working dbusmenu on %s (%s)", item.service, item.menu_path)
 
-    async def setup_item_monitors(self, item: Item) -> None:
+    async def monitor(self, item: Item) -> None:
+        """Subscribe to item property/signal changes (poll as a fallback),
+        then to menu layout updates.  dbus-next proxy listeners require an
+        exact argument count, so each lambda mirrors its signal's arity."""
         try:
             obj = self.bus.get_proxy_object(
                 item.service,
@@ -659,13 +440,15 @@ class Bridge:
             log.warning(
                 "introspection of %s failed (%s); polling instead", item.service, exc
             )
-            item.poller = asyncio.create_task(self._poll_props(item))
+            item.poller = asyncio.create_task(self.poll(item))
             return
+        push = lambda: self._spawn(self.fill_props(item, push=True))
         try:
-            props_iface = obj.get_interface(PROPS_IFACE)
-            props_iface.on_properties_changed(
-                lambda *a: self._spawn(self.fill_props(item, push=True))
+            listener = getattr(
+                obj.get_interface(PROPS_IFACE), "on_properties_changed", None
             )
+            if listener:
+                listener(lambda _iface, _changed, _invalidated: push())
         except Exception:
             pass
         try:
@@ -679,45 +462,52 @@ class Bridge:
                 "new_overlay_icon",
                 "new_menu",
             ):
-                handler = getattr(sni, f"on_{sig}", None)
-                if handler is not None:
-                    handler(lambda *a: self._spawn(self.fill_props(item, push=True)))
+                if listener := getattr(sni, f"on_{sig}", None):
+                    listener(push)  # zero-argument signals
         except Exception:
             pass
-
-    async def monitor_menu(self, item: Item) -> None:
-        if not item.menu_path:
-            return
-        try:
-            obj = self.bus.get_proxy_object(
-                item.service,
-                item.menu_path,
-                await self.bus.introspect(item.service, item.menu_path),
-            )
-        except Exception:
-            return
-        for iface_name in MENU_IFACES:
+        if item.menu_path:
             try:
-                iface = obj.get_interface(iface_name)
-                layout_updated = getattr(iface, "on_layout_updated", None)
-                if layout_updated is not None:
-                    layout_updated(
-                        lambda *a: self._spawn(self.refresh_menu(item, force=True))
-                    )
-                return
+                mobj = self.bus.get_proxy_object(
+                    item.service,
+                    item.menu_path,
+                    await self.bus.introspect(item.service, item.menu_path),
+                )
+                for iface_name in MENU_IFACES:
+                    if listener := getattr(
+                        mobj.get_interface(iface_name), "on_layout_updated", None
+                    ):
+                        listener(
+                            lambda _rev, _parent, _pos: self._spawn(
+                                self.refresh_menu(item, force=True)
+                            )
+                        )
+                        break
             except Exception:
-                continue
+                pass
 
-    async def _poll_props(self, item: Item) -> None:
+    async def poll(self, item: Item) -> None:
+        """Fallback polling for items we could not introspect.
+
+        An item that never delivers data is dead weight (Qtile drops items
+        that fail to start too); give it POLL_GRACE rounds, then remove it.
+        Items that worked once keep polling forever across hiccups.
+        """
+        misses = 0
         while item.service in self.items:
-            await asyncio.sleep(3.0)
-            await self.fill_props(item, push=True)
+            await asyncio.sleep(3)
+            if await self.fill_props(item, push=True) or item.props:
+                continue
+            misses += 1
+            if misses >= POLL_GRACE:
+                log.info("tray item %s never answered; dropping it", item.service)
+                await self.on_item_unregistered(item.service)
+                return
 
     # ------------------------------------------------------- windows messages
-    async def handle_client_message(self, m: Dict[str, Any]) -> None:
+    async def handle_client_message(self, m: dict) -> None:
         t = m.get("t")
         log.debug("client msg: %s", m)
-        item = self.items.get(str(m.get("key") or ""))
         if t == "hello_ack":
             if m.get("protocol") != PROTOCOL_VERSION:
                 log.warning(
@@ -726,39 +516,26 @@ class Bridge:
                     PROTOCOL_VERSION,
                 )
             return
+        item = self.items.get(str(m.get("key") or ""))
         if item is None:
             return
         try:
             if t == "activate":
-                await self.dbus_call(
-                    item.service, item.path, SNI_IFACE, "Activate", "ii", [0, 0]
-                )
+                await self.call(item, "Activate", "ii", [0, 0])
             elif t == "secondary":
-                await self.dbus_call(
-                    item.service,
-                    item.path,
-                    SNI_IFACE,
-                    "SecondaryActivate",
-                    "ii",
-                    [0, 0],
-                )
+                await self.call(item, "SecondaryActivate", "ii", [0, 0])
             elif t == "context":
                 await self.refresh_menu(item, force=True, about_to_show=True)
             elif t == "menu_click" and item.menu_path:
                 await self.click_menu_item(item, m)
             elif t == "scroll":
-                await self.dbus_call(
-                    item.service,
-                    item.path,
-                    SNI_IFACE,
-                    "Scroll",
-                    "ii",
-                    [int(m.get("dx", 0)), int(m.get("dy", 0))],
+                await self.call(
+                    item, "Scroll", "ii", [int(m.get("dx", 0)), int(m.get("dy", 0))]
                 )
         except Exception as exc:
             log.debug("forwarding %s to %s failed: %s", t, item.service, exc)
 
-    async def click_menu_item(self, item: Item, m: Dict[str, Any]) -> None:
+    async def click_menu_item(self, item: Item, m: dict) -> None:
         """Forward a menu click, resolving the target against a fresh layout.
 
         Some apps (e.g. clash-verge) rebuild their dbusmenu on every change
@@ -766,9 +543,7 @@ class Bridge:
         Match by label against the latest layout; fall back to the raw id.
         """
         label = str(m.get("label") or "")
-        node = None
-        if label:
-            node = find_menu_node(item.menu_cache, label)
+        node = find_menu_node(item.menu_cache, label) if label else None
         if node is None:
             node = {"id": int(m.get("item", 0))}
         try:
@@ -786,19 +561,18 @@ class Bridge:
                 ],
             )
         except Exception as exc:
-            log.debug("menu_click(%s) failed: %s; refreshing menu", label or node["id"], exc)
-            await self.refresh_menu(item, force=True)
+            log.debug("menu_click(%s) failed: %s", label or node["id"], exc)
             return
         await self.refresh_menu(item, force=True)
 
     # ------------------------------------------------------------------ tcp
-    def send(self, writer: asyncio.StreamWriter, msg: Dict[str, Any]) -> None:
+    def send(self, writer: asyncio.StreamWriter, msg: dict) -> None:
         try:
             writer.write((json.dumps(msg, ensure_ascii=False) + "\n").encode("utf-8"))
         except Exception:
             self._drop(writer)
 
-    def broadcast(self, msg: Dict[str, Any]) -> None:
+    def broadcast(self, msg: dict) -> None:
         for writer in list(self.clients):
             self.send(writer, msg)
 
@@ -809,7 +583,7 @@ class Bridge:
         except Exception:
             pass
 
-    async def _on_client(
+    async def on_client(
         self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter
     ) -> None:
         peer = writer.get_extra_info("peername")
@@ -848,7 +622,7 @@ class Bridge:
                 pass
             log.info("tray_host disconnected: %s", peer)
 
-    def add_message(self, item: Item) -> Dict[str, Any]:
+    def add_message(self, item: Item) -> dict:
         return {
             "t": "add",
             "key": item.service,
@@ -856,32 +630,18 @@ class Bridge:
             "title": item.title,
             "tooltip": item.tooltip,
             "status": item.status,
-            "category": item.props.get("Category") or "",
             "icon": (
                 base64.b64encode(item.icon_png).decode("ascii")
                 if item.icon_png
                 else None
             ),
-            "icon_name": item.props.get("IconName") or "",
-            "item_is_menu": bool(item.props.get("ItemIsMenu", False)),
         }
 
     # ---------------------------------------------------------------- misc
-    async def _safe(self, coro) -> None:
-        try:
-            await coro
-        except asyncio.CancelledError:
-            raise
-        except Exception:
-            log.exception("background task failed")
-
-    def _spawn(self, coro) -> None:
-        asyncio.create_task(self._safe(coro))
-
     def spawn_windows_side(self) -> None:
         arg = shutil.which("python.exe")
         if not arg:
-            log.warning("python.exe not found; start tray_host.py manually on Windows")
+            log.warning("python.exe not found; start main.py manually on Windows")
             return
         script = os.path.abspath(__file__)
         try:
@@ -909,13 +669,7 @@ class Bridge:
         if self.server:
             self.server.close()
             await self.server.wait_closed()
-        if self.bus:
-            try:
-                result = self.bus.disconnect()
-                if asyncio.iscoroutine(result):
-                    await result
-            except Exception:
-                pass
+        self.bus.disconnect()
 
 
 async def main(args: argparse.Namespace) -> int:
@@ -931,13 +685,9 @@ async def main(args: argparse.Namespace) -> int:
         )
         return 1
 
-    bridge = Bridge(args.port)
+    bridge = Bridge(args.port, await MessageBus(bus_address=bus_address).connect())
     bridge.bus_address = bus_address
-    bridge.bus = await MessageBus(bus_address=bus_address).connect()
-
-    bridge.server = await asyncio.start_server(
-        bridge._on_client, "127.0.0.1", args.port
-    )
+    bridge.server = await asyncio.start_server(bridge.on_client, "127.0.0.1", args.port)
     log.info("listening on 127.0.0.1:%d for tray_host (%s)", args.port, bus_address)
 
     warned = False
@@ -961,7 +711,7 @@ async def main(args: argparse.Namespace) -> int:
 
     stop = asyncio.Event()
     loop = asyncio.get_running_loop()
-    for sig in (signal.SIGINT, signal.SIGTERM):
+    for sig in (os_signal.SIGINT, os_signal.SIGTERM):
         try:
             loop.add_signal_handler(sig, stop.set)
         except NotImplementedError:
@@ -982,7 +732,7 @@ if __name__ == "__main__":
         "--spawn",
         action="store_true",
         default=True,
-        help="auto-launch tray_host.py on Windows (default)",
+        help="auto-launch main.py on Windows (default)",
     )
     ap.add_argument(
         "--no-spawn",

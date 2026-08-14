@@ -1,4 +1,9 @@
-{ flake, pkgs, lib, ... }:
+{
+  flake,
+  pkgs,
+  lib,
+  ...
+}:
 {
   wsl = {
     enable = true;
@@ -17,12 +22,15 @@
 
   users.mutableUsers = true;
 
-  environment.systemPackages = [ pkgs.sni-host ];
+  environment.systemPackages = [
+    pkgs.sni-host
+    pkgs.tray-host
+  ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
   networking.hostName = "wsl";
   system.stateVersion = "26.11";
-  
+
   security.sudo-rs.wheelNeedsPassword = false;
 
   home-manager.users.${flake.config.me.username}.home.stateVersion = "26.11";
