@@ -1,4 +1,5 @@
 .direnv
 result
+*.pyc
 *.qcow2
 *.fd

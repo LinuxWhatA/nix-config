@@ -10,7 +10,7 @@ running on Windows, which paints real icons in the Windows notification area
 and routes clicks/menu events back.
 
 WSLg ships no StatusNotifierWatcher (microsoft/wslg#158), so when none exists
-on the bus this bridge also provides one itself (exported via dbus-next);
+on the bus this bridge also provides one itself (exported via dbus-fast);
 on a desktop session with a real watcher it acts as a plain host.
 
     sni-host [--port 17632]
@@ -32,15 +32,15 @@ import shutil
 import signal as os_signal
 import subprocess
 import sys
-import time
+from dataclasses import dataclass, field
 
-from dbus_next import (  # pyright: ignore[reportPrivateImportUsage]
-    Message,  # pyright: ignore[reportPrivateImportUsage]
-    MessageType,  # pyright: ignore[reportPrivateImportUsage]
-    Variant,  # pyright: ignore[reportPrivateImportUsage]
+from dbus_fast import (
+    Message,
+    MessageType,
+    Variant,
 )
-from dbus_next.aio import MessageBus  # pyright: ignore[reportPrivateImportUsage]
-from dbus_next.constants import NameFlag, RequestNameReply
+from dbus_fast.aio import MessageBus
+from dbus_fast.constants import NameFlag, RequestNameReply
 from sni_spec import (
     DBUS_IFACE,
     ITEM_PATH,
@@ -53,34 +53,45 @@ from sni_spec import (
     WATCHER_PATH,
     Watcher,
     find_menu_node,
+    first_primary_node,
     icon_png,
     parse_layout_node,
     resolve_bus_address,
+    unwrap_variants,
 )
 
 log = logging.getLogger("sni-host")
 
 HOST_NAME_PREFIX = "org.kde.StatusNotifierHost-wslg-tray-bridge"
 POLL_GRACE = 5  # failed polls before a never-responding item is dropped
+POLL_INTERVAL = 3  # seconds between fallback polls
+DBUS_CALL_TIMEOUT = 5.0  # remote apps must answer within this or be dropped
+DEBOUNCE = 0.2  # seconds of signal chatter coalesced into one fetch
 
 
+@dataclass
 class Item:
     """One StatusNotifierItem living on `service` (its bus name)."""
 
-    def __init__(self, service: str, path: str = ITEM_PATH):
-        self.service = service
-        self.path = path
-        self.props: dict = {}
-        self.title = self.tooltip = self.status = ""
-        self.icon_png: bytes | None = None
-        self.menu_path: str | None = None
-        self.menu_iface: str | None = None
-        self.menu_ok = False
-        self.menu_cache: list = []
-        self.poller: asyncio.Task | None = None
+    service: str
+    path: str = ITEM_PATH
+    props: dict = field(default_factory=dict)
+    title: str = ""
+    tooltip: str = ""
+    status: str = ""
+    icon_png: bytes | None = None
+    menu_path: str | None = None
+    menu_iface: str | None = None
+    menu_ok: bool = False
+    menu_cache: list = field(default_factory=list)
+    poller: asyncio.Task | None = None
+    handlers: list = field(default_factory=list)  # (iface, snake, fn) for off_*
 
 
 class Bridge:
+    """Owns the SNI pipeline: finds or emulates the StatusNotifierWatcher,
+    tracks items, and serves the TCP socket to the Windows tray-host."""
+
     def __init__(self, port: int, bus: MessageBus):
         self.port = port
         self.bus = bus
@@ -89,26 +100,44 @@ class Bridge:
         self.watcher: tuple[str, str] | None = None  # (name, path) of the live watcher
         self.watcher_own: Watcher | None = None  # our own Watcher, when we are it
         self.items: dict[str, Item] = {}
+        self.hosts: set[str] = set()  # registered StatusNotifierHost bus names
         self.clients: set[asyncio.StreamWriter] = set()
         self.server: asyncio.Server | None = None
+        self._dirty: dict[str, Item] = {}  # items awaiting a deferred props fetch
+        self._flush_task: asyncio.Task | None = None
+        self._shutdown = False
         # hook the raw message stream once; it stays harmless in external
         # watcher mode (on_bus_message only acts on our own Watcher)
         self.bus.add_message_handler(self.on_bus_message)
 
     # ---------------------------------------------------------------- helpers
-    async def dbus_call(self, destination, path, interface, member, signature, body):
-        reply = await self.bus.call(
-            Message(
-                destination=destination,
-                path=path,
-                interface=interface,
-                member=member,
-                signature=signature,
-                body=body,
+    async def dbus_call(
+        self,
+        destination: str,
+        path: str,
+        interface: str,
+        member: str,
+        signature: str,
+        body: list,
+    ) -> list:
+        try:
+            reply = await asyncio.wait_for(
+                self.bus.call(
+                    Message(
+                        destination=destination,
+                        path=path,
+                        interface=interface,
+                        member=member,
+                        signature=signature,
+                        body=body,
+                    )
+                ),
+                timeout=DBUS_CALL_TIMEOUT,
             )
-        )
+        except asyncio.TimeoutError:
+            raise RuntimeError(f"{destination}.{member} timed out")
         if reply is None:
-            raise RuntimeError("no reply from %s.%s" % (destination, member))
+            raise RuntimeError(f"no reply from {destination}.{member}")
         if reply.message_type == MessageType.ERROR:
             text = str(reply.body[0]) if reply.body else ""
             raise RuntimeError(
@@ -118,7 +147,26 @@ class Bridge:
             )
         return reply.body
 
-    async def call(self, item, member, signature, body):
+    async def bus_call(self, member: str, signature: str, body: list) -> list:
+        """Call a method on the org.freedesktop.DBus service itself."""
+        return await self.dbus_call(
+            "org.freedesktop.DBus",
+            "/org/freedesktop/DBus",
+            DBUS_IFACE,
+            member,
+            signature,
+            body,
+        )
+
+    async def introspect(self, destination: str, path: str):
+        """Introspect with the same timeout discipline as dbus_call."""
+        return await asyncio.wait_for(
+            self.bus.introspect(destination, path), timeout=DBUS_CALL_TIMEOUT
+        )
+
+    async def call(
+        self, item: Item, member: str, signature: str, body: list
+    ) -> None:
         """Call an SNI method on an item."""
         await self.dbus_call(
             item.service, item.path, SNI_IFACE, member, signature, body
@@ -133,15 +181,82 @@ class Bridge:
         except Exception:
             log.exception("background task failed")
 
+    def push_item(self, item: Item) -> None:
+        """Mark an item dirty and coalesce signal bursts into one fetch.
+
+        Chatty apps fire PropertiesChanged/new_* repeatedly; each signal
+        would otherwise trigger a full GetAll + PNG encode + TCP broadcast.
+        """
+        self._dirty[item.service] = item
+        if self._flush_task is None or self._flush_task.done():
+            self._flush_task = asyncio.create_task(self._flush_loop())
+
+    async def _flush_loop(self) -> None:
+        while True:
+            await asyncio.sleep(DEBOUNCE)
+            batch, self._dirty = list(self._dirty.values()), {}
+            if not batch:
+                break
+            for item in batch:
+                if item.service in self.items:
+                    await self.fill_props(item, push=True)
+        self._flush_task = None
+
+    async def menu_call(
+        self, item: Item, member: str, signature: str, body: list
+    ) -> tuple[list | None, str | None]:
+        """Call a dbusmenu method on an item, trying each interface spelling
+        until one answers.  Returns (reply, iface) or (None, None)."""
+        for iface in MENU_IFACES:
+            try:
+                reply = await self.dbus_call(
+                    item.service, item.menu_path, iface, member, signature, body
+                )
+            except Exception:
+                continue
+            return reply, iface
+        return None, None
+
+    def _menu_attr(self, obj, attr_snake: str):
+        """(iface, listener) of the first dbusmenu interface exposing it."""
+        for iface_name in MENU_IFACES:
+            iface = obj.get_interface(iface_name)
+            if listener := getattr(iface, f"on_{attr_snake}", None):
+                return iface, listener
+        return None, None
+
+    def _set_menu_cache(self, item: Item, tree: list, iface: str) -> None:
+        """Cache a fresh menu tree and broadcast it (no-op when unchanged)."""
+        if tree != item.menu_cache:
+            item.menu_cache, item.menu_iface, item.menu_ok = tree, iface, True
+            self.broadcast({"t": "menu", "key": item.service, "menu": tree})
+
     # ------------------------------------------------------------------ dbus
-    def on_bus_message(self, msg: Message):
+    def add_host(self, service: str) -> None:
+        """Register a StatusNotifierHost and emit the D-Bus signal."""
+        service = str(service)
+        if service in self.hosts:
+            return
+        self.hosts.add(service)
+        if self.watcher_own:
+            self.watcher_own.StatusNotifierHostRegistered()  # pyright: ignore[reportCallIssue] — @signal wrapper
+            for name in self.watcher_own.items:
+                self.watcher_own.StatusNotifierItemRegistered(name)
+
+    def remove_host(self, service: str) -> None:
+        """Unregister a StatusNotifierHost and emit the D-Bus signal."""
+        if service in self.hosts:
+            self.hosts.discard(service)
+            if self.watcher_own:
+                self.watcher_own.StatusNotifierHostUnregistered()  # pyright: ignore[reportCallIssue] — @signal wrapper
+
+    def on_bus_message(self, msg: Message) -> Message | None:
         """Pieces dbus-next can't express triggerlessly: appindicator-style
         registrations (an object path instead of a service name, which needs
         the caller's unique bus name) and liveness cleanup of registered
         items via NameOwnerChanged."""
         if (
             msg.message_type == MessageType.SIGNAL
-            and msg.sender == "org.freedesktop.DBus"
             and msg.interface == DBUS_IFACE
             and msg.member == "NameOwnerChanged"
         ):
@@ -149,8 +264,8 @@ class Bridge:
             if self.watcher_own and not new:
                 if name in self.watcher_own.items:
                     self.watcher_own.unregister(name)
-                elif name in self.watcher_own.hosts:
-                    self.watcher_own.unregister_host(name)
+                elif name in self.hosts:
+                    self.remove_host(name)
         elif (
             msg.message_type == MessageType.METHOD_CALL
             and msg.path == WATCHER_PATH
@@ -170,16 +285,10 @@ class Bridge:
 
     async def _list_names(self) -> list[str] | None:
         try:
-            reply = await self.dbus_call(
-                "org.freedesktop.DBus",
-                "/org/freedesktop/DBus",
-                DBUS_IFACE,
-                "ListNames",
-                "",
-                [],
-            )
+            reply = await self.bus_call("ListNames", "", [])
             return [str(n) for n in reply[0]]
-        except Exception:
+        except Exception as exc:
+            log.debug("ListNames failed: %s", exc)
             return None
 
     async def find_watcher(self) -> str | None:
@@ -203,6 +312,8 @@ class Bridge:
             ):
                 owned.append(name)
             elif name == WATCHER_NAMES[0]:
+                for taken in owned:
+                    await self.bus.release_name(taken)
                 return False  # the preferred watcher name is taken by someone else
         if not owned:
             return False
@@ -210,10 +321,7 @@ class Bridge:
         self.watcher_own = attempt
         self.watcher = (owned[0], WATCHER_PATH)
         log.info("no tray watcher found; providing our own at %s", owned)
-        await self.dbus_call(
-            "org.freedesktop.DBus",
-            "/org/freedesktop/DBus",
-            DBUS_IFACE,
+        await self.bus_call(
             "AddMatch",
             "s",
             [
@@ -225,13 +333,8 @@ class Bridge:
 
     async def register_host(self) -> None:
         try:
-            await self.dbus_call(
-                "org.freedesktop.DBus",
-                "/org/freedesktop/DBus",
-                DBUS_IFACE,
-                "RequestName",
-                "su",
-                [self.host_name, NameFlag.DO_NOT_QUEUE.value],
+            await self.bus_call(
+                "RequestName", "su", [self.host_name, NameFlag.DO_NOT_QUEUE.value]
             )
         except Exception:
             log.debug("could not own %s, will use raw unique name", self.host_name)
@@ -254,7 +357,7 @@ class Bridge:
             return
         name, path = self.watcher
         obj = self.bus.get_proxy_object(
-            name, path, await self.bus.introspect(name, path)
+            name, path, await self.introspect(name, path)
         )
         iface = obj.get_interface(WATCHER_IFACE)
         for attr, handler in (
@@ -332,6 +435,14 @@ class Bridge:
             return
         if item.poller:
             item.poller.cancel()
+        # detach bus signal handlers so a vanished service's subscriptions
+        # (and match rules) do not accumulate on the connection
+        for iface, snake, fn in item.handlers:
+            try:
+                if off := getattr(iface, f"off_{snake}", None):
+                    off(fn)
+            except Exception:
+                log.debug("could not detach %s handler for %s", snake, service)
         self.broadcast({"t": "remove", "key": service})
         log.info("tray item gone: %s", service)
 
@@ -340,9 +451,7 @@ class Bridge:
             reply = await self.dbus_call(
                 item.service, item.path, PROPS_IFACE, "GetAll", "s", [SNI_IFACE]
             )
-            props = {
-                k: v.value if isinstance(v, Variant) else v for k, v in reply[0].items()
-            }
+            props = unwrap_variants(reply[0])
         except Exception as exc:
             log.debug("GetAll(%s) failed: %s", item.service, exc)
             return False
@@ -386,55 +495,56 @@ class Bridge:
             self.broadcast({"t": "update", "key": item.service, **changes})
         return True
 
+    async def fetch_layout(self, item: Item) -> tuple[list, str] | None:
+        """Current layout tree of the item's menu plus the working iface,
+        read with GetLayout(0, -1, []).  GetLayout may be called at any
+        time, so this is safe to use right before raising a click.
+        Returns None if no iface spelling answered."""
+        reply, iface = await self.menu_call(item, "GetLayout", "iias", [0, -1, []])
+        if reply is None or iface is None:
+            return None
+        node = reply[1] if len(reply) > 1 else None
+        children = node[2] if isinstance(node, (tuple, list)) and len(node) > 2 else []
+        tree = [
+            parsed
+            for n in children
+            if (parsed := parse_layout_node(n.value if isinstance(n, Variant) else n))
+            is not None
+        ]
+        return tree, iface
+
     async def refresh_menu(
         self, item: Item, force: bool = False, about_to_show: bool = False
     ) -> None:
         if not item.menu_path or (not force and item.menu_ok is False):
             return
-        for iface in MENU_IFACES:
-            try:
-                if about_to_show:
-                    reply = await self.dbus_call(
-                        item.service, item.menu_path, iface, "AboutToShow", "i", [0]
-                    )
-                    if not (reply and len(reply) and reply[0]):
-                        return
-                body = await self.dbus_call(
-                    item.service,
-                    item.menu_path,
-                    iface,
-                    "GetLayout",
-                    "iias",
-                    [0, -1, []],
-                )
-                node = body[1] if body and len(body) > 1 else None
-                children = (
-                    node[2] if isinstance(node, (tuple, list)) and len(node) > 2 else []
-                )
-                tree = [
-                    parse_layout_node(n.value if isinstance(n, Variant) else n)
-                    for n in children
-                ]
-            except Exception:
-                continue
-            item.menu_cache, item.menu_iface, item.menu_ok = tree, iface, True
-            self.broadcast({"t": "menu", "key": item.service, "menu": tree})
+        if about_to_show:
+            # Best-effort notification that the menu is about to be shown
+            # (spec); a missing implementation must not block the read.
+            await self.menu_call(item, "AboutToShow", "i", [0])
+        layout = await self.fetch_layout(item)
+        if not layout:
+            item.menu_ok = False
+            if item.menu_cache:
+                item.menu_cache = []
+                self.broadcast({"t": "menu", "key": item.service, "menu": []})
+            log.debug("no working dbusmenu on %s (%s)", item.service, item.menu_path)
             return
-        item.menu_ok = False
-        if item.menu_cache:
-            item.menu_cache = []
-            self.broadcast({"t": "menu", "key": item.service, "menu": []})
-        log.debug("no working dbusmenu on %s (%s)", item.service, item.menu_path)
+        self._set_menu_cache(item, *layout)
 
     async def monitor(self, item: Item) -> None:
         """Subscribe to item property/signal changes (poll as a fallback),
-        then to menu layout updates.  dbus-next proxy listeners require an
-        exact argument count, so each lambda mirrors its signal's arity."""
+        then to menu layout updates.  dbus-fast proxy listeners require an
+        exact argument count, so each lambda mirrors its signal's arity.
+
+        Every subscription is recorded on the item so that it can be
+        detached (off_<signal>) when the item goes away.
+        """
         try:
             obj = self.bus.get_proxy_object(
                 item.service,
                 item.path,
-                await self.bus.introspect(item.service, item.path),
+                await self.introspect(item.service, item.path),
             )
         except Exception as exc:
             log.warning(
@@ -442,13 +552,21 @@ class Bridge:
             )
             item.poller = asyncio.create_task(self.poll(item))
             return
-        push = lambda: self._spawn(self.fill_props(item, push=True))
+
+        def push() -> None:
+            self.push_item(item)
+
+        def subscribe(iface, snake: str, fn) -> None:
+            if listener := getattr(iface, f"on_{snake}", None):
+                listener(fn)
+                item.handlers.append((iface, snake, fn))
+
         try:
-            listener = getattr(
-                obj.get_interface(PROPS_IFACE), "on_properties_changed", None
+            subscribe(
+                obj.get_interface(PROPS_IFACE),
+                "properties_changed",
+                lambda _iface, _changed, _invalidated: push(),
             )
-            if listener:
-                listener(lambda _iface, _changed, _invalidated: push())
         except Exception:
             pass
         try:
@@ -462,8 +580,7 @@ class Bridge:
                 "new_overlay_icon",
                 "new_menu",
             ):
-                if listener := getattr(sni, f"on_{sig}", None):
-                    listener(push)  # zero-argument signals
+                subscribe(sni, sig, push)  # zero-argument signals
         except Exception:
             pass
         if item.menu_path:
@@ -471,18 +588,17 @@ class Bridge:
                 mobj = self.bus.get_proxy_object(
                     item.service,
                     item.menu_path,
-                    await self.bus.introspect(item.service, item.menu_path),
+                    await self.introspect(item.service, item.menu_path),
                 )
-                for iface_name in MENU_IFACES:
-                    if listener := getattr(
-                        mobj.get_interface(iface_name), "on_layout_updated", None
-                    ):
-                        listener(
-                            lambda _rev, _parent, _pos: self._spawn(
-                                self.refresh_menu(item, force=True)
-                            )
-                        )
-                        break
+                iface, _listener = self._menu_attr(mobj, "layout_updated")
+                if iface:
+                    subscribe(
+                        iface,
+                        "layout_updated",
+                        lambda _rev, _parent, _pos: self._spawn(
+                            self.refresh_menu(item, force=True)
+                        ),
+                    )
             except Exception:
                 pass
 
@@ -495,8 +611,9 @@ class Bridge:
         """
         misses = 0
         while item.service in self.items:
-            await asyncio.sleep(3)
+            await asyncio.sleep(POLL_INTERVAL)
             if await self.fill_props(item, push=True) or item.props:
+                misses = 0
                 continue
             misses += 1
             if misses >= POLL_GRACE:
@@ -528,24 +645,41 @@ class Bridge:
                 await self.refresh_menu(item, force=True, about_to_show=True)
             elif t == "menu_click" and item.menu_path:
                 await self.click_menu_item(item, m)
+            elif t == "open_window":
+                await self.open_window(item)
             elif t == "scroll":
                 await self.call(
                     item, "Scroll", "ii", [int(m.get("dx", 0)), int(m.get("dy", 0))]
                 )
         except Exception as exc:
-            log.debug("forwarding %s to %s failed: %s", t, item.service, exc)
+            log.info("forwarding %s to %s failed: %s", t, item.service, exc)
 
     async def click_menu_item(self, item: Item, m: dict) -> None:
-        """Forward a menu click, resolving the target against a fresh layout.
+        """Resolve a click against the current layout, then fire Event.
 
-        Some apps (e.g. clash-verge) rebuild their dbusmenu on every change
-        and renumber all item ids, so cached ids go stale almost immediately.
-        Match by label against the latest layout; fall back to the raw id.
+        clash-verge rebuilds its dbusmenu and renumbers item ids on every
+        state change, while the Win32 popup is built from our cached layout
+        (pystray has no menu-open hook to refresh it), so the id a click
+        carries is stale by definition — sending it as-is either does
+        nothing or triggers a different item.  GetLayout is therefore read
+        again (allowed at any time per spec) and the label resolved against
+        it; the raw id is only a last resort.
         """
         label = str(m.get("label") or "")
-        node = find_menu_node(item.menu_cache, label) if label else None
-        if node is None:
-            node = {"id": int(m.get("item", 0))}
+        cached_id = int(m.get("item") or 0)
+        node = None
+        if item.menu_path and (layout := await self.fetch_layout(item)):
+            self._set_menu_cache(item, *layout)
+            if label:
+                node = find_menu_node(layout[0], label)
+        if node is None and label:
+            node = find_menu_node(item.menu_cache, label)
+        if not await self._fire_event(item, int(node["id"]) if node else cached_id):
+            return
+        await self.refresh_menu(item, force=True)
+
+    async def _fire_event(self, item: Item, node_id: int) -> bool:
+        """Fire Event(id, "clicked") on the item's dbusmenu; True on success."""
         try:
             await self.dbus_call(
                 item.service,
@@ -554,16 +688,106 @@ class Bridge:
                 "Event",
                 "isvu",
                 [
-                    int(node["id"]),
+                    node_id,
                     "clicked",
-                    Variant("s", ""),
-                    int(time.time()) & 0xFFFFFFFF,
+                    Variant("i", 1),  # X11 left button
+                    0,  # timestamp unknown
                 ],
             )
+            return True
         except Exception as exc:
-            log.debug("menu_click(%s) failed: %s", label or node["id"], exc)
+            log.info("Event(%s) on %s failed: %s", node_id, item.service, exc)
+            return False
+
+    # ------------------------------------------------------- open window
+    async def app_pid(self, item: Item) -> int | None:
+        """PID of the process behind the SNI item.
+
+        The item's bus name is resolved to its unique name first (the
+        registered name may be well-known), then GetConnectionUnixProcessID
+        maps it to a pid — used to locate the app's X11 windows.
+        """
+        try:
+            reply = await self.bus_call("GetNameOwner", "s", [item.service])
+            unique = str(reply[0]) if reply and reply[0] else item.service
+            reply = await self.bus_call(
+                "GetConnectionUnixProcessID", "s", [unique]
+            )
+            return int(reply[0]) if reply and reply[0] else None
+        except Exception:
+            return None
+
+    async def map_x11_windows(self, pid: int) -> bool:
+        """Map + raise the app's X11 windows so WSLg shows them again.
+
+        Only windows owned by `pid` (via _NET_WM_PID) are touched, so this
+        can never surface a different program.  Returns True when at least
+        one window existed and was remapped — i.e. the app merely hid its
+        window on close-to-tray and keeps it around.
+        """
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                "xdotool",
+                "search",
+                "--pid",
+                str(pid),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.DEVNULL,
+            )
+            out, _ = await proc.communicate()
+        except (FileNotFoundError, OSError) as exc:
+            log.debug("xdotool unavailable: %s", exc)
+            return False
+        wins = [w.decode() for w in out.split()]
+        if not wins:
+            return False
+        await asyncio.create_subprocess_exec(
+            "xdotool",
+            *(a for w in wins for a in ("windowmap", w, "windowraise", w)),
+            stdout=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.DEVNULL,
+        )
+        log.info("mapped %d X11 window(s) of pid %s", len(wins), pid)
+        return True
+
+    async def click_primary_menu(self, item: Item) -> None:
+        """Fire Event(clicked) on the app's primary "show window" item.
+
+        Used when Activate produced no window: apps built on the tray-icon
+        crate never wire Activate on Linux, and apps that close-to-tray by
+        destroying their window have no X11 window left to map.  The item
+        is picked from the app's own current menu layout (first enabled,
+        non-checkable, non-quit leaf), so nothing here is app-specific.
+        """
+        if not item.menu_path:
             return
-        await self.refresh_menu(item, force=True)
+        layout = await self.fetch_layout(item)
+        if not layout:
+            return
+        self._set_menu_cache(item, *layout)
+        node = first_primary_node(layout[0])
+        if node is None:
+            log.info("no primary menu item on %s", item.service)
+            return
+        log.info(
+            "clicking primary menu item %r on %s", node.get("label"), item.service
+        )
+        await self._fire_event(item, int(node["id"]))
+
+    async def open_window(self, item: Item) -> None:
+        """Generic fallback to surface a backgrounded app's window.
+
+        SNI Activate is only a request and many apps ignore it on Linux,
+        so when it failed to produce a window: 1) map the app's X11
+        windows if it has any (covers apps that merely hide their window),
+        else 2) click its primary menu item (covers apps that destroy
+        their window on close-to-tray).  Both routes are generic and can
+        only ever touch the app itself.
+        """
+        pid = await self.app_pid(item)
+        if pid and await self.map_x11_windows(pid):
+            return
+        await self.click_primary_menu(item)
 
     # ------------------------------------------------------------------ tcp
     def send(self, writer: asyncio.StreamWriter, msg: dict) -> None:
@@ -615,11 +839,7 @@ class Bridge:
         except Exception as exc:
             log.debug("client connection error: %s", exc)
         finally:
-            self.clients.discard(writer)
-            try:
-                writer.close()
-            except Exception:
-                pass
+            self._drop(writer)
             log.info("tray_host disconnected: %s", peer)
 
     def add_message(self, item: Item) -> dict:
@@ -663,13 +883,27 @@ class Bridge:
             log.warning("failed to launch Windows side: %s", exc)
 
     async def shutdown(self) -> None:
-        self.broadcast({"t": "bye", "reason": "server shutting down"})
-        for writer in list(self.clients):
-            self._drop(writer)
-        if self.server:
-            self.server.close()
-            await self.server.wait_closed()
-        self.bus.disconnect()
+        if self._shutdown:
+            return
+        self._shutdown = True
+        try:
+            self.broadcast({"t": "bye", "reason": "server shutting down"})
+            for writer in list(self.clients):
+                try:
+                    await asyncio.wait_for(writer.drain(), timeout=1)
+                except Exception:
+                    pass
+                self._drop(writer)
+            if self.server:
+                self.server.close()
+                await self.server.wait_closed()
+        finally:
+            # dbus-fast's disconnect() is synchronous (socket teardown is
+            # kicked off here; pending calls error out on it)
+            try:
+                self.bus.disconnect()
+            except Exception:
+                log.debug("bus disconnect failed", exc_info=True)
 
 
 async def main(args: argparse.Namespace) -> int:
@@ -694,6 +928,7 @@ async def main(args: argparse.Namespace) -> int:
 
     async def watch_watcher():
         nonlocal warned
+        delay = 3
         while True:
             try:
                 if await bridge.bootstrap():
@@ -703,7 +938,8 @@ async def main(args: argparse.Namespace) -> int:
             if not warned:
                 warned = True
                 await bridge.diagnose()
-            await asyncio.sleep(3)
+            await asyncio.sleep(delay)
+            delay = min(delay * 2, 60)
 
     asyncio.create_task(watch_watcher())
     if args.spawn:
@@ -749,4 +985,7 @@ if __name__ == "__main__":
     ap.add_argument(
         "--version", action="version", version=f"protocol {PROTOCOL_VERSION}"
     )
-    sys.exit(asyncio.run(main(ap.parse_args())))
+    args = ap.parse_args()
+    if not 1 <= args.port <= 65535:
+        ap.error("--port must be between 1 and 65535")
+    sys.exit(asyncio.run(main(args)))

@@ -12,15 +12,18 @@
   lib,
   python3,
   writeScriptBin,
+  xdotool,
 }:
 let
   src = lib.cleanSource ./src;
   pyEnv = python3.withPackages (ps: [
-    ps.dbus-next # D-Bus (GLib-free)
+    ps.dbus-fast # D-Bus (GLib-free); maintained fork of dbus-next
     ps.pillow # IconPixmap ARGB32 → PNG
   ]);
 in
 writeScriptBin "sni-host" ''
+  # 运行时依赖注入 PATH:xdotool 用于"左键拉起后台应用"时的 X11 窗口映射;
+  export PATH="${xdotool}/bin''${PATH:+:$PATH}"
   exec ${pyEnv}/bin/python3 ${src}/sni_host.py "$@"
 ''
 // {
