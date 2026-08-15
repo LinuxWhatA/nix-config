@@ -1,5 +1,8 @@
 # 目录扫描自动生成 flake outputs，同时提供统一 specialArgs
 #
+# 约束：不得为本文件添加任何新功能——需保持与 nixos-unified 的 Autowiring
+# 功能一致。新 output/接线逻辑一律以独立模块放在 modules/flake/ 下。
+#
 # 规则：
 #   configurations/nixos/*.nix → nixosConfigurations  （NixOS + home-manager）
 #   modules/nixos/*.nix        → nixosModules

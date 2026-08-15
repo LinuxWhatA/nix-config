@@ -1,5 +1,3 @@
-{ flake, ... }:
-
 {
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
@@ -10,6 +8,4 @@
     pulse.enable = true;
     jack.enable = true;
   };
-
-  users.users.${flake.config.me.username}.extraGroups = [ "audio" ];
 }

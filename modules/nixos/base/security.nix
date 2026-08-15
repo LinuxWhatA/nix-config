@@ -16,6 +16,6 @@
 
   security.sudo-rs = {
     enable = true;
-    extraConfig = "Defaults env_reset,timestamp_timeout=60";
+    extraConfig = "Defaults timestamp_timeout=60";
   };
 }

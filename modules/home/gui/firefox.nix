@@ -1,9 +1,8 @@
-{ config, flake, ... }:
+{ flake, ... }:
 
 {
   programs.firefox = {
     enable = true;
-    configPath = "${config.xdg.configHome}/mozilla/firefox";
     languagePacks = [ "zh-CN" ];
     profiles.default = {
       search = {
