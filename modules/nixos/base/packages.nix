@@ -21,8 +21,6 @@
     nix-index-database.enable = true;
   };
 
-  users.users.${flake.config.me.username}.extraGroups = [ "adbusers" ];
-
   # 允许 Electron 在 Wayland 原生上运行
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";

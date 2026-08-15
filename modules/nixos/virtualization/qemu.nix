@@ -28,7 +28,6 @@
 
   users.users.${flake.config.me.username}.extraGroups = [
     "kvm"
-    "libvirt"
     "libvirtd"
   ];
 }

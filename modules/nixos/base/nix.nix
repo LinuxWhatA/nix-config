@@ -13,8 +13,6 @@ in
   nixpkgs = {
     config = {
       allowUnfree = true;
-      allowBroken = true;
-      allowUnsupportedSystem = true;
     };
     overlays = lib.attrValues self.overlays;
   };
@@ -44,7 +42,10 @@ in
       ];
       warn-dirty = false;
 
-      substituters = lib.mkForce [
+      # 镜像不可用时回退本地构建
+      fallback = true;
+
+      substituters = lib.mkDefault [
         "https://mirror.nju.edu.cn/nix-channels/store"
         "https://mirrors.ustc.edu.cn/nix-channels/store"
         "https://mirror.sjtu.edu.cn/nix-channels/store"

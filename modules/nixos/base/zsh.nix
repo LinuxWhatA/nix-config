@@ -1,17 +1,8 @@
 {
   pkgs,
-  lib,
-  config,
   ...
 }:
 
-let
-  # TTY 使用纯文本符号预设，图形终端使用 Nerd Font 预设
-  ttySettingsFile = (pkgs.formats.toml { }).generate "starship-tty.toml" (
-    (lib.importTOML "${pkgs.starship}/share/starship/presets/plain-text-symbols.toml")
-    // config.programs.starship.settings
-  );
-in
 {
   programs = {
     zsh = {
@@ -29,9 +20,10 @@ in
         bindkey "$terminfo[kcuu1]" history-substring-search-up
         bindkey "$terminfo[kcud1]" history-substring-search-down
 
-        # Linux TTY 使用纯文本符号预设
-        if [[ "$TERM" == linux ]]; then
-          export STARSHIP_CONFIG=${ttySettingsFile}
+        # Linux TTY / dumb / Windows Terminal 回退纯文本符号预设（直接引用 starship 包内预设，随版本同步）
+        # WT_SESSION 为 Windows Terminal 官方环境变量，经 WSLENV 传入 WSL
+        if [[ "$TERM" == linux || "$TERM" == dumb || -n "$WT_SESSION" ]]; then
+          export STARSHIP_CONFIG=${pkgs.starship}/share/starship/presets/plain-text-symbols.toml
         fi
       '';
     };

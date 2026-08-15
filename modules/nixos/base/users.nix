@@ -12,7 +12,8 @@
       "wheel"
       "networkmanager"
     ];
-    hashedPassword = "$6$6aT0cza7dVGIOdsf$ICgv1WOo255hp41vzsz2c7m1BtI51MFfmR7K7qJdJ4zRR2yFSNS0mKsqSMhMPPSWbShpi5UzgMmOkd/9UMxEg0";
+    # 仅首次创建用户时生效，之后可通过 passwd 自行修改
+    initialHashedPassword = "$6$6aT0cza7dVGIOdsf$ICgv1WOo255hp41vzsz2c7m1BtI51MFfmR7K7qJdJ4zRR2yFSNS0mKsqSMhMPPSWbShpi5UzgMmOkd/9UMxEg0";
   };
 
   home-manager.backupFileExtension = "hm-backup";

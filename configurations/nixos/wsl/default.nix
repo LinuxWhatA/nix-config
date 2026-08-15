@@ -14,9 +14,7 @@ in
 
   home-manager.users.${flake.config.me.username}.imports = [
     self.homeModules.default
-    (self + /modules/home/cli/nh.nix)
-    (self + /modules/home/cli/git.nix)
-    (self + /modules/home/cli/packages.nix)
+    self.homeModules.cli
     (self + /modules/home/gui/opencode.nix)
   ];
 }
