@@ -20,4 +20,10 @@
     flake.inputs.self.homeModules.default
     flake.inputs.self.homeModules.cli
   ];
+
+  home-manager.users.root = {
+    imports = [
+      flake.inputs.self.homeModules.root
+    ];
+  };
 }

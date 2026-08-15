@@ -1,40 +1,10 @@
+# 系统 shell 属性：zsh 全套配置（插件、提示符、session 变量注入）已迁至 HM
+# modules/home/cli/zsh.nix；本文件只保留系统级用户属性
+{ pkgs, ... }:
 {
-  pkgs,
-  ...
-}:
-
-{
-  programs = {
-    zsh = {
-      enable = true;
-      enableCompletion = true;
-      autosuggestions.enable = true;
-      syntaxHighlighting.enable = true;
-      setOptions = [
-        "HIST_IGNORE_ALL_DUPS"
-        "SHARE_HISTORY"
-        "HIST_FCNTL_LOCK"
-      ];
-      interactiveShellInit = ''
-        source ${pkgs.zsh-history-substring-search}/share/zsh-history-substring-search/zsh-history-substring-search.zsh
-        bindkey "$terminfo[kcuu1]" history-substring-search-up
-        bindkey "$terminfo[kcud1]" history-substring-search-down
-
-        # Linux TTY / dumb / Windows Terminal 回退纯文本符号预设（直接引用 starship 包内预设，随版本同步）
-        # WT_SESSION 为 Windows Terminal 官方环境变量，经 WSLENV 传入 WSL
-        if [[ "$TERM" == linux || "$TERM" == dumb || -n "$WT_SESSION" ]]; then
-          export STARSHIP_CONFIG=${pkgs.starship}/share/starship/presets/plain-text-symbols.toml
-        fi
-      '';
-    };
-    starship = {
-      enable = true;
-      presets = [ "nerd-font-symbols" ];
-      settings = {
-        add_newline = false;
-        git_status.ignore_submodules = true;
-      };
-    };
-  };
+  # 提供 zsh 的 PATH shim（/etc/profile.d），否则断言：
+  # "users.users.*.shell is set to zsh, but programs.zsh.enable is not true"
+  programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
+  users.users.root.shell = pkgs.zsh;
 }
