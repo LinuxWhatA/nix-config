@@ -45,6 +45,7 @@ from sni_spec import (
     DBUS_IFACE,
     ITEM_PATH,
     MENU_IFACES,
+    NO_DBUSMENU,
     PROPS_IFACE,
     PROTOCOL_VERSION,
     SNI_IFACE,
@@ -57,6 +58,7 @@ from sni_spec import (
     icon_png,
     parse_layout_node,
     resolve_bus_address,
+    tooltip_of,
     unwrap_variants,
 )
 
@@ -97,7 +99,7 @@ class Bridge:
         self.bus = bus
         self.bus_address: str | None = None
         self.host_name = f"{HOST_NAME_PREFIX}-{os.getpid()}"
-        self.watcher: tuple[str, str] | None = None  # (name, path) of the live watcher
+        self.watcher: str | None = None  # live StatusNotifierWatcher bus name
         self.watcher_own: Watcher | None = None  # our own Watcher, when we are it
         self.items: dict[str, Item] = {}
         self.hosts: set[str] = set()  # registered StatusNotifierHost bus names
@@ -105,9 +107,13 @@ class Bridge:
         self.server: asyncio.Server | None = None
         self._dirty: dict[str, Item] = {}  # items awaiting a deferred props fetch
         self._flush_task: asyncio.Task | None = None
+        self._watcher_loop: asyncio.Task | None = None
+        self._watching_names = False
+        self._exported_watcher = False
         self._shutdown = False
-        # hook the raw message stream once; it stays harmless in external
-        # watcher mode (on_bus_message only acts on our own Watcher)
+        # hook the raw message stream once: it handles NameOwnerChanged
+        # liveness (items, hosts, watcher loss) and appindicator-style
+        # registrations; both no-ops while no watcher is established
         self.bus.add_message_handler(self.on_bus_message)
 
     # ---------------------------------------------------------------- helpers
@@ -251,37 +257,95 @@ class Bridge:
                 self.watcher_own.StatusNotifierHostUnregistered()  # pyright: ignore[reportCallIssue] — @signal wrapper
 
     def on_bus_message(self, msg: Message) -> Message | None:
-        """Pieces dbus-next can't express triggerlessly: appindicator-style
-        registrations (an object path instead of a service name, which needs
-        the caller's unique bus name) and liveness cleanup of registered
-        items via NameOwnerChanged."""
+        """Raw-stream hooks dbus-fast cannot express through the exported
+        interface: NameOwnerChanged liveness and appindicator-style
+        registrations (an object path instead of a bus name, which needs
+        the caller's unique name from msg.sender).
+
+        The handler is installed once at construction; it only acts when
+        it owns the watcher or follows an external one.
+        """
         if (
             msg.message_type == MessageType.SIGNAL
             and msg.interface == DBUS_IFACE
             and msg.member == "NameOwnerChanged"
         ):
-            name, _old, new = msg.body
-            if self.watcher_own and not new:
-                if name in self.watcher_own.items:
-                    self.watcher_own.unregister(name)
-                elif name in self.hosts:
-                    self.remove_host(name)
-        elif (
-            msg.message_type == MessageType.METHOD_CALL
-            and msg.path == WATCHER_PATH
+            self.on_name_owner_changed(str(msg.body[0]), str(msg.body[2]))
+            return None
+        if msg.message_type == MessageType.METHOD_CALL:
+            return self.try_appindicator_register(msg)
+        return None
+
+    def try_appindicator_register(self, msg: Message) -> Message | None:
+        """Appindicator clients pass an object path as `service`, so the
+        caller's unique name stands in as the bus name."""
+        if (
+            msg.path == WATCHER_PATH
             and msg.interface == WATCHER_IFACE
             and msg.member == "RegisterStatusNotifierItem"
             and msg.signature == "s"
+            and isinstance(msg.body[0], str)
+            and msg.body[0].startswith("/")
+            and self.watcher_own is not None
         ):
-            service = msg.body[0]
-            if (
-                isinstance(service, str)
-                and service.startswith("/")
-                and self.watcher_own
-            ):
-                self.watcher_own.register(msg.sender, service)
-                return Message.new_method_return(msg, "", [])
+            self.watcher_own.register(msg.sender, msg.body[0])
+            return Message.new_method_return(msg, "", [])
         return None
+
+    def on_name_owner_changed(self, name: str, new: str) -> None:
+        """Liveness pipeline behind a single NameOwnerChanged subscription
+        (xapp-sn-watcher uses one subscriber for the same bookkeeping):
+
+        - a vanished item is unregistered (own-watcher mode)
+        - a vanished host is dropped
+        - a vanished external watcher is re-acquired from scratch
+        - a stolen watcher name (REPLACE takeover) is re-acquired
+        """
+        if new:
+            # Non-empty owners are routine (our own claim, external churn);
+            # the one exception is our watcher name being taken over with
+            # REPLACE while we own it -- re-bootstrap then.
+            if (
+                self.watcher_own is not None
+                and name in WATCHER_NAMES
+                and new != getattr(self.bus, "unique_name", "")
+            ):
+                log.warning(
+                    "watcher name %s taken over by %s; re-bootstrapping",
+                    name,
+                    new,
+                )
+                self.reset_watcher()
+                self.restart_watcher_loop()
+            return
+        if name in self.hosts:
+            self.remove_host(name)
+        if self.watcher_own is not None:
+            if name in self.watcher_own.items:
+                self.watcher_own.unregister(name)
+            elif name in WATCHER_NAMES:
+                log.warning("watcher name %s lost; re-bootstrapping", name)
+                self.reset_watcher()
+                self.restart_watcher_loop()
+        elif self.watcher is not None and name == self.watcher:
+            log.warning("StatusNotifierWatcher %s vanished; re-bootstrapping", name)
+            self.reset_watcher()
+            self.restart_watcher_loop()
+
+    def reset_watcher(self) -> None:
+        """Drop all watcher state: own export, items, hosts.  The next
+        watcher-loop pass re-acquires whatever is on the bus."""
+        self.watcher_own = None
+        self.watcher = None
+        if self._exported_watcher:
+            try:
+                self.bus.unexport(WATCHER_PATH)
+            except Exception:
+                log.debug("could not unexport watcher", exc_info=True)
+            self._exported_watcher = False
+        for service in list(self.items):
+            self._spawn(self.on_item_unregistered(service))
+        self.hosts.clear()
 
     async def _list_names(self) -> list[str] | None:
         try:
@@ -317,18 +381,12 @@ class Bridge:
                 return False  # the preferred watcher name is taken by someone else
         if not owned:
             return False
-        self.bus.export(WATCHER_PATH, attempt)
+        if not self._exported_watcher:
+            self.bus.export(WATCHER_PATH, attempt)
+            self._exported_watcher = True
         self.watcher_own = attempt
-        self.watcher = (owned[0], WATCHER_PATH)
-        log.info("no tray watcher found; providing our own at %s", owned)
-        await self.bus_call(
-            "AddMatch",
-            "s",
-            [
-                "type='signal',sender='org.freedesktop.DBus',"
-                "member='NameOwnerChanged',path='/org/freedesktop/DBus'"
-            ],
-        )
+        self.watcher = owned[0]
+        log.info("no tray watcher found; providing our own at %s", " + ".join(owned))
         return True
 
     async def register_host(self) -> None:
@@ -340,10 +398,9 @@ class Bridge:
             log.debug("could not own %s, will use raw unique name", self.host_name)
         if self.watcher is None:
             return
-        name, path = self.watcher
         await self.dbus_call(
-            name,
-            path,
+            self.watcher,
+            WATCHER_PATH,
             WATCHER_IFACE,
             "RegisterStatusNotifierHost",
             "s",
@@ -355,9 +412,8 @@ class Bridge:
         """Follow an external watcher: subscribe to its signals, replay its items."""
         if self.watcher is None:
             return
-        name, path = self.watcher
         obj = self.bus.get_proxy_object(
-            name, path, await self.introspect(name, path)
+            self.watcher, WATCHER_PATH, await self.introspect(self.watcher, WATCHER_PATH)
         )
         iface = obj.get_interface(WATCHER_IFACE)
         for attr, handler in (
@@ -377,7 +433,7 @@ class Bridge:
             if getattr(iface, attr, None):
                 getattr(iface, attr)(handler)
         reply = await self.dbus_call(
-            name, path, PROPS_IFACE, "GetAll", "s", [WATCHER_IFACE]
+            self.watcher, WATCHER_PATH, PROPS_IFACE, "GetAll", "s", [WATCHER_IFACE]
         )
         existing = reply[0].get("RegisteredStatusNotifierItems")
         if existing is not None:
@@ -390,12 +446,12 @@ class Bridge:
             return True
         name = await self.find_watcher()
         if name:
-            self.watcher = (name, WATCHER_PATH)
+            self.watcher = name
             log.info("found StatusNotifierWatcher at %s", name)
         elif not await self.claim_watcher():
             return False
         await self.register_host()
-        if not self.watcher_own:
+        if self.watcher_own is None:
             await self.setup_watcher_signals()
         return True
 
@@ -415,6 +471,40 @@ class Bridge:
             f" ({'; '.join(hints)})" if hints else "",
         )
 
+    def restart_watcher_loop(self) -> None:
+        """(Re)start watcher acquisition; a later loss of the watcher re-enters it."""
+        if self._watcher_loop is None or self._watcher_loop.done():
+            self._watcher_loop = asyncio.create_task(
+                self._safe(self.run_watcher_loop())
+            )
+
+    async def run_watcher_loop(self) -> None:
+        """Find a watcher or become one, retrying with backoff while the
+        bus has none.  Returns once a live watcher is established."""
+        if not self._watching_names:
+            await self.bus_call(
+                "AddMatch",
+                "s",
+                [
+                    "type='signal',sender='org.freedesktop.DBus',"
+                    "member='NameOwnerChanged',path='/org/freedesktop/DBus'"
+                ],
+            )
+            self._watching_names = True
+        delay = POLL_INTERVAL
+        warned = False
+        while not self._shutdown:
+            try:
+                if await self.bootstrap():
+                    return
+            except Exception as exc:
+                log.warning("watcher setup failed: %s", exc)
+            if not warned:
+                warned = True
+                await self.diagnose()
+            await asyncio.sleep(delay)
+            delay = min(delay * 2, 60)
+
     # ----------------------------------------------------------- item handling
     async def on_item_registered(self, service: str, path: str = ITEM_PATH) -> None:
         if service in self.items:
@@ -422,7 +512,13 @@ class Bridge:
         item = Item(service, path)
         self.items[service] = item
         if not await self.fill_props(item):
+            # Roll the registration back (xapp-sn-watcher syncs the item
+            # table the same way on a failed registration), so a dead entry
+            # never lingers in RegisteredStatusNotifierItems and a later
+            # re-registration can succeed.
             self.items.pop(service, None)
+            if self.watcher_own is not None:
+                self.watcher_own.unregister(service)
             return
         self.broadcast(self.add_message(item))
         await self.refresh_menu(item, force=True)
@@ -459,12 +555,7 @@ class Bridge:
         item.props = props
 
         icon = icon_png(props)
-        tt = props.get("ToolTip")
-        tooltip = (
-            str(tt[2] or "")
-            if isinstance(tt, (tuple, list)) and len(tt) >= 3  # (s, a(iiay), s, s)
-            else ""
-        )
+        tooltip = tooltip_of(props)
         title, status = str(props.get("Title") or ""), str(props.get("Status") or "")
 
         changes: dict = {}
@@ -483,7 +574,9 @@ class Bridge:
             status,
         )
 
-        menu = props.get("Menu") or None
+        menu = props.get("Menu")
+        if menu == NO_DBUSMENU:
+            menu = None
         if menu and menu != item.menu_path:
             item.menu_path, item.menu_ok = menu, False
             if not first:
@@ -924,24 +1017,7 @@ async def main(args: argparse.Namespace) -> int:
     bridge.server = await asyncio.start_server(bridge.on_client, "127.0.0.1", args.port)
     log.info("listening on 127.0.0.1:%d for tray_host (%s)", args.port, bus_address)
 
-    warned = False
-
-    async def watch_watcher():
-        nonlocal warned
-        delay = 3
-        while True:
-            try:
-                if await bridge.bootstrap():
-                    return
-            except Exception as exc:
-                log.warning("watcher setup failed: %s", exc)
-            if not warned:
-                warned = True
-                await bridge.diagnose()
-            await asyncio.sleep(delay)
-            delay = min(delay * 2, 60)
-
-    asyncio.create_task(watch_watcher())
+    bridge.restart_watcher_loop()
     if args.spawn:
         bridge.spawn_windows_side()
 

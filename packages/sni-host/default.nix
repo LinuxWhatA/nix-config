@@ -17,7 +17,7 @@
 let
   src = lib.cleanSource ./src;
   pyEnv = python3.withPackages (ps: [
-    ps.dbus-fast # D-Bus (GLib-free); maintained fork of dbus-next
+    ps.dbus-fast # D-Bus (GLib-free client/server for Python)
     ps.pillow # IconPixmap ARGB32 → PNG
   ]);
 in

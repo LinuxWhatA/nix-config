@@ -9,10 +9,12 @@
     enable = true;
     defaultUser = flake.config.me.username;
     interop.register = true; # 解决 binfmt 冲突
+    useWindowsDriver = true; # WSLg OpenGL 用 Windows 宿主驱动
     wslConf.interop = {
       enabled = true; # 启用互操作功能
       appendWindowsPath = false; # 不附加Windows PATH以提升速度
     };
+    startMenuLaunchers = true;
   };
   systemd.services.systemd-binfmt.enable = false;
   services.envfs.enable = lib.mkForce false;

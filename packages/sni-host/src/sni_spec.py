@@ -50,16 +50,32 @@ WATCHER_NAMES = (
 )
 WATCHER_PATH = "/StatusNotifierWatcher"
 ITEM_PATH = "/StatusNotifierItem"
+NO_DBUSMENU = "/NO_DBUSMENU"  # spec sentinel: the item has no menu
 PROTOCOL_VERSION = 1
 
 
 # ------------------------------------------------------------------- helpers
 def unwrap_variants(props: dict) -> dict:
-    """Strip dbus-next Variant wrappers, returning plain Python values."""
+    """Strip dbus-fast Variant wrappers, returning plain Python values."""
     return {k: v.value if isinstance(v, Variant) else v for k, v in props.items()}
 
 
-# dbus type codes for the decorator annotations below (dbus-next reads
+def tooltip_of(props: dict) -> str:
+    """Tooltip text of an item, tolerating both ToolTip signature variants.
+
+    The spec says ``(sa(iiay)ss)``; some apps emit a bare string instead
+    (xapp-sn-watcher handles both, sn-item.c:798-829).  Of the tuple form
+    we keep the heading (field 2), matching the pre-existing behaviour.
+    """
+    tt = props.get("ToolTip")
+    if isinstance(tt, (tuple, list)) and len(tt) >= 3:
+        return str(tt[2] or "")
+    if isinstance(tt, (str, bytes)):
+        return tt.decode() if isinstance(tt, bytes) else tt
+    return ""
+
+
+# dbus type codes for the decorator annotations below (dbus-fast reads
 # them literally); Pylance would treat "s" as a forward reference.
 # pyright: reportInvalidTypeForm=false
 class Watcher(ServiceInterface):
@@ -111,7 +127,10 @@ class Watcher(ServiceInterface):
 
     @dbus_property(access=PropertyAccess.READ)
     def IsStatusNotifierHostRegistered(self) -> sig_b:
-        return bool(self.bridge.hosts)
+        # When the bridge owns the watcher it IS the host pipeline, so the
+        # flag is advertised before its own registration call lands (the
+        # xapp-sn-watcher behaviour); otherwise follow the registrations.
+        return self.bridge.watcher_own is not None or bool(self.bridge.hosts)
 
     @dbus_property(access=PropertyAccess.READ)
     def ProtocolVersion(self) -> sig_i:
