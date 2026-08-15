@@ -56,6 +56,5 @@ in
         };
       };
     in
-    mergeJson ".vscode/argv.json" argv
-    + mergeJson ".config/Code/User/settings.json" userSettings;
+    mergeJson ".vscode/argv.json" argv + mergeJson ".config/Code/User/settings.json" userSettings;
 }

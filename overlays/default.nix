@@ -43,6 +43,25 @@ in
 
   nix-alien = inputs.nix-alien.packages.x86_64-linux.nix-alien;
 
+  # amdgpu gfxhub page fault 缓解：Chromium GPU 进程改走 radv(Vulkan) 而非 radeonsi(GL)
+  # argv.json 白名单不支持 use-angle 开关，只能在启动 wrapper 里注入
+  # VK_ICD_FILENAMES：Chromium 捆绑的 vulkan-loader 找不到 NixOS 的 ICD 路径，
+  #   不指定则 ANGLE 报 VK_ERROR_INCOMPATIBLE_DRIVER（-9）导致 GPU 进程退出
+  # symlinkJoin 透传 meta，保留 mainProgram，home-manager getExe 不再告警
+  vscode = prev.symlinkJoin {
+    name = "${prev.vscode.name}";
+    version = "${prev.vscode.version}";
+    paths = [ prev.vscode ];
+    meta = prev.vscode.meta;
+    buildInputs = [ prev.makeWrapper ];
+    postBuild = ''
+      wrapProgram "$out/bin/code" \
+        --add-flags "--use-angle=vulkan" \
+        --set VK_ICD_FILENAMES "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json" \
+        --prefix LD_LIBRARY_PATH : "/run/opengl-driver/lib"
+    '';
+  };
+
   proton-run = mkProtonRun "proton-run" prev.proton-ge-bin.steamcompattool;
   dwproton-run = mkProtonRun "dwproton-run" prev.dwproton-bin.steamcompattool;
 
