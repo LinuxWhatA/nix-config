@@ -54,7 +54,6 @@ from sni_spec import (
     WATCHER_PATH,
     Watcher,
     find_menu_node,
-    first_primary_node,
     icon_png,
     parse_layout_node,
     resolve_bus_address,
@@ -170,9 +169,7 @@ class Bridge:
             self.bus.introspect(destination, path), timeout=DBUS_CALL_TIMEOUT
         )
 
-    async def call(
-        self, item: Item, member: str, signature: str, body: list
-    ) -> None:
+    async def call(self, item: Item, member: str, signature: str, body: list) -> None:
         """Call an SNI method on an item."""
         await self.dbus_call(
             item.service, item.path, SNI_IFACE, member, signature, body
@@ -413,7 +410,9 @@ class Bridge:
         if self.watcher is None:
             return
         obj = self.bus.get_proxy_object(
-            self.watcher, WATCHER_PATH, await self.introspect(self.watcher, WATCHER_PATH)
+            self.watcher,
+            WATCHER_PATH,
+            await self.introspect(self.watcher, WATCHER_PATH),
         )
         iface = obj.get_interface(WATCHER_IFACE)
         for attr, handler in (
@@ -731,19 +730,17 @@ class Bridge:
             return
         try:
             if t == "activate":
-                await self.call(item, "Activate", "ii", [0, 0])
-            elif t == "secondary":
-                await self.call(item, "SecondaryActivate", "ii", [0, 0])
-            elif t == "context":
-                await self.refresh_menu(item, force=True, about_to_show=True)
-            elif t == "menu_click" and item.menu_path:
+                if item.props.get("ItemIsMenu"):
+                    # KDE parity (StatusNotifierItem.qml:46): an item that
+                    # declares itself a menu opens its menu on left click
+                    # instead of receiving Activate.
+                    await self.surface_menu(item)
+                else:
+                    await self.call(item, "Activate", "ii", [0, 0])
+            elif t == "menu_click":
                 await self.click_menu_item(item, m)
             elif t == "open_window":
                 await self.open_window(item)
-            elif t == "scroll":
-                await self.call(
-                    item, "Scroll", "ii", [int(m.get("dx", 0)), int(m.get("dy", 0))]
-                )
         except Exception as exc:
             log.info("forwarding %s to %s failed: %s", t, item.service, exc)
 
@@ -803,9 +800,7 @@ class Bridge:
         try:
             reply = await self.bus_call("GetNameOwner", "s", [item.service])
             unique = str(reply[0]) if reply and reply[0] else item.service
-            reply = await self.bus_call(
-                "GetConnectionUnixProcessID", "s", [unique]
-            )
+            reply = await self.bus_call("GetConnectionUnixProcessID", "s", [unique])
             return int(reply[0]) if reply and reply[0] else None
         except Exception:
             return None
@@ -814,9 +809,13 @@ class Bridge:
         """Map + raise the app's X11 windows so WSLg shows them again.
 
         Only windows owned by `pid` (via _NET_WM_PID) are touched, so this
-        can never surface a different program.  Returns True when at least
-        one window existed and was remapped — i.e. the app merely hid its
-        window on close-to-tray and keeps it around.
+        can never surface a different program.  A single chained xdotool
+        call searches by pid and acts on every result (``%@``), keeping
+        this to one process spawn and one X connection.  Exit status is
+        the "found" signal: chained search is silent on stdout and fails
+        with a non-zero status when the window stack is empty.  Returns
+        True when at least one window existed and was remapped - i.e. the
+        app merely hid its window on close-to-tray and keeps it around.
         """
         try:
             proc = await asyncio.create_subprocess_exec(
@@ -824,48 +823,18 @@ class Bridge:
                 "search",
                 "--pid",
                 str(pid),
-                stdout=asyncio.subprocess.PIPE,
+                "windowmap",
+                "--sync",
+                "%@",
+                "windowraise",
+                "%@",
+                stdout=asyncio.subprocess.DEVNULL,
                 stderr=asyncio.subprocess.DEVNULL,
             )
-            out, _ = await proc.communicate()
+            return await proc.wait() == 0
         except (FileNotFoundError, OSError) as exc:
             log.debug("xdotool unavailable: %s", exc)
             return False
-        wins = [w.decode() for w in out.split()]
-        if not wins:
-            return False
-        await asyncio.create_subprocess_exec(
-            "xdotool",
-            *(a for w in wins for a in ("windowmap", w, "windowraise", w)),
-            stdout=asyncio.subprocess.DEVNULL,
-            stderr=asyncio.subprocess.DEVNULL,
-        )
-        log.info("mapped %d X11 window(s) of pid %s", len(wins), pid)
-        return True
-
-    async def click_primary_menu(self, item: Item) -> None:
-        """Fire Event(clicked) on the app's primary "show window" item.
-
-        Used when Activate produced no window: apps built on the tray-icon
-        crate never wire Activate on Linux, and apps that close-to-tray by
-        destroying their window have no X11 window left to map.  The item
-        is picked from the app's own current menu layout (first enabled,
-        non-checkable, non-quit leaf), so nothing here is app-specific.
-        """
-        if not item.menu_path:
-            return
-        layout = await self.fetch_layout(item)
-        if not layout:
-            return
-        self._set_menu_cache(item, *layout)
-        node = first_primary_node(layout[0])
-        if node is None:
-            log.info("no primary menu item on %s", item.service)
-            return
-        log.info(
-            "clicking primary menu item %r on %s", node.get("label"), item.service
-        )
-        await self._fire_event(item, int(node["id"]))
 
     async def open_window(self, item: Item) -> None:
         """Generic fallback to surface a backgrounded app's window.
@@ -873,14 +842,28 @@ class Bridge:
         SNI Activate is only a request and many apps ignore it on Linux,
         so when it failed to produce a window: 1) map the app's X11
         windows if it has any (covers apps that merely hide their window),
-        else 2) click its primary menu item (covers apps that destroy
-        their window on close-to-tray).  Both routes are generic and can
-        only ever touch the app itself.
+        else 2) present the app's menu to the user (KDE's behaviour: a
+        no-op activate degrades to the context menu instead of guessing
+        an item).  All routes are generic and can only ever touch the app
+        itself.
         """
         pid = await self.app_pid(item)
         if pid and await self.map_x11_windows(pid):
             return
-        await self.click_primary_menu(item)
+        await self.surface_menu(item)
+
+    async def surface_menu(self, item: Item) -> None:
+        """Present the app's context menu and let the user pick an item.
+
+        Used for left clicks on ``ItemIsMenu`` items (KDE behaviour) and
+        as the last fallback when Activate raised no window: instead of
+        auto-clicking a menu item that might turn out to be a setting or
+        "quit", refresh the menu the way a right-click would and ask the
+        Windows side to pop it up at the cursor.  The user then chooses
+        the app's own "show window" item by hand.
+        """
+        await self.refresh_menu(item, force=True, about_to_show=True)
+        self.broadcast({"t": "show_menu", "key": item.service})
 
     # ------------------------------------------------------------------ tcp
     def send(self, writer: asyncio.StreamWriter, msg: dict) -> None:

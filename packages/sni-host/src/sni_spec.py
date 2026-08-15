@@ -238,33 +238,6 @@ def find_menu_node(nodes: list, label: str) -> dict | None:
     return None
 
 
-def first_primary_node(nodes: list) -> dict | None:
-    """First root-level item that plausibly shows the app's main window.
-
-    SNI convention puts the app's primary "show window" action first in
-    the root menu (clash-verge: 仪表板; typical apps: 打开/显示主窗口,
-    Open/Show).  Purely structural, no label matching: separators,
-    disabled/hidden items, check/radio toggles and submenus are skipped
-    (they are never window-openers), and the last root item is skipped
-    because "quit" conventionally occupies that slot — so the fallback
-    can never toggle a setting or quit the app, in any language.  Only
-    the root level is consulted, since submenus are navigation.
-    """
-    items = [
-        n
-        for n in nodes or []
-        if n.get("type") != "separator"
-        and n.get("enabled", True)
-        and n.get("visible", True) is not False
-        and not n.get("children")
-        and not n.get("radio")
-        and "checked" not in n
-    ]
-    if len(items) <= 1:
-        return None
-    return items[0]
-
-
 # ------------------------------------------------------------------- entry
 def resolve_bus_address() -> str | None:
     addr = os.environ.get("DBUS_SESSION_BUS_ADDRESS")

@@ -32,6 +32,15 @@ from PIL import Image, ImageDraw
 PROTOCOL_VERSION = 1
 ICON_SIZE = 32
 
+# pystray's Win32 backend treats a notification-area callback message
+# (its registered uCallbackMessage, WM_USER+11) as "icon interaction"
+# and dispatches it by lParam to the mouse event handlers; a real right
+# click arrives as WM_RBUTTONUP there (pystray/_win32.py:_on_notify).
+# These let us replay exactly what a right click does — TrackPopupMenuEx
+# at the cursor — for sni-host's "show the menu" fallback.
+PYSTRAY_WM_NOTIFY = 0x0400 + 11  # WM_USER + 11
+WM_RBUTTONUP = 0x0205
+
 # Every WSLg app window lives in the WSLg RDP client process (mstsc.exe,
 # per WSLGd's design) and additionally carries a "WslgServerWindowId"
 # window property that the WSLg client sets on each remote app window —
@@ -218,9 +227,7 @@ class TrayHost:
         if "icon" in m or "status" in m:
             icon.icon = self._overlay_attention(rec.img, rec.status)
         if "tooltip" in m or "title" in m:
-            rec.title = (
-                m.get("tooltip") or m.get("title") or m.get("id") or rec.title
-            )
+            rec.title = m.get("tooltip") or m.get("title") or m.get("id") or rec.title
             icon.title = rec.title
         if "menu" in m:
             icon.menu = self._menu(m["key"], m.get("menu") or [])
@@ -236,6 +243,27 @@ class TrayHost:
         rec = self.icons.get(m.get("key"))
         if rec:
             rec.icon.menu = self._menu(m["key"], m.get("menu") or [])
+
+    def on_show_menu(self, m: dict[str, Any]) -> None:
+        """Pop the icon's menu up programmatically (KDE-style fallback).
+
+        sni-host asks for this when Activate raised no window (or the item
+        is ItemIsMenu): show the menu at the cursor so the user picks the
+        "open main window" item themselves, instead of an automatic
+        menu-item click.  pystray has no public "show menu" call, so the
+        same notification-area callback message a real right click produces
+        (WM_USER+11, lParam=WM_RBUTTONUP) is posted to the icon's hidden
+        window; the pystray Win32 backend then runs TrackPopupMenuEx
+        exactly like a genuine right click.
+        """
+        rec = self.icons.get(m.get("key"))
+        if not rec:
+            return
+        icon = rec.icon  # on Windows pystray.Icon is the Win32 backend itself
+        if icon._hwnd:  # only exists once the icon's message loop is up
+            ctypes.windll.user32.PostMessageW(
+                icon._hwnd, PYSTRAY_WM_NOTIFY, 0, WM_RBUTTONUP
+            )
 
     # ------------------------------------------------------------- menu/img
     def _menu(
@@ -319,6 +347,12 @@ class TrayHost:
         is asked to surface the app right away instead of after a dead
         wait, then the poll picks the window up when it appears.
 
+        The poll is capped at 2s: a window surfaced via open_window appears
+        within a second (windowmap --sync blocks until mapped), and the
+        raise worker is serial — a click that never yields a window must
+        not keep later clicks waiting behind it (a no-window click used to
+        block the next one for the full 6s).
+
         NOTE: do NOT collapse this into a single "window exists" check; a
         window can exist yet sit buried (visible != on top), which made
         menu clicks look dead.  Reproduce: left-click the tray icon, switch
@@ -335,7 +369,7 @@ class TrayHost:
             # surface it through the Linux side immediately.
             self.send({"t": "open_window", "key": key})
             print("[tray-host] no WSLg window; nudging app to open", flush=True)
-        deadline = time.monotonic() + (6.0 if nudge else 2.0)
+        deadline = time.monotonic() + 2.0
         while time.monotonic() < deadline:
             if key not in self.icons:
                 return
