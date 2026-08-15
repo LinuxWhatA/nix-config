@@ -4,7 +4,10 @@
   fetchurl,
   autoPatchelfHook,
   dpkg,
+  desktop-file-utils,
+  wrapGAppsHook3,
   gtk3,
+  gdk-pixbuf,
   libnotify,
   libepoxy,
   webkitgtk_4_1,
@@ -14,6 +17,7 @@
   libXtst,
   libappindicator-gtk3,
   glibc,
+  pipewire,
 }:
 
 let
@@ -51,10 +55,13 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     autoPatchelfHook
     dpkg
+    desktop-file-utils
+    wrapGAppsHook3
   ];
 
   buildInputs = [
     gtk3
+    gdk-pixbuf
     libnotify
     libepoxy
     webkitgtk_4_1
@@ -67,6 +74,16 @@ stdenv.mkDerivation (finalAttrs: {
   ];
   runtimeDependencies = [ glibc ];
   patchelfFlags = [ "--force-rpath" ];
+
+  # 部分组件（录屏/远程音频）在启动时 dlopen libpipewire，非 NEEDED 依赖，
+  # autoPatchelfHook 不会处理，需通过 LD_LIBRARY_PATH 提供。
+  # 注意：gappsWrapperArgs 必须在 preFixup 阶段追加（wrap-gapps-hook 会在
+  # hook 开头重置该数组，顶层属性值会被丢弃）
+  preFixup = ''
+    gappsWrapperArgs+=(
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ pipewire ]}"
+    )
+  '';
 
   # 剥离后 daemon 会连接失败（AUR b3a3824），保持上游二进制原样
   dontStrip = true;
@@ -93,8 +110,10 @@ stdenv.mkDerivation (finalAttrs: {
     cp build/usr/share/applications/awesun.desktop $out/share/applications/
     cp build/usr/local/awesun/awesun.png $out/share/pixmaps/sunloginclient.png
     substituteInPlace $out/share/applications/awesun.desktop \
-      --replace "/usr/local/awesun/awesun" "sunloginclient" \
-      --replace "/usr/local/awesun/awesun.png" "$out/share/pixmaps/sunloginclient.png"
+      --replace-fail "/usr/local/awesun/awesun.png" "sunloginclient" \
+      --replace-fail "/usr/local/awesun/awesun" "sunloginclient" \
+      --replace-fail "Categories=Network;RemoteControl;" "Categories=Network;X-RemoteControl;"
+    desktop-file-validate $out/share/applications/awesun.desktop
 
     runHook postInstall
   '';
