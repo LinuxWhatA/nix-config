@@ -25,7 +25,7 @@ let
 
   python-embed = fetchurl {
     url = "https://www.python.org/ftp/python/${python3.version}/python-${python3.version}-embed-amd64.zip";
-    hash = "sha256-35AehKiW/x7nIK0DN34MjYwiRP2nmAiu6v9jFt8ct1w=";
+    hash = "sha256-0pfl/wGZZoF62FAkZRdhOfLT2ED6TthLE77TmaarHxU=";
   };
 
   pillow-win = fetchurl {
