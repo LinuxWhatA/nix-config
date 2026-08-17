@@ -170,7 +170,7 @@ def icon_png(props: dict) -> bytes | None:
     for w, h, data in sorted(candidates, key=lambda e: e[0] * e[1], reverse=True):
         img = None
         try:
-            img = Image.frombytes("RGBA", (w, h), bytes(data), "raw", "ARGB")
+            img = Image.frombytes("RGBA", (w, h), bytes(data), "raw", "ARGB", 0, 0)
             buf = io.BytesIO()
             img.save(buf, format="PNG")
             return buf.getvalue()

@@ -5,16 +5,21 @@ let
 in
 final: prev:
 let
+  mergeJson = (import (flake.inputs.self + /lib/merge-json.nix) { inherit (prev) pkgs; }).mergeJson;
+
   withCategory =
     category: pkg:
     prev.symlinkJoin {
       name = pkg.name;
       paths = [ pkg ];
       postBuild = ''
-        for f in $out/share/applications/*.desktop; do
-          sed 's/^Categories=/Categories=${category};/' "$f" > "$f.bak"
-          mv "$f.bak" "$f"
-        done
+        if [ -d "$out/share/applications" ]; then
+          for f in "$out"/share/applications/*.desktop; do
+            [ -f "$f" ] || continue
+            sed 's/^Categories=/Categories=${category};/' "$f" > "$f.tmp"
+            mv "$f.tmp" "$f"
+          done
+        fi
       '';
     };
 
@@ -32,6 +37,8 @@ in
   }) (builtins.attrNames (builtins.readDir ../packages))
 ))
 // {
+  inherit mergeJson;
+
   wechat = prev.wechat.override {
     fetchurl =
       { ... }:
@@ -47,7 +54,9 @@ in
   # argv.json 白名单不支持 use-angle 开关，只能在启动 wrapper 里注入
   # VK_ICD_FILENAMES：Chromium 捆绑的 vulkan-loader 找不到 NixOS 的 ICD 路径，
   #   不指定则 ANGLE 报 VK_ERROR_INCOMPATIBLE_DRIVER（-9）导致 GPU 进程退出
-  # symlinkJoin 透传 meta，保留 mainProgram，home-manager getExe 不再告警
+  #
+  # 使用 symlinkJoin：原始 vscode 从 cache.nixos.org 获取，仅创建符号链接 + wrapProgram，
+  # build 开销极小。若改用 overrideAttrs 会创建新的 store path，绕过二进制缓存。
   vscode = prev.symlinkJoin {
     name = "${prev.vscode.name}";
     version = "${prev.vscode.version}";

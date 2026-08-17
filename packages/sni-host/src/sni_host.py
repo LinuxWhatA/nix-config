@@ -110,6 +110,7 @@ class Bridge:
         self._watching_names = False
         self._exported_watcher = False
         self._shutdown = False
+        self._background_tasks: set[asyncio.Task] = set()
         # hook the raw message stream once: it handles NameOwnerChanged
         # liveness (items, hosts, watcher loss) and appindicator-style
         # registrations; both no-ops while no watcher is established
@@ -176,7 +177,9 @@ class Bridge:
         )
 
     def _spawn(self, coro) -> None:
-        asyncio.create_task(self._safe(coro))
+        task = asyncio.create_task(self._safe(coro))
+        self._background_tasks.add(task)
+        task.add_done_callback(self._background_tasks.discard)
 
     async def _safe(self, coro) -> None:
         try:
@@ -995,7 +998,12 @@ async def main(args: argparse.Namespace) -> int:
         )
         return 1
 
-    bridge = Bridge(args.port, await MessageBus(bus_address=bus_address).connect())
+    try:
+        bus = await MessageBus(bus_address=bus_address).connect()
+    except Exception as exc:
+        log.error("D-Bus connection failed (%s): %s", bus_address, exc)
+        return 1
+    bridge = Bridge(args.port, bus)
     bridge.bus_address = bus_address
     bridge.server = await asyncio.start_server(bridge.on_client, "127.0.0.1", args.port)
     log.info("listening on 127.0.0.1:%d for tray_host (%s)", args.port, bus_address)
