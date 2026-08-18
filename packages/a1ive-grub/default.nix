@@ -24,7 +24,7 @@
 let
   # bootstrap.conf 中固定的 gnulib 版本（GRUB 2.11 时代）
   gnulib = fetchgit {
-    url = "https://git.savannah.gnu.org/git/gnulib.git";
+    url = "https://github.com/coreutils/gnulib.git";
     rev = "d271f868a8df9bbec29049d01e056481b7a1a263";
     hash = "sha256-AON1MEfEbSTZMeDDwawRDUD22/4+jIiWYnk35xg7ZSk=";
   };
@@ -72,7 +72,9 @@ stdenv.mkDerivation {
 
     ./bootstrap --no-git --gnulib-srcdir=$NIX_BUILD_TOP/gnulib-writable
 
-    substituteInPlace ./configure --replace-fail /usr/share/fonts/unifont ${unifont}/share/fonts
+    # 与 nixpkgs grub2 一致：GRUB 在 /usr/share/fonts 各子目录（含 X11/misc）搜索
+    # unifont.{pcf,pcf.gz,bdf,bdf.gz,ttf,ttf.gz} 作为 FONT_SOURCE 生成 .pf2
+    substituteInPlace ./configure --replace-fail /usr/share/fonts ${unifont}/share/fonts
   '';
 
   configureFlags = [
