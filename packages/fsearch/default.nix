@@ -31,7 +31,7 @@ stdenv.mkDerivation (finalAttrs: {
   patches = [
     (fetchpatch {
       url = "https://github.com/cboxdoerfer/fsearch/commit/0257fd0a77b28d38fc07ab5981d8e5698147c835.patch";
-      hash = "sha256-nR5EJ1fUeTGjvN7OJzibwvbuAwQu2xo7i09yktoxvfQ=";
+      hash = "sha256-2FKo3PGkhoZYAzxvAitUvB8Zw51RJNNLrs3N02VoKIA=";
     })
   ];
 
