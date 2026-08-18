@@ -42,8 +42,9 @@ in
       ];
       warn-dirty = false;
 
-      # 镜像不可用时回退本地构建
-      fallback = true;
+      # GC 时保留当前系统构建闭包（drv 及其所有输入输出，含 FOD 与编译器），
+      # 防止 gnulib/gcc 等被回收后从网络重新下载。
+      keep-outputs = true;
 
       substituters = lib.mkDefault [
         "https://mirror.nju.edu.cn/nix-channels/store"
