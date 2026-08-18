@@ -20,7 +20,7 @@
 
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.writeScript "reset-bluetooth.sh" ''
+      ExecStart = "${pkgs.writeShellScript "reset-bluetooth.sh" ''
         for dev in $(${pkgs.usbutils}/bin/lsusb | grep -i bluetooth | ${pkgs.gawk}/bin/awk '{print $6}'); do
           ${pkgs.usbutils}/bin/usbreset "$dev"
         done
