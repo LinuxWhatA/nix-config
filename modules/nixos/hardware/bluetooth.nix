@@ -3,6 +3,8 @@
   hardware.bluetooth = {
     enable = true;
   };
+  # MT7921 USB 蓝牙自动挂起导致配对设备连接缓慢/失败
+  boot.extraModprobeConfig = "options btusb enable_autosuspend=N";
   # https://wiki.nixos.org/wiki/Bluetooth#USB_device_needs_to_be_unplugged/re-plugged_after_suspends
   systemd.services.reset-bluetooth-after-suspend = {
     description = "Reset Bluetooth USB device after system resume";
