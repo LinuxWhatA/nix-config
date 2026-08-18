@@ -19,6 +19,7 @@
   home-manager.users.${flake.config.me.username}.imports = [
     flake.inputs.self.homeModules.default
     flake.inputs.self.homeModules.cli
+    flake.inputs.self.homeModules.gui
   ];
 
   home-manager.users.root = {

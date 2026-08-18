@@ -1,9 +1,6 @@
 # COSMIC 桌面 —— 主机配置一行导入：(self + /modules/nixos/desktop/cosmic.nix)
-{ flake, ... }:
-
 {
-  # 桌面需要用户态 GUI 模块
-  home-manager.sharedModules = [ flake.inputs.self.homeModules.gui ];
+  # 桌面需要用户态 GUI 模块（经 desktop-host.nix 注入到桌面用户，root 不继承）
 
   # 启用 COSMIC 登录管理器
   services.displayManager.cosmic-greeter.enable = true;
