@@ -1,0 +1,37 @@
+--- dsdt.dsl	2026-08-18 00:00:00.000000000 +0800
++++ dsdt.dsl.mod	2026-08-18 00:00:00.000000000 +0800
+@@ -18,7 +18,7 @@
+  *     Compiler ID      "ACPI"
+  *     Compiler Version 0x00040000 (262144)
+  */
+-DefinitionBlock ("", "DSDT", 1, "XMCC  ", "XMCC2108", 0x00000002)
++DefinitionBlock ("", "DSDT", 1, "XMCC  ", "XMCC2108", 0x00000003)
+ {
+     External (_GPE, DeviceObj)
+     External (_SB_.ALIB, MethodObj)    // 2 Arguments
+@@ -29,7 +29,6 @@
+     External (_SB_.NPCF.ATPP, IntObj)
+     External (_SB_.NPCF.DBAC, IntObj)
+     External (_SB_.PCI0.GFX0.VGA_.LCD_, DeviceObj)
+-    External (_SB_.PCI0.GP17.VGA_.AFN7, UnknownObj)
+     External (_SB_.PCI0.GPP0.PEGP, UnknownObj)
+     External (_SB_.PCI0.GPP0.PEGP.TGPT, IntObj)
+     External (_SB_.PCI0.GPP7, DeviceObj)
+@@ -5219,7 +5218,7 @@
+                     {
+                         If ((DPTC == One))
+                         {
+-                            Name (PPPB, Buffer (0x12){})
++                            Name (PPPB, Buffer (0x11){})
+                             CreateWordField (PPPB, Zero, SSZE)
+                             CreateByteField (PPPB, 0x02, PMDH)
+                             CreateDWordField (PPPB, 0x03, VCLT)
+@@ -5227,7 +5226,7 @@
+                             CreateDWordField (PPPB, 0x08, VMCL)
+                             CreateByteField (PPPB, 0x0C, PMDB)
+                             CreateDWordField (PPPB, 0x0D, P3TL)
+-                            SSZE = 0x12
++                            SSZE = 0x11
+                             PMDH = 0x0B
+                             VCLT = Arg0
+                             PMDI = 0x0C

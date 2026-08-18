@@ -1,9 +1,15 @@
-{ flake, ... }:
+{ flake, pkgs, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
     (flake.inputs.self + /modules/nixos/hardware/boot.nix)
+  ];
+
+  # BIOS DSDT 修复（PPPB buffer 越界，见 packages/redmi-acpi-table）
+  # 未压缩 cpio 必须位于 initrd 最前，内核 ACPI 表升级机制才能识别
+  boot.initrd.prepend = [
+    "${pkgs.redmi-acpi-table}/acpi_override.cpio"
   ];
 
   boot.kernelParams = [
