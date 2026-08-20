@@ -4,7 +4,7 @@
   ...
 }:
 
-{
+rec {
   imports = [
     flake.inputs.disko.nixosModules.disko
   ];
@@ -89,8 +89,8 @@
   };
   fileSystems."/persist".neededForBoot = true;
 
-  fileSystems."/mnt/TiPlus5000" = {
-    device = "/dev/disk/by-label/TiPlus5000";
+  fileSystems."/mnt/Data" = {
+    device = "/dev/disk/by-label/Data";
     fsType = "ntfs3";
     options = [
       "defaults"
@@ -103,7 +103,14 @@
       "dmask=0000" # 目录777
       "fmask=0000" # 文件777
       "x-gvfs-show" # 在文件管理器中显示盘符
+      "windows_names" # 提高与Windows的兼容性
     ];
+  };
+
+  fileSystems."/mnt/Windows" = {
+    device = "/dev/disk/by-label/Windows";
+    fsType = "ntfs3";
+    options = fileSystems."/mnt/Data".options;
   };
 
   services.btrfs.autoScrub.enable = true;

@@ -15,6 +15,7 @@ in
 
     (self + /modules/nixos/base)
     (self + /modules/nixos/desktop-host.nix)
+    (self + /modules/nixos/virtualization/rdp-windows.nix)
 
     ./grub.nix
     ./configuration.nix

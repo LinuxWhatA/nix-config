@@ -2,29 +2,23 @@
 { flake, pkgs, ... }:
 
 {
-  virtualisation.libvirtd.enable = true;
-  # virtualisation.libvirtd.swtpm.enable = true;
+  virtualisation.libvirtd = {
+    enable = true;
+    # qemu.swtpm.enable = true;
+    qemu.vhostUserPackages = with pkgs; [ virtiofsd ];
+  };
   programs.virt-manager.enable = true;
+  virtualisation.spiceUSBRedirection.enable = true;
   boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 
   environment.systemPackages = with pkgs; [
     virtiofsd
     bridge-utils
+    flake.inputs.winapps.packages."${stdenv.hostPlatform.system}".winapps
+    flake.inputs.winapps.packages."${stdenv.hostPlatform.system}".winapps-launcher
   ];
 
-  networking.firewall = {
-    # spice
-    allowedTCPPortRanges = [
-      {
-        from = 5900;
-        to = 5999;
-      }
-    ];
-    # libvirt
-    allowedTCPPorts = [
-      16509
-    ];
-  };
+  networking.firewall.trustedInterfaces = [ "virbr0" ];
 
   users.users.${flake.config.me.username} = {
     packages = [

@@ -49,6 +49,20 @@
       inputs.flake-compat.follows = "flake-compat";
       inputs.nix-index-database.follows = "nix-index-database";
     };
+    flake-utils = {
+      url = "git+https://gitcode.com/gh_mirrors/fl/flake-utils";
+    };
+    winapps = {
+      url = "git+https://gitcode.com/GitHub_Trending/wina/winapps";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-compat.follows = "flake-compat";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+    NixVirt = {
+      # 0.6.0 起缺少 smm/loader-secure 支持，需跟 master（2025-11 之后）
+      url = "git+https://github.com/AshleyYakeley/NixVirt";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     betterfox = {
       url = "git+https://gitcode.com/GitHub_Trending/be/Betterfox";
       flake = false;

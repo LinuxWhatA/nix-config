@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "NixVirt": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783240168,
+        "narHash": "sha256-9zaLOKal8uI+ecKaOBCOfGcZe/HG1xQQnlDDjPoOmwE=",
+        "ref": "refs/heads/master",
+        "rev": "6d213ab42f72ba41c2eb4e6bdb97581c0642d942",
+        "revCount": 443,
+        "type": "git",
+        "url": "https://github.com/AshleyYakeley/NixVirt"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/AshleyYakeley/NixVirt"
+      }
+    },
     "betterfox": {
       "flake": false,
       "locked": {
@@ -69,6 +89,24 @@
       "original": {
         "type": "git",
         "url": "https://gitcode.com/gh_mirrors/fl/flake-parts"
+      }
+    },
+    "flake-utils": {
+      "inputs": {
+        "systems": "systems"
+      },
+      "locked": {
+        "lastModified": 1701680307,
+        "narHash": "sha256-kAuep2h5ajznlPMD9rnQyffWG8EM/C73lejGofXvdM8=",
+        "ref": "refs/heads/main",
+        "rev": "4022d587cbbfd70fe950c1e2083a02621806a725",
+        "revCount": 88,
+        "type": "git",
+        "url": "https://gitcode.com/gh_mirrors/fl/flake-utils"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitcode.com/gh_mirrors/fl/flake-utils"
       }
     },
     "hardware": {
@@ -158,6 +196,21 @@
       "original": {
         "type": "git",
         "url": "https://gitcode.com/gh_mirrors/ni/nix-alien"
+      }
+    },
+    "nix-filter": {
+      "locked": {
+        "lastModified": 1757882181,
+        "narHash": "sha256-+cCxYIh2UNalTz364p+QYmWHs0P+6wDhiWR4jDIKQIU=",
+        "owner": "numtide",
+        "repo": "nix-filter",
+        "rev": "59c44d1909c72441144b93cf0f054be7fe764de5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "nix-filter",
+        "type": "github"
       }
     },
     "nix-index-database": {
@@ -260,10 +313,12 @@
     },
     "root": {
       "inputs": {
+        "NixVirt": "NixVirt",
         "betterfox": "betterfox",
         "disko": "disko",
         "flake-compat": "flake-compat",
         "flake-parts": "flake-parts",
+        "flake-utils": "flake-utils",
         "hardware": "hardware",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
@@ -273,7 +328,23 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-lib": "nixpkgs-lib",
         "plasma-manager": "plasma-manager",
-        "wechat": "wechat"
+        "wechat": "wechat",
+        "winapps": "winapps"
+      }
+    },
+    "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
       }
     },
     "wechat": {
@@ -286,6 +357,33 @@
       "original": {
         "type": "file",
         "url": "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage"
+      }
+    },
+    "winapps": {
+      "inputs": {
+        "flake-compat": [
+          "flake-compat"
+        ],
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nix-filter": "nix-filter",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784112840,
+        "narHash": "sha256-zEa39HQaifu2rEi65w4b0lXRbTBiWyT4MlUQwTgN+gM=",
+        "ref": "refs/heads/main",
+        "rev": "7f6b6abf575e3f93614aeeacb75b609372e7f1a6",
+        "revCount": 921,
+        "type": "git",
+        "url": "https://gitcode.com/GitHub_Trending/wina/winapps"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitcode.com/GitHub_Trending/wina/winapps"
       }
     }
   },
