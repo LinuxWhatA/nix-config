@@ -21,7 +21,7 @@ let
 in
 
 pkgs.symlinkJoin {
-  name = "python";
+  name = "patchedpython";
   paths = [
     python3
     pip

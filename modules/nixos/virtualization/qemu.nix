@@ -26,8 +26,16 @@
     ];
   };
 
-  users.users.${flake.config.me.username}.extraGroups = [
-    "kvm"
-    "libvirtd"
-  ];
+  users.users.${flake.config.me.username} = {
+    packages = [
+      (pkgs.writeShellScriptBin "qemu-win11" ''
+        exec qemu-kvm -cpu host -smp 12 -m 16384 -usb -device usb-tablet \
+          -bios ${pkgs.OVMF.fd}/FV/OVMF.fd $@
+      '')
+    ];
+    extraGroups = [
+      "kvm"
+      "libvirtd"
+    ];
+  };
 }

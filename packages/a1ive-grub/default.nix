@@ -90,6 +90,9 @@ stdenv.mkDerivation {
 
     cp -f $src/makepkg/arch/x64/builtin.txt $out/builtin.txt
     cp -f ${./bootmgfw.efi} $out/bootmgfw.efi
+
+    # 生成 core image
+    $out/bin/grub-mkimage -d $out/lib/grub/x86_64-efi -p "/grub" -o $out/grubx64.efi -O x86_64-efi $(cat $out/builtin.txt)
   '';
 
   meta = {

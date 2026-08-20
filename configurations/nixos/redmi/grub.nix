@@ -14,17 +14,16 @@ in
     grub = {
       extraConfig = "set enable_progress_indicator=0";
       extraInstallCommands = ''
-        # a1 模块与字体（源码编译产物）
+        # 模块与字体（源码编译产物）
         ${bin}/cp -rf ${a1ive}/lib/grub/x86_64-efi /boot/grub/
         ${bin}/mkdir -p /boot/grub/fonts
-        ${bin}/cp -f ${a1ive}/share/grub/unicode.pf2 ${a1ive}/share/grub/ascii.pf2 ${a1ive}/share/grub/euro.pf2 /boot/grub/fonts/
+        ${bin}/cp -f ${a1ive}/share/grub/*.pf2 /boot/grub/fonts/
 
         # ntboot --efi 需要 bootmgfw.efi
         ${bin}/cp -f ${a1ive}/bootmgfw.efi /boot/grub/
 
-        # 用源码编译的 grub-mkimage 生成 a1 core image
-        ${a1ive}/bin/grub-mkimage -d ${a1ive}/lib/grub/x86_64-efi -p "/grub" -o /boot/grub/grubx64.efi -O x86_64-efi $(${bin}/cat ${a1ive}/builtin.txt)
-        ${bin}/mv -f /boot/grub/grubx64.efi /boot/EFI/NixOS-boot/
+        # core image
+        ${bin}/cp -f ${a1ive}/grubx64.efi /boot/EFI/NixOS-boot/
       '';
       extraEntries = ''
         menuentry "Windows VHD" --class windows {

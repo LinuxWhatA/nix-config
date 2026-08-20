@@ -21,7 +21,7 @@
     # Custom Program
     fhs
     cdrtools
-    patchedpython
+    python3
     proton-run
     dwproton-run
     umu-launcher
