@@ -186,6 +186,34 @@ let
         model = "itco";
         action = "reset";
       };
+      filesystem = [
+        {
+          type = "mount";
+          accessmode = "passthrough";
+          driver = {
+            type = "virtiofs";
+          };
+          source = {
+            dir = "/home/${flake.config.me.username}";
+          };
+          target = {
+            dir = "home";
+          };
+        }
+        {
+          type = "mount";
+          accessmode = "passthrough";
+          driver = {
+            type = "virtiofs";
+          };
+          source = {
+            dir = "/mnt/Data";
+          };
+          target = {
+            dir = "Data";
+          };
+        }
+      ];
     };
   };
 in

@@ -14,8 +14,6 @@
   environment.systemPackages = with pkgs; [
     virtiofsd
     bridge-utils
-    flake.inputs.winapps.packages."${stdenv.hostPlatform.system}".winapps
-    flake.inputs.winapps.packages."${stdenv.hostPlatform.system}".winapps-launcher
   ];
 
   networking.firewall.trustedInterfaces = [ "virbr0" ];
