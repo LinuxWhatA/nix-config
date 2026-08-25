@@ -40,7 +40,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   pnpmDeps = fetchPnpmDeps {
-    pname = finalAttrs.pname;
+    inherit (finalAttrs) pname;
     inherit (finalAttrs) src;
     inherit pnpm patches;
     fetcherVersion = 4;

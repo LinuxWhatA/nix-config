@@ -5,12 +5,12 @@ let
 in
 final: prev:
 let
-  mergeJson = (import (flake.inputs.self + /lib/merge-json.nix) { inherit (prev) pkgs; }).mergeJson;
+  inherit ((import (flake.inputs.self + /lib/merge-json.nix) { inherit (prev) pkgs; })) mergeJson;
 
   withCategory =
     category: pkg:
     prev.symlinkJoin {
-      name = pkg.name;
+      inherit (pkg) name;
       paths = [ pkg ];
       postBuild = ''
         if [ -d "$out/share/applications" ]; then

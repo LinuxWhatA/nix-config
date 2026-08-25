@@ -288,6 +288,30 @@
         "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.lib"
       }
     },
+    "nixvim": {
+      "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "systems": "systems_2"
+      },
+      "locked": {
+        "lastModified": 1787607029,
+        "narHash": "sha256-tV9ko8KNqSDp3gLnSvFm8Fux0RqUCEDEBwPtXJFSEos=",
+        "ref": "refs/heads/main",
+        "rev": "b1173f007cac2c83c1d314291ae90f386bd2fb35",
+        "revCount": 4734,
+        "type": "git",
+        "url": "https://github.com/nix-community/nixvim"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/nix-community/nixvim"
+      }
+    },
     "plasma-manager": {
       "inputs": {
         "home-manager": [
@@ -327,6 +351,7 @@
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs",
         "nixpkgs-lib": "nixpkgs-lib",
+        "nixvim": "nixvim",
         "plasma-manager": "plasma-manager",
         "winapps": "winapps"
       }
@@ -342,6 +367,23 @@
       },
       "original": {
         "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1774449309,
+        "narHash": "sha256-brhZ8DmuGtzkCYHJg4HEd602amKm89Y9ytsFZ5uWD1w=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "c29398b59d2048c4ab79345812849c9bd15e9150",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "ref": "future-26.11",
         "repo": "default",
         "type": "github"
       }

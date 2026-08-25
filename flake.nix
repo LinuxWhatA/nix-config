@@ -58,6 +58,11 @@
       inputs.flake-compat.follows = "flake-compat";
       inputs.flake-utils.follows = "flake-utils";
     };
+    nixvim = {
+      url = "git+https://github.com/nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
     NixVirt = {
       url = "git+https://github.com/AshleyYakeley/NixVirt";
       inputs.nixpkgs.follows = "nixpkgs";
