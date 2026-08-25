@@ -1,7 +1,11 @@
 # 跨平台 CLI 工具
-{ pkgs, ... }:
+{ flake, pkgs, ... }:
 
 {
+  imports = [
+    flake.inputs.nix-index-database.homeModules.nix-index
+  ];
+
   home.packages = with pkgs; [
     # Unix tools
     sd

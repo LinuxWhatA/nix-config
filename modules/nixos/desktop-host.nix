@@ -3,6 +3,7 @@
 { flake, ... }:
 {
   imports = [
+    (flake.inputs.self + /modules/nixos/base)
     (flake.inputs.self + /modules/nixos/desktop/console.nix)
     (flake.inputs.self + /modules/nixos/desktop/plasma6.nix)
     (flake.inputs.self + /modules/nixos/gui/clash.nix)
@@ -17,14 +18,7 @@
   ];
 
   home-manager.users.${flake.config.me.username}.imports = [
-    flake.inputs.self.homeModules.default
     flake.inputs.self.homeModules.cli
     flake.inputs.self.homeModules.gui
   ];
-
-  home-manager.users.root = {
-    imports = [
-      flake.inputs.self.homeModules.root
-    ];
-  };
 }

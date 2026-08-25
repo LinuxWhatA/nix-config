@@ -8,12 +8,16 @@
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
+    historySubstringSearch = {
+      enable = true;
+      searchUpKey = "$terminfo[kcuu1]";
+      searchDownKey = "$terminfo[kcud1]";
+    };
     setOptions = [
       "HIST_IGNORE_ALL_DUPS"
       "SHARE_HISTORY"
       "HIST_FCNTL_LOCK"
     ];
-    historySubstringSearch.enable = true;
     # initContent（initExtra 已弃用，见 HM modules/programs/zsh/deprecated.nix）
     initContent = lib.mkOrder 1000 ''
       # Linux TTY / dumb / Windows Terminal 回退纯文本符号预设（直接引用 starship 包内预设，随版本同步）
