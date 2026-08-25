@@ -78,6 +78,7 @@
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      flake.inputs = inputs;
       systems = [ "x86_64-linux" ];
       imports = map (f: ./modules/flake/${f}) (builtins.attrNames (builtins.readDir ./modules/flake));
     };
