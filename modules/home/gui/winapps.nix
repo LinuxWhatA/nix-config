@@ -1,10 +1,10 @@
 # WinApps —— 通过 RDP 启动 Windows 应用（包见 modules/nixos/virtualization/qemu.nix）。
-{ flake, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   home.packages = [
-    flake.inputs.winapps.packages."${pkgs.stdenv.hostPlatform.system}".winapps
-    flake.inputs.winapps.packages."${pkgs.stdenv.hostPlatform.system}".winapps-launcher
+    pkgs.winapps
+    pkgs.winapps-launcher
   ];
   home.file.".config/winapps/winapps.conf".text = ''
     RDP_USER="Administrator"

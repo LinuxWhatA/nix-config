@@ -29,6 +29,17 @@ let
       export PROTONPATH="${compat}"
       exec ${prev.umu-launcher}/bin/umu-run "$@"
     '';
+
+  # setup.sh 的 waFindInstalled 遍历 $SOURCE_PATH/apps/* 生成 installed.bat，
+  # postPatch 在 cp -r ./ $out/src/ 之前执行，新 app 会被一起复制。
+  # 提为 let 绑定：launcher 需引用同一构建，且 attrset 内不可自引用。
+  winapps-patched = inputs.winapps.packages.x86_64-linux.winapps.overrideAttrs (old: {
+    postPatch = (old.postPatch or "") + ''
+      # desktop 文件与 ~/.local/bin 启动脚本一律使用相对路径 winapps（PATH 解析），
+      # 避免 store path 变化后失效；launcher 据此以 '^winapps ' 匹配发现应用
+      sed -i 's|/nix/store/[^ ]*/bin/winapps |winapps |g' setup.sh
+    '';
+  });
 in
 (builtins.listToAttrs (
   map (name: {
@@ -38,15 +49,6 @@ in
 ))
 // {
   inherit mergeJson;
-
-  wechat = prev.wechat.override {
-    fetchurl =
-      { ... }:
-      prev.fetchurl {
-        url = "file://${inputs.wechat}";
-        hash = "sha256-RX26ArkbAxzdRBLu4HT7v/udnQax5Q/Bgi00hw4RSZA=";
-      };
-  };
 
   nix-alien = inputs.nix-alien.packages.x86_64-linux.nix-alien;
 
@@ -73,6 +75,15 @@ in
 
   proton-run = mkProtonRun "proton-run" prev.proton-ge-bin.steamcompattool;
   dwproton-run = mkProtonRun "dwproton-run" prev.dwproton-bin.steamcompattool;
+
+  winapps = winapps-patched;
+
+  # 本地包定义见 packages/winapps-launcher（含 VM_NAME export 修复，上游 winapps
+  # 主仓库捆绑的 launcher 副本未同步该修复）
+  # 传入 final.winapps（注入版），保证 launcher 的 WINAPPS_PATH 与系统 winapps 一致
+  winapps-launcher = prev.callPackage ../packages/winapps-launcher {
+    inherit (final) winapps;
+  };
 
   motrix-next = withCategory "Network" prev.motrix-next;
   wpsoffice-cn = withCategory "Office" prev.wpsoffice-cn;

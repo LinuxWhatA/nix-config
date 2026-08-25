@@ -328,7 +328,6 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-lib": "nixpkgs-lib",
         "plasma-manager": "plasma-manager",
-        "wechat": "wechat",
         "winapps": "winapps"
       }
     },
@@ -345,18 +344,6 @@
         "owner": "nix-systems",
         "repo": "default",
         "type": "github"
-      }
-    },
-    "wechat": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-SucQpHHs2xW7LNhEi/4il2v1J/YeJfQOpDebpBu+IgE=",
-        "type": "file",
-        "url": "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage"
-      },
-      "original": {
-        "type": "file",
-        "url": "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage"
       }
     },
     "winapps": {

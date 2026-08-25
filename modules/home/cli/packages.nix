@@ -10,6 +10,7 @@
     rar
     usbutils
     fastfetch
+    pciutils
     vulkan-tools
 
     # Nix dev

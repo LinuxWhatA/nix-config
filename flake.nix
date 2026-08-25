@@ -59,16 +59,11 @@
       inputs.flake-utils.follows = "flake-utils";
     };
     NixVirt = {
-      # 0.6.0 起缺少 smm/loader-secure 支持，需跟 master（2025-11 之后）
       url = "git+https://github.com/AshleyYakeley/NixVirt";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     betterfox = {
       url = "git+https://gitcode.com/GitHub_Trending/be/Betterfox";
-      flake = false;
-    };
-    wechat = {
-      url = "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage";
       flake = false;
     };
   };
