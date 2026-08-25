@@ -24,9 +24,9 @@
 ### 模块
 - `modules/nixos/`：NixOS 模块，包括：
   - `cli/`：命令行模块（字体、Locale、Nix、Pipewire、OpenSSH、Vim 等）
-  - `desktop/`：桌面环境（COSMIC、GNOME、Plasma6、Wayfire、XFCE）与系统界面（getty、locale）
+  - `desktop/`：桌面环境（COSMIC、GNOME、Plasma6、XFCE）与系统界面（getty、locale）
   - `gui/`：桌面应用（Clash、Dev-Sidecar、Plymouth、Steam）
-  - `hardware/`：硬件（蓝牙、NVIDIA 470、persist、swap 等）
+  - `hardware/`：硬件（蓝牙、图形驱动、persist、swap 等）
   - `services/`：服务（home/网络/安全、NFS、RustDesk、Sunshine、ToDesk、UUDeck、v2raya、Xrdp 等）
   - `virtualization/`：虚拟化（Docker、QEMU、VirtualBox、Waydroid）
 - `modules/home/`：Home Manager 模块，由系统托管注入：
