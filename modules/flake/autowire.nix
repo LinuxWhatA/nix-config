@@ -34,10 +34,12 @@ let
         mod
         inputs.home-manager.nixosModules.home-manager
         {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = specialArgs;
-          home-manager.sharedModules = [ homeCommon ];
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            extraSpecialArgs = specialArgs;
+            sharedModules = [ homeCommon ];
+          };
         }
       ];
     };

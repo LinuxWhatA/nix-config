@@ -23,9 +23,11 @@
         settings.addons = {
           pinyin.globalSection.CloudPinyinEnabled = "True";
           cloudpinyin.globalSection.Backend = "Baidu";
-          classicui.globalSection.Theme = "Material-Color-blue";
-          classicui.globalSection.DarkTheme = "Material-Color-blue";
-          classicui.globalSection.UseDarkTheme = "True";
+          classicui.globalSection = {
+            UseDarkTheme = "True";
+            Theme = "Material-Color-blue";
+            DarkTheme = "Material-Color-blue";
+          };
         };
       };
     };

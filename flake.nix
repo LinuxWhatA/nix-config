@@ -45,18 +45,22 @@
     };
     nix-alien = {
       url = "git+https://gitcode.com/gh_mirrors/ni/nix-alien";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-compat.follows = "flake-compat";
-      inputs.nix-index-database.follows = "nix-index-database";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-compat.follows = "flake-compat";
+        nix-index-database.follows = "nix-index-database";
+      };
     };
     flake-utils = {
       url = "git+https://gitcode.com/gh_mirrors/fl/flake-utils";
     };
     winapps = {
       url = "git+https://gitcode.com/GitHub_Trending/wina/winapps";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-compat.follows = "flake-compat";
-      inputs.flake-utils.follows = "flake-utils";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-compat.follows = "flake-compat";
+        flake-utils.follows = "flake-utils";
+      };
     };
     nixvim = {
       url = "git+https://github.com/nix-community/nixvim";

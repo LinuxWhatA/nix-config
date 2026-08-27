@@ -16,11 +16,13 @@
     viAlias = true;
     vimAlias = true;
 
-    plugins.lualine.enable = true;
-    plugins.trouble.enable = true;
-    plugins.lazygit.enable = true;
-    plugins.bufferline.enable = true;
-    plugins.nvim-autopairs.enable = true;
+    plugins = {
+      lualine.enable = true;
+      trouble.enable = true;
+      lazygit.enable = true;
+      bufferline.enable = true;
+      nvim-autopairs.enable = true;
+    };
     colorschemes.catppuccin.enable = true;
     plugins.gitsigns = {
       enable = true;

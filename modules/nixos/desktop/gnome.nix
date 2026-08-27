@@ -7,10 +7,12 @@
 }:
 {
   # 桌面需要用户态 GUI 模块（经 desktop-host.nix 注入到桌面用户，root 不继承）
-  services.desktopManager.gnome.enable = true;
-  services.displayManager.gdm.enable = true;
-  services.displayManager.gdm.autoSuspend = false;
-  services.gnome.games.enable = false;
+  services = {
+    desktopManager.gnome.enable = true;
+    displayManager.gdm.enable = true;
+    displayManager.gdm.autoSuspend = false;
+    gnome.games.enable = false;
+  };
 
   environment.gnome.excludePackages = with pkgs; [
     orca # 屏幕阅读器

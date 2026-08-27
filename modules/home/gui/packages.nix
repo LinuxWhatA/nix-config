@@ -10,5 +10,7 @@
     motrix-next
     moonlight-qt
     wpsoffice-cn
+    winetricks
+    wineWow64Packages.staging
   ];
 }
