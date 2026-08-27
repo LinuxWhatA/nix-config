@@ -1,4 +1,4 @@
-# naix/redmi 桌面主机公共组合，主机配置一行导入：(self + /modules/nixos/desktop-host.nix)
+# naix/redmi 桌面主机公共组合，主机配置一行导入：(self + /modules/desktop-host.nix)
 # 硬件差异（common-pc-* vs common-pc-laptop-*）、waydroid、grub 保留在各主机 default.nix
 { flake, ... }:
 {

@@ -13,7 +13,7 @@ in
     inputs.hardware.nixosModules.common-cpu-amd-pstate
     inputs.hardware.nixosModules.common-cpu-amd-zenpower
 
-    (self + /modules/nixos/desktop-host.nix)
+    (self + /modules/desktop-host.nix)
     (self + /modules/nixos/virtualization/rdp-windows.nix)
 
     ./grub.nix

@@ -49,11 +49,11 @@
         "rev": "ff8702b4de27f72b4c78573dfb89ec74e36abdf1",
         "revCount": 1392,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/di/disko"
+        "url": "https://git.nju.edu.cn/nix-mirror/disko"
       },
       "original": {
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/di/disko"
+        "url": "https://git.nju.edu.cn/nix-mirror/disko"
       }
     },
     "flake-compat": {
@@ -136,17 +136,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1784877405,
-        "narHash": "sha256-W649GocILahx7Vb/JMx834217+OLKBrq014VmC/8+NM=",
+        "lastModified": 1787797243,
+        "narHash": "sha256-8+Q7NOB7RPajRjA4pbCDLzqH+MTjnG9x6LUPLfL2joA=",
         "ref": "refs/heads/master",
-        "rev": "32de400b6ac9f43042bca706f4a64f6ad08117e8",
-        "revCount": 7084,
+        "rev": "99c9ec63390f1d8c14d95d9e8b17cc29cfbd4e11",
+        "revCount": 7192,
         "type": "git",
-        "url": "https://gitee.com/mirrors/home-manager-nix"
+        "url": "https://git.nju.edu.cn/nix-mirror/home-manager"
       },
       "original": {
         "type": "git",
-        "url": "https://gitee.com/mirrors/home-manager-nix"
+        "url": "https://git.nju.edu.cn/nix-mirror/home-manager"
       }
     },
     "impermanence": {
@@ -220,17 +220,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1785650611,
-        "narHash": "sha256-q4kR7g+pCcz6NASvoVPYu+CWWUurX03wogtBqGmR4h0=",
+        "lastModified": 1787457452,
+        "narHash": "sha256-FJh4esFS3zqNNuKwvN3t6wrJGewqp1AUF9DAEvoKPD8=",
         "ref": "refs/heads/main",
-        "rev": "dbc756c9d7287de19b3e0e38c928c47510d42c3e",
-        "revCount": 626,
+        "rev": "c51d5c2ba69c907a34e90c9b6b80cd2b93811745",
+        "revCount": 632,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/ni/nix-index-database"
+        "url": "https://git.nju.edu.cn/nix-mirror/nix-index-database"
       },
       "original": {
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/ni/nix-index-database"
+        "url": "https://git.nju.edu.cn/nix-mirror/nix-index-database"
       }
     },
     "nixos-wsl": {
@@ -299,17 +299,17 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1787607029,
-        "narHash": "sha256-tV9ko8KNqSDp3gLnSvFm8Fux0RqUCEDEBwPtXJFSEos=",
+        "lastModified": 1787691219,
+        "narHash": "sha256-CjeJTOjrluiDuL0W/YBFkSBOQjBYmdKwj7hWAJ4PIh0=",
         "ref": "refs/heads/main",
-        "rev": "b1173f007cac2c83c1d314291ae90f386bd2fb35",
-        "revCount": 4734,
+        "rev": "ebec1ae277a50b16e7d6682edd009ef585d68261",
+        "revCount": 4740,
         "type": "git",
-        "url": "https://github.com/nix-community/nixvim"
+        "url": "https://git.nju.edu.cn/nix-mirror/nixvim"
       },
       "original": {
         "type": "git",
-        "url": "https://github.com/nix-community/nixvim"
+        "url": "https://git.nju.edu.cn/nix-mirror/nixvim"
       }
     },
     "plasma-manager": {
@@ -322,17 +322,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1785759326,
-        "narHash": "sha256-jy6o6FclYhTuDM0+zM+6vYqZXSODB5Xg+AzzKMXrSgI=",
+        "lastModified": 1785762349,
+        "narHash": "sha256-jZhZkzAwc7f3exzcTDJWP2WCAchCv0iNC3UF/QsahdQ=",
         "ref": "refs/heads/trunk",
-        "rev": "88a1ce3aa083a1461b532373a8041888595a894c",
-        "revCount": 324,
+        "rev": "a19a2a029fa180911bd89c554dca1616e10f4c1d",
+        "revCount": 327,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/pl/plasma-manager"
+        "url": "https://git.nju.edu.cn/nix-mirror/plasma-manager"
       },
       "original": {
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/pl/plasma-manager"
+        "url": "https://git.nju.edu.cn/nix-mirror/plasma-manager"
       }
     },
     "root": {

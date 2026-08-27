@@ -11,7 +11,7 @@
       inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     };
     home-manager = {
-      url = "git+https://gitee.com/mirrors/home-manager-nix";
+      url = "git+https://git.nju.edu.cn/nix-mirror/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -26,11 +26,11 @@
       inputs.home-manager.follows = "home-manager";
     };
     disko = {
-      url = "git+https://gitcode.com/gh_mirrors/di/disko";
+      url = "git+https://git.nju.edu.cn/nix-mirror/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     plasma-manager = {
-      url = "git+https://gitcode.com/gh_mirrors/pl/plasma-manager";
+      url = "git+https://git.nju.edu.cn/nix-mirror/plasma-manager";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
@@ -40,7 +40,7 @@
       inputs.flake-compat.follows = "flake-compat";
     };
     nix-index-database = {
-      url = "git+https://gitcode.com/gh_mirrors/ni/nix-index-database";
+      url = "git+https://git.nju.edu.cn/nix-mirror/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-alien = {
@@ -63,7 +63,7 @@
       };
     };
     nixvim = {
-      url = "git+https://github.com/nix-community/nixvim";
+      url = "git+https://git.nju.edu.cn/nix-mirror/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };

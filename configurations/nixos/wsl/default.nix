@@ -15,6 +15,5 @@ in
   home-manager.users.${flake.config.me.username}.imports = [
     self.homeModules.cli
     (self + /modules/home/gui/opencode.nix)
-    (self + /modules/home/gui/deepseek.nix)
   ];
 }

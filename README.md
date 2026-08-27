@@ -1,3 +1,9 @@
+[![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://mit-license.org)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/LinuxWhatA/nix-config)
+[![NixOS Disko](https://img.shields.io/badge/NixOS-Disko-blue?logo=NixOS)](https://github.com/nix-community/disko)
+[![NixOS Home Manager](https://img.shields.io/badge/NixOS-Home_Manager-blue?logo=NixOS)](https://github.com/nix-community/home-manager)
+[![NixOS Plasma Manager](https://img.shields.io/badge/NixOS-Plasma_Manager-blue?logo=kdeplasma)](https://github.com/nix-community/plasma-manager)
+[![NixOS WSL](https://img.shields.io/badge/NixOS-WSL-blue?logo=Linux)](https://github.com/nix-community/NixOS-WSL)
 # 我的 NixOS 配置
 
 ## 介绍
