@@ -1,4 +1,4 @@
-# Git 配置 ——原 modules/home/cli/git.nix
+# Git 配置
 { flake, ... }:
 
 {

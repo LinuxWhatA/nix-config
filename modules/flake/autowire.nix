@@ -4,11 +4,11 @@
 # 功能一致。新 output/接线逻辑一律以独立模块放在 modules/flake/ 下。
 #
 # 规则：
-#   configurations/nixos/*.nix → nixosConfigurations  （NixOS + home-manager）
-#   modules/nixos/*.nix        → nixosModules
-#   modules/home/*.nix         → homeModules
-#   overlays/*.nix             → overlays
-#   packages/*.nix             → packages
+#   configurations/nixos/<host>/default.nix → nixosConfigurations.<host>
+#   modules/nixos/<name>.nix 或 <dir>/default.nix → nixosModules
+#   modules/home/<dir>/default.nix          → homeModules
+#   overlays/<name>.nix                     → overlays
+#   packages/<name>/default.nix             → packages
 #
 {
   self,

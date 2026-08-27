@@ -28,17 +28,16 @@
 - `configurations/nixos/`：按设备（naix、redmi、wsl）组织的 NixOS 配置，每台设备由 `default.nix` 组合清单 + 分类模块构成，Home Manager 用户环境内嵌于系统配置中。
 
 ### 模块
-- `modules/nixos/`：NixOS 模块，包括：
-  - `cli/`：命令行模块（字体、Locale、Nix、Pipewire、OpenSSH、Vim 等）
-  - `desktop/`：桌面环境（COSMIC、GNOME、Plasma6、XFCE）与系统界面（getty、locale）
+- `modules/nixos/`：NixOS 系统模块，包括：
+  - `base/`：基础模块（字体、Locale、Nix、OpenSSH、用户等，所有主机共享）
+  - `desktop/`：桌面环境（COSMIC、GNOME、Plasma6、XFCE）
   - `gui/`：桌面应用（Clash、Dev-Sidecar、Plymouth、Steam）
-  - `hardware/`：硬件（蓝牙、图形驱动、persist、swap 等）
-  - `services/`：服务（home/网络/安全、NFS、RustDesk、Sunshine、ToDesk、UUDeck、v2raya、Xrdp 等）
+  - `hardware/`：硬件（蓝牙、图形驱动、persist、boot 等）
+  - `services/`：服务（网络、NFS、Pipewire、RustDesk、Sunshine、ToDesk、v2raya、Xrdp 等）
   - `virtualization/`：虚拟化（Docker、QEMU、VirtualBox、Waydroid）
-- `modules/home/`：Home Manager 模块，由系统托管注入：
-  - `default.nix`：用户基础（xdg 目录、stateVersion、nix-index）
-  - `cli/`：命令行日常（direnv、git、nix、shell、包）
-  - `gui/`：图形应用（Firefox、Heroic、MangoHud、opencode、VSCode）
+- `modules/home/`：Home Manager 用户模块，由系统托管注入：
+  - `cli/`：命令行工具（direnv、fd、git、nh、packages、xdg、zsh）
+  - `gui/`：图形应用（deepseek、Firefox、Heroic、MangoHud、opencode、VSCode、winapps）
 - `modules/flake/`：flake-parts 模块（`autowire.nix` 负责目录结构自动接线）。
 
 ### 自定义包
