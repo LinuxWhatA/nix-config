@@ -8,7 +8,7 @@
   ];
   home.file.".config/winapps/winapps.conf".text = ''
     RDP_USER="Administrator"
-    RDP_ASKPASS="bash -c 'kwallet-query --folder winapps --read-password rdp kdewallet'"
+    RDP_ASKPASS="bash -c '${pkgs.zenity}/bin/zenity --password 2>/dev/null'"
     RDP_IP=""
     RDP_PORT="3389"
     VM_NAME="RDPWindows"
