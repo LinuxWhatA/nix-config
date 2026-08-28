@@ -12,9 +12,8 @@ modules/                       # NixOS/Home-manager 模块目录
 │   ├── autowire.nix           # 接线：目录扫描生成 outputs，声明并填充 nixosModules/homeModules 选项
 │   ├── config.nix             # 用户配置（username、email、sshKey 等）
 │   ├── desktop-host.nix       # 桌面主机功能组合（dendritic：顶层 config 装配）
-│   ├── devshell.nix           # 开发环境 shell 配置
 │   ├── packages.nix           # overlay 包暴露为 flake packages
-│   └── toplevel.nix           # 顶层 flake 配置（allowUnfree 等）
+│   └── per-system.nix         # perSystem 配置（pkgs、formatter、devshell）
 ├── home/                      # Home-manager 用户模块
 │   ├── cli/                   # CLI 工具模块（git、zsh、nh、fd 等）
 │   └── gui/                   # GUI 应用模块（firefox、vscode、winapps 等）
@@ -57,5 +56,5 @@ All modules receive `specialArgs.flake = { self, inputs, config }` — use `flak
 
 - Flake inputs intentionally pin Chinese mirrors (git.nju.edu.cn / gitee / gitcode); do not "fix" them to github.
 - `hardware-configuration.nix` (naix/redmi) is hand-written with disko disk config — never regenerate with `nixos-generate-config`.
-- `allowUnfree = true` set in `modules/flake/toplevel.nix`; `pkgs.mergeJson` (from `lib/merge-json.nix` via overlay) is the utility for injecting defaults into app-managed JSON configs.
+- `allowUnfree = true` set in `modules/flake/per-system.nix`; `pkgs.mergeJson` (from `lib/merge-json.nix` via overlay) is the utility for injecting defaults into app-managed JSON configs.
 - `direnv allow` loads the devshell (python + python-registry, used by `packages/bt-keys-info`).
