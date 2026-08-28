@@ -1,4 +1,3 @@
-# QEMU/KVM（libvirt）—— 主机配置一行导入：(self + /modules/nixos/virtualization/qemu.nix)
 { flake, pkgs, ... }:
 
 {

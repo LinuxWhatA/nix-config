@@ -3,7 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    (flake.inputs.self + /modules/nixos/hardware/boot.nix)
+    flake.config.nixosModules.hardware.boot
   ];
 
   networking.hostName = "naix";

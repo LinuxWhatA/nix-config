@@ -3,7 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    (flake.inputs.self + /modules/nixos/hardware/boot.nix)
+    flake.config.nixosModules.hardware.boot
   ];
 
   # BIOS DSDT 修复（PPPB buffer 越界，见 packages/redmi-acpi-table）

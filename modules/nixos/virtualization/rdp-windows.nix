@@ -2,7 +2,6 @@
 # 由 NixVirt 管理。xml 是 virt-manager 导出的，默认/冗余值（PCI 地址、控制器、
 # 内存单位、on_* 策略等）已省略，由 libvirt 自动补齐。
 # 注意：启用后该连接（qemu:///system）上其他未在此声明的虚拟机会被删除。
-# 主机配置一行导入：(self + /modules/nixos/virtualization/rdp-windows.nix)
 { flake, ... }:
 
 let

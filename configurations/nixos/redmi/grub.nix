@@ -7,7 +7,7 @@ let
   bin = pkgs.coreutils + "/bin";
 in
 {
-  imports = [ (flake.inputs.self + /modules/nixos/hardware/grub.nix) ];
+  imports = [ flake.config.nixosModules.hardware.grub ];
 
   boot.loader = {
     timeout = 5;

@@ -1,4 +1,3 @@
-# GNOME 桌面 —— 主机配置一行导入：(self + /modules/nixos/desktop/gnome.nix)
 {
   flake,
   pkgs,

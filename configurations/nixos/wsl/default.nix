@@ -2,18 +2,17 @@
 { flake, ... }:
 let
   inherit (flake) inputs;
-  inherit (inputs) self;
 in
 {
   imports = [
     ./configuration.nix
     inputs.nixos-wsl.nixosModules.wsl
-    (self + /modules/nixos/base)
-    (self + /modules/nixos/gui/clash.nix)
+    flake.config.nixosModules.base.default
+    flake.config.nixosModules.gui.clash
   ];
 
   home-manager.users.${flake.config.me.username}.imports = [
-    self.homeModules.cli
-    (self + /modules/home/gui/opencode.nix)
+    flake.config.homeModules.cli.default
+    flake.config.homeModules.gui.opencode
   ];
 }

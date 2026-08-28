@@ -8,7 +8,7 @@
 
 ## 介绍
 
-一个基于 flake-parts 的 NixOS 配置项目，通过本地 `modules/flake/autowire.nix` 自动生成 NixOS 系统配置，Home Manager 用户环境由系统内嵌托管。
+一个基于 flake-parts 的 NixOS 配置项目，通过 `modules/flake/autowire.nix` 自动装配 outputs，并把低层模块收集到顶层 config（dendritic：主机从 config 引用模块组合），Home Manager 用户环境由系统内嵌托管。
 
 项目结构清晰，包含以下主要功能模块：
 
@@ -30,15 +30,15 @@
 ### 模块
 - `modules/nixos/`：NixOS 系统模块，包括：
   - `base/`：基础模块（字体、Locale、Nix、OpenSSH、用户等，所有主机共享）
-  - `desktop/`：桌面环境（COSMIC、GNOME、Plasma6、XFCE）
-  - `gui/`：桌面应用（Clash、Dev-Sidecar、Plymouth、Steam）
+  - `desktop/`：桌面环境（Console、COSMIC、GNOME、Plasma6、XFCE）
+  - `gui/`：桌面应用（Clash、Dev-Sidecar、Plymouth、Steam、UUDeck）
   - `hardware/`：硬件（蓝牙、图形驱动、persist、boot 等）
-  - `services/`：服务（网络、NFS、Pipewire、RustDesk、Sunshine、ToDesk、v2raya、Xrdp 等）
-  - `virtualization/`：虚拟化（Docker、QEMU、VirtualBox、Waydroid）
+  - `services/`：服务（网络、NFS、Nix-Server、Pipewire、RustDesk、SunloginClient、Sunshine、ToDesk、v2raya、Xrdp 等）
+  - `virtualization/`：虚拟化（Docker、QEMU、RDP-Windows、VirtualBox、Waydroid）
 - `modules/home/`：Home Manager 用户模块，由系统托管注入：
   - `cli/`：命令行工具（direnv、fd、git、nh、packages、xdg、zsh）
   - `gui/`：图形应用（deepseek、Firefox、Heroic、MangoHud、opencode、VSCode、winapps）
-- `modules/flake/`：flake-parts 模块（`autowire.nix` 负责目录结构自动接线）。
+- `modules/flake/`：flake-parts 模块（`autowire.nix` 扫描装配并声明模块树选项，`desktop-host.nix` 顶层组合桌面特性，`packages.nix` 暴露 overlay 包）。
 
 ### 自定义包
 - `packages/`：自定义 Nix 包。

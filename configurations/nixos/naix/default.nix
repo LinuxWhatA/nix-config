@@ -2,7 +2,6 @@
 { flake, ... }:
 let
   inherit (flake) inputs;
-  inherit (inputs) self;
 in
 {
   imports = [
@@ -13,8 +12,8 @@ in
     inputs.hardware.nixosModules.common-cpu-amd-pstate
     inputs.hardware.nixosModules.common-cpu-amd-zenpower
 
-    (self + /modules/desktop-host.nix)
-    (self + /modules/nixos/virtualization/waydroid.nix)
+    flake.config.nixosModules.desktop-host
+    flake.config.nixosModules.virtualization.waydroid
 
     ./grub.nix
     ./configuration.nix

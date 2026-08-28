@@ -1,4 +1,3 @@
-# Plasma 6 桌面 —— 主机配置一行导入：(self + /modules/nixos/desktop/plasma6.nix)
 { flake, pkgs, ... }:
 
 {

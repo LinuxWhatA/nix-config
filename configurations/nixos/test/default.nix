@@ -1,20 +1,16 @@
 # test 模块测试机
 { flake, ... }:
-let
-  inherit (flake) inputs;
-  inherit (inputs) self;
-in
 {
   imports = [
     ../redmi/grub.nix
     ./configuration.nix
-    (self + /modules/nixos/base/nix.nix)
-    (self + /modules/nixos/base/zsh.nix)
-    (self + /modules/nixos/base/users.nix)
-    (self + /modules/nixos/base/openssh.nix)
+    flake.config.nixosModules.base.nix
+    flake.config.nixosModules.base.zsh
+    flake.config.nixosModules.base.users
+    flake.config.nixosModules.base.openssh
   ];
 
   home-manager.users.${flake.config.me.username}.imports = [
-    self.homeModules.cli
+    flake.config.homeModules.cli.default
   ];
 }

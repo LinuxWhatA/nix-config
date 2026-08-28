@@ -2,7 +2,7 @@
 { flake, pkgs, ... }:
 
 {
-  imports = [ (flake.inputs.self + /modules/nixos/hardware/grub.nix) ];
+  imports = [ flake.config.nixosModules.hardware.grub ];
 
   boot.loader.grub = {
     extraFiles = {
