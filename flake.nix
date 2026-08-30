@@ -75,6 +75,10 @@
       url = "git+https://gitcode.com/GitHub_Trending/be/Betterfox";
       flake = false;
     };
+    denial-nixos = {
+      url = "git+https://github.com/BeyondtheApex/nixos-denial-compositor-flake-config";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   # 自动接线：modules/flake 下的所有 .nix 文件自动作为 flake-parts 模块导入，

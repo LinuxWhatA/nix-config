@@ -36,6 +36,63 @@
         "url": "https://gitcode.com/GitHub_Trending/be/Betterfox"
       }
     },
+    "denial": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787922772,
+        "narHash": "sha256-qRbD0HvBJ87QWriQsx6GWdYVMnKj1Iae8QLRaxRL8T4=",
+        "owner": "denialwm",
+        "repo": "denial",
+        "rev": "b71b11984e6fba60e5259b382718c75d00b1d08f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "denialwm",
+        "ref": "v0.3.0",
+        "repo": "denial",
+        "type": "github"
+      }
+    },
+    "denial-nixos": {
+      "inputs": {
+        "denial": "denial",
+        "denialShell": "denialShell",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay"
+      },
+      "locked": {
+        "lastModified": 1787939219,
+        "narHash": "sha256-G9A1nzIUEzvOkWdOQLaiLDszbv9dJpr4Z1meEECezZE=",
+        "ref": "refs/heads/main",
+        "rev": "857433c8bfbcc10d4e82499e7b9247497a7ff036",
+        "revCount": 5,
+        "type": "git",
+        "url": "https://github.com/BeyondtheApex/nixos-denial-compositor-flake-config"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/BeyondtheApex/nixos-denial-compositor-flake-config"
+      }
+    },
+    "denialShell": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787922772,
+        "narHash": "sha256-qRbD0HvBJ87QWriQsx6GWdYVMnKj1Iae8QLRaxRL8T4=",
+        "owner": "denialwm",
+        "repo": "denial",
+        "rev": "b71b11984e6fba60e5259b382718c75d00b1d08f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "denialwm",
+        "ref": "v0.3.0",
+        "repo": "denial",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -258,19 +315,18 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1787631388,
-        "narHash": "sha256-vMiXptXarfSdJb1Gkc+FYVOAibuBRj7qxGa8z68q1Uw=",
-        "ref": "nixpkgs-unstable",
-        "rev": "ac6b2166e7a9375683b8e98f860f273222337b16",
-        "shallow": true,
-        "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs"
+        "lastModified": 1744536153,
+        "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "18dd725c29603f582cf1900e0d25f9f1063dbf11",
+        "type": "github"
       },
       "original": {
+        "owner": "NixOS",
         "ref": "nixpkgs-unstable",
-        "shallow": true,
-        "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs"
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "nixpkgs-lib": {
@@ -286,6 +342,23 @@
       "original": {
         "type": "git",
         "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.lib"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1787631388,
+        "narHash": "sha256-vMiXptXarfSdJb1Gkc+FYVOAibuBRj7qxGa8z68q1Uw=",
+        "ref": "nixpkgs-unstable",
+        "rev": "ac6b2166e7a9375683b8e98f860f273222337b16",
+        "shallow": true,
+        "type": "git",
+        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs"
+      },
+      "original": {
+        "ref": "nixpkgs-unstable",
+        "shallow": true,
+        "type": "git",
+        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs"
       }
     },
     "nixvim": {
@@ -339,6 +412,7 @@
       "inputs": {
         "NixVirt": "NixVirt",
         "betterfox": "betterfox",
+        "denial-nixos": "denial-nixos",
         "disko": "disko",
         "flake-compat": "flake-compat",
         "flake-parts": "flake-parts",
@@ -349,11 +423,29 @@
         "nix-alien": "nix-alien",
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "nixpkgs-lib": "nixpkgs-lib",
         "nixvim": "nixvim",
         "plasma-manager": "plasma-manager",
         "winapps": "winapps"
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1787834454,
+        "narHash": "sha256-jXSvqn04IOecJCvSvl8+g3PsbDVNP6qKs6dKUs/b16k=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "dc2fd1acc537f3583744e1373597a5731ff7a6e3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
       }
     },
     "systems": {

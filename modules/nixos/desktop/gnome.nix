@@ -27,11 +27,6 @@
     gnome-contacts # 联系人
   ];
 
-  environment.variables = {
-    XMODIFIERS = "@im=fcitx";
-    QT_IM_MODULE = "fcitx";
-  };
-
   # kde connect 端口
   networking.firewall = rec {
     allowedTCPPortRanges = [

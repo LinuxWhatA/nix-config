@@ -33,5 +33,11 @@
     };
   };
 
+  environment.variables = {
+    XMODIFIERS = "@im=fcitx";
+    QT_IM_MODULE = "fcitx";
+    GTK_IM_MODULE = "fcitx";
+  };
+
   time.timeZone = lib.mkDefault "Asia/Shanghai";
 }

@@ -11,6 +11,7 @@
     moonlight-qt
     wpsoffice-cn
     winetricks
+    deepin-wine10-stable
     wineWow64Packages.staging
   ];
 }

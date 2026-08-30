@@ -12,7 +12,7 @@ in
     imports = [
       nixosModules.base.default
       nixosModules.desktop.console
-      nixosModules.desktop.plasma6
+      nixosModules.desktop.cosmic
       nixosModules.gui.clash
       nixosModules.gui.plymouth
       nixosModules.gui.steam
