@@ -12,6 +12,7 @@
       mkhl.direnv
       ms-python.python
       jnoortheen.nix-ide
+      kilocode.kilo-code
       ms-python.black-formatter
       ms-ceintl.vscode-language-pack-zh-hans
     ];
