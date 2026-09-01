@@ -4,6 +4,7 @@
   imports = [
     ../redmi/grub.nix
     ./configuration.nix
+    flake.config.nixosModules.base.host
     flake.config.nixosModules.base.nix
     flake.config.nixosModules.base.zsh
     flake.config.nixosModules.base.users
