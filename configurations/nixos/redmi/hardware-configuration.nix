@@ -105,6 +105,11 @@ rec {
       "fmask=0000" # 文件777
       "x-gvfs-show" # 在文件管理器中显示盘符
       "windows_names" # 提高与Windows的兼容性
+      # 延迟挂载：不阻塞 local-fs.target，首次访问时自动挂载（节省 ~50ms + 避免无盘时卡启动）
+      "noauto"
+      "x-systemd.automount"
+      "x-systemd.device-timeout=5s"
+      "x-systemd.mount-timeout=10s"
     ];
   };
 

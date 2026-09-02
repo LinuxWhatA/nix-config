@@ -19,6 +19,7 @@ in
       nixosModules.hardware.bluetooth
       nixosModules.hardware.graphics
       nixosModules.hardware.persist
+      nixosModules.services.fwupd
       nixosModules.services.networking
       nixosModules.services.pipewire
       nixosModules.virtualization.qemu

@@ -13,4 +13,10 @@
       "fs.inotify.max_user_watches" = 524288;
     };
   };
+
+  # 缩短 systemd 默认超时（默认 90s），避免慢盘服务被误杀，社区常用 30s
+  systemd.settings.Manager = {
+    DefaultTimeoutStartSec = "30s";
+    DefaultTimeoutStopSec = "30s";
+  };
 }

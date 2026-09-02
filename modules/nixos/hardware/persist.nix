@@ -22,6 +22,7 @@
       "/var/lib/fprint"
       "/var/lib/systemd"
       "/var/lib/nixos"
+      "/var/lib/todesk"
       "/var/log"
       "/srv"
       # 当 / 为 tmpfs 时，/tmp 占用内存，Nix 构建易 OOM。
