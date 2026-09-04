@@ -64,7 +64,6 @@
     };
     nixvim = {
       url = "git+https://git.nju.edu.cn/nix-mirror/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };
     NixVirt = {
@@ -77,6 +76,10 @@
     };
     denial-nixos = {
       url = "git+https://github.com/BeyondtheApex/nixos-denial-compositor-flake-config";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    noctalia = {
+      url = "git+https://github.com/noctalia-dev/noctalia";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

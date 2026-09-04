@@ -12,7 +12,8 @@ in
     imports = [
       nixosModules.base.default
       nixosModules.desktop.console
-      nixosModules.desktop.plasma6
+      nixosModules.desktop.labwc
+      nixosModules.gui.thunar
       nixosModules.gui.clash
       nixosModules.gui.plymouth
       nixosModules.gui.steam
