@@ -1,8 +1,7 @@
 # 与具体硬件无关的 opt-in persistence 部分。
 #
-# 引入 impermanence，并声明系统级需要持久化的路径。
-# 持久化存储本身的挂载（/ 为 tmpfs、/persist 为 btrfs subvol、btrfs 快照根或完全不临时）
-# 属于硬件相关配置，由各主机的 hardware-configuration 决定，本文件不感知。
+# 引入 impermanence，并声明系统级需要持久化的路径；持久化存储的挂载
+# （/ 为 tmpfs、/persist 为 btrfs subvol 等）属硬件配置，由各主机的 hardware-configuration 决定。
 {
   flake,
   ...

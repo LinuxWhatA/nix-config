@@ -1,4 +1,8 @@
+# Noctalia 桌面伴侣（launcher/dock/bar/剪贴板/控制中心）的用户态声明。
+# programs.noctalia 的选项由上游 homeModules.default 提供，本文件是纯 HM 模块，
+# 故归 home/gui（autowire 扫入 nixos 树会误暴成 nixosModules.desktop.noctalia）。
 {
+  flake,
   config,
   lib,
   pkgs,
@@ -18,6 +22,10 @@ let
   '';
 in
 {
+  imports = [
+    flake.inputs.noctalia.homeModules.default
+  ];
+
   programs.noctalia = {
     enable = true;
     systemd.enable = true;
@@ -49,6 +57,9 @@ in
         ];
       };
       widget = {
+        clock = {
+          format = "{:%m月%d日 周%a %H:%M}";
+        };
         network = {
           show_label = false;
         };
@@ -77,9 +88,9 @@ in
       };
       hot_corners = {
         enable = true;
-      };
-      hot_corners.top_left = {
-        action = "launcher";
+        top_left = {
+          action = "launcher";
+        };
       };
       osd.kinds = {
         keyboard_layout = false;
@@ -95,7 +106,7 @@ in
         };
       };
       # greetd 免认证自动登录，login keyring 不会解锁，secret-service 取不到主密钥；
-      # 改用文件主密钥（见上方 ensureStorageKey），剪贴板历史才能加密落盘
+      # 文件主密钥（见上方 ensureStorageKey）在服务启动前生成，剪贴板历史才能加密落盘
       storage = {
         key_source = "file";
         key_file = storageKey;

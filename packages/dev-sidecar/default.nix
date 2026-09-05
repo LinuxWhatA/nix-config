@@ -55,7 +55,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   env = {
     CI = "true"; # 跳过 gui 的 postinstall（electron-builder install-app-deps）
-    ELECTRON_SKIP_BINARY_DOWNLOAD = "1"; # 不下载 electron 官方二进制，改用 nixpkgs 的 electron
+    ELECTRON_SKIP_BINARY_DOWNLOAD = "1"; # electron 用 nixpkgs 版本，跳过官方二进制下载
     NODE_OPTIONS = "--max-old-space-size=8192"; # webpack 构建需要较多内存
   };
 
@@ -79,7 +79,6 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r node_modules $out/lib/dev-sidecar/node_modules
 
     # CA 不在构建期生成：私钥写入 store 全局可读（0444），且每次重建都会换新信任锚。
-    # 改由 modules/nixos/gui/dev-sidecar.nix 首次激活时生成到 ~/.dev-sidecar（私钥 600）
     # 启动脚本：gsettings 等命令需在 PATH 中
     mkdir -p $out/bin
     cat > $out/bin/dev-sidecar <<EOF

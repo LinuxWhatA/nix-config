@@ -42,11 +42,6 @@
   };
 
   home-manager.users.${flake.config.me.username} = {
-    imports = [
-      flake.inputs.noctalia.homeModules.default
-      ./noctalia.nix
-    ];
-
     services = {
       # labwc 不提供输出缩放，需外部守护进程在热插拔时维持比例
       kanshi = {

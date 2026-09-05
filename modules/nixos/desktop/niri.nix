@@ -53,8 +53,7 @@ in
 
   home-manager.users.${flake.config.me.username} = {
     imports = [
-      flake.inputs.noctalia.homeModules.default
-      ./noctalia.nix
+      flake.config.homeModules.gui.noctalia
     ];
 
     wayland.windowManager.niri = {

@@ -15,7 +15,6 @@ in
       nixosModules.desktop.labwc
       nixosModules.gui.thunar
       nixosModules.gui.clash
-      nixosModules.gui.plymouth
       nixosModules.gui.steam
       nixosModules.hardware.bluetooth
       nixosModules.hardware.graphics

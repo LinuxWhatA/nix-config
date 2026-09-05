@@ -1,5 +1,4 @@
-# zsh 与 starship（HM 负责 shell 文件与插件，session 变量经 hm-session-vars.sh 自动注入）
-# 注：users.defaultUserShell 保留在 NixOS 层（系统用户属性）
+# 默认 shell（users.defaultUserShell）属系统用户属性，由 NixOS 层设置；此处只配 shell 增强与 starship
 { pkgs, lib, ... }:
 
 {

@@ -1,5 +1,4 @@
 # Configuration for this repo
-# See ./modules/flake/config.nix for module options.
 {
   me = {
     username = "lwa";

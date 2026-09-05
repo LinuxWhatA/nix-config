@@ -1,4 +1,4 @@
-# redmi 的 GRUB 差异项（公共部分见 modules/nixos/hardware/grub.nix）
+# redmi 的 GRUB 差异项
 { flake, pkgs, ... }:
 
 let

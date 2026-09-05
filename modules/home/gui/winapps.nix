@@ -1,4 +1,4 @@
-# WinApps —— 通过 RDP 启动 Windows 应用（包见 modules/nixos/virtualization/qemu.nix）。
+# 通过 RDP 启动 Windows 应用
 { pkgs, ... }:
 
 {

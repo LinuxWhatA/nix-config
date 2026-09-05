@@ -15,7 +15,7 @@
     onShutdown = "suspend";
   };
 
-  # libvirtd 默认 WantedBy multi-user.target 阻塞 critical-chain 1.6s，改为 socket 激活
+  # libvirtd 默认 WantedBy multi-user.target 会阻塞 critical-chain ~1.6s（onBoot=ignore 下开机无需拉起）
   systemd.services.libvirtd.wantedBy = lib.mkForce [ ];
   # libvirt-guests 仅在 libvirtd 启完后恢复 VM 状态，但 onBoot="ignore" 下开机无 VM 可恢复
   # 其 After=libvirtd.service 把整条关键链拉长 ~1.6s，禁掉

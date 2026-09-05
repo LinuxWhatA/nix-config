@@ -1,4 +1,4 @@
-# GRUB 公共配置（naix/redmi 共用，差异项在各主机 grub.nix）
+# GRUB 公共配置（naix/redmi 共用）
 { pkgs, ... }:
 
 {
