@@ -13,7 +13,7 @@ let
     (config.environment ? persistence) && (config.environment.persistence ? "/persist");
 in
 {
-  users.users.root.openssh.authorizedKeys.keys = [ flake.config.me.sshKey ];
+  # root 禁止 SSH 登录（含密钥），不配置 root 的 authorizedKeys
   users.users."${flake.config.me.username}".openssh.authorizedKeys.keys = [
     flake.config.me.sshKey
   ];

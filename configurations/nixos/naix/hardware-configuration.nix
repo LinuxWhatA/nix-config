@@ -16,12 +16,10 @@ rec {
     "usbhid"
     "sd_mod"
   ];
-  boot.initrd.kernelModules = [ ];
   boot.kernelModules = [
     "kvm-amd"
     "nct6775"
   ];
-  boot.extraModulePackages = [ ];
 
   disko.devices.disk.main = {
     imageSize = "32G";
@@ -122,6 +120,4 @@ rec {
   ];
 
   networking.useDHCP = lib.mkDefault true;
-
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }

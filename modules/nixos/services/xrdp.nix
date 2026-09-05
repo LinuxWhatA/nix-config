@@ -9,13 +9,13 @@
     '';
   };
 
-  # 普通用户电源权限（XRDP）
+  # 普通用户电源权限（XRDP，仅限 wheel）
   security.polkit = {
     enable = true;
     extraConfig = ''
       polkit.addRule(function (action, subject) {
         if (
-          subject.isInGroup("users") &&
+          subject.isInGroup("wheel") &&
           [
             "org.freedesktop.login1.reboot",
             "org.freedesktop.login1.reboot-multiple-sessions",

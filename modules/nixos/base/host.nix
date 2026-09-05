@@ -5,6 +5,5 @@
 {
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   system.stateVersion = lib.mkDefault "26.11";
-  users.mutableUsers = lib.mkDefault true;
   home-manager.users.${flake.config.me.username}.home.stateVersion = lib.mkDefault "26.11";
 }

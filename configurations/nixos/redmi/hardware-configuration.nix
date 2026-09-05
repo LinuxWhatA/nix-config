@@ -17,7 +17,6 @@ rec {
   ];
   boot.initrd.kernelModules = [ "ntfs3" ];
   boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
   boot.kernelParams = [
     "amdgpu.abmlevel=0"
     "acpi.ec_no_wakeup=1"
@@ -127,5 +126,4 @@ rec {
   ];
 
   networking.useDHCP = lib.mkDefault true;
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }
