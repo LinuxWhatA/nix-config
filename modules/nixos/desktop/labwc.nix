@@ -145,27 +145,6 @@
               };
             }
             {
-              "@key" = "W-space";
-              action = {
-                "@name" = "Execute";
-                "@command" = "noctalia msg panel-toggle launcher";
-              };
-            }
-            {
-              "@key" = "W-s";
-              action = {
-                "@name" = "Execute";
-                "@command" = "noctalia msg panel-toggle control-center";
-              };
-            }
-            {
-              "@key" = "W-comma";
-              action = {
-                "@name" = "Execute";
-                "@command" = "noctalia msg settings-toggle";
-              };
-            }
-            {
               "@key" = "W-v";
               action = {
                 "@name" = "Execute";
@@ -189,6 +168,28 @@
               "@key" = "W-f";
               action = {
                 "@name" = "ToggleMaximize";
+              };
+            }
+            # Noctalia 官方推荐 IPC 按键绑定
+            {
+              "@key" = "W-space";
+              action = {
+                "@name" = "Execute";
+                "@command" = "noctalia msg panel-toggle launcher";
+              };
+            }
+            {
+              "@key" = "W-s";
+              action = {
+                "@name" = "Execute";
+                "@command" = "noctalia msg panel-toggle control-center";
+              };
+            }
+            {
+              "@key" = "W-comma";
+              action = {
+                "@name" = "Execute";
+                "@command" = "noctalia msg settings-toggle";
               };
             }
             {

@@ -1,6 +1,7 @@
 # Noctalia 桌面伴侣（launcher/dock/bar/剪贴板/控制中心）的用户态声明。
-# programs.noctalia 的选项由上游 homeModules.default 提供，本文件是纯 HM 模块，
-# 故归 home/gui（autowire 扫入 nixos 树会误暴成 nixosModules.desktop.noctalia）。
+# 选项全部来自上游 homeModules.default（下方 imports），属纯 HM 模块，
+# 必须放 home/gui：autowire 会把 modules/nixos 子树暴露成 nixos 模块，
+# 一段纯 HM 配置若落到那边就会被误当系统模块接线。
 {
   flake,
   config,
@@ -9,9 +10,9 @@
   ...
 }:
 let
-  # 存储主密钥属于运行时用户数据，不能写进 /nix/store（全局可读，等于明文泄露）。
-  # 这里只声明"如何生成"，由 noctalia 服务启动前按需生成：装机后无需任何手工介入。
-  # 形如 nixpkgs 中 lldap 的 jwt_secret、roundcube 的 des_key：缺失时才生成，已存在不动。
+  # 主密钥属运行时用户数据，写入 /nix/store 即明文（store 全局可读），故只声明生成逻辑，
+  # 由 noctalia 启动前补生成、装机零手工（同 nixpkgs 的 lldap jwt_secret 先例）。
+  # 生成幂等：已存在则不动，否则每次重建都轮换密钥，旧密钥加密的数据将永久无法解密。
   storageKey = "${config.xdg.dataHome}/noctalia/storage-key";
   ensureStorageKey = pkgs.writeShellScript "noctalia-storage-key" ''
     set -eu
@@ -87,7 +88,7 @@ in
         ];
       };
       hot_corners = {
-        enable = true;
+        enabled = true;
         top_left = {
           action = "launcher";
         };
@@ -95,31 +96,36 @@ in
       osd.kinds = {
         keyboard_layout = false;
       };
-      # 空闲熄屏由 noctalia 原生 idle.behavior 处理（官方 services/idle.mdx）：
-      # 到点自动熄屏、活动即恢复，无需外部命令或具体输出名；timeout=300 对齐 5 分钟空闲。
-      # pre_action_fade_seconds = 0：不预渐晕遮罩，到点立即熄。
+      # 空闲熄屏/活动恢复由 idle.behavior 处理。labwc 是 wlroots，无合成器输出电源 IPC：
+      # 原生 screen_off 会经 ext-workspace 后端跑 `wlr-randr --off`，发布版强制先 `--output`、
+      # 必失败，故按官方 compositor-settings/labwc.mdx 改用 wlopm 命令。
+      # wlopm 输出名按 glob 匹配（非 shell 展开），`'*'` 即全部输出，单条覆盖多屏/热插拔；
+      # 命令经 /bin/sh 执行，单引号防 `*` 被 shell 展开。timeout=300（5 分钟）；
+      # pre_action_fade_seconds=0：免渐晕遮罩，到点立即熄。
       idle = {
         pre_action_fade_seconds = 0;
         behavior."screen-off" = {
-          action = "screen_off";
+          action = "command";
           timeout = 300;
+          command = "${lib.getExe pkgs.wlopm} --off '*'";
+          resume_command = "${lib.getExe pkgs.wlopm} --on '*'";
         };
       };
-      # greetd 免认证自动登录，login keyring 不会解锁，secret-service 取不到主密钥；
-      # 文件主密钥（见上方 ensureStorageKey）在服务启动前生成，剪贴板历史才能加密落盘
+      # 默认 secret-service 主密钥取不到——greetd 免认证登录不解锁 login keyring，
+      # 故改用文件主密钥；生成与启动时序见 ensureStorageKey / ExecStartPre
       storage = {
         key_source = "file";
         key_file = storageKey;
       };
       shell = {
-        # 由 noctalia 自身注册 org.freedesktop.PolicyKit1 认证代理，
-        # 认证弹窗走 shell 面板（默认 floating + center），无需外部 agent 进程
+        # 用 noctalia 自带 polkit 认证代理（org.freedesktop.PolicyKit1）：
+        # 弹窗走 shell 面板，无需再注册外部 agent 进程
         polkit_agent = true;
         panel.clipboard_position = "top_right";
       };
     };
   };
 
-  # ExecStartPre 保证密钥一定先于 noctalia 进程生成；已有密钥不会被覆盖
+  # HM 用户服务无 preStart 钩子；用 ExecStartPre 保证密钥先于 noctalia 进程就绪
   systemd.user.services.noctalia.Service.ExecStartPre = ensureStorageKey;
 }
