@@ -51,6 +51,8 @@ All modules receive `specialArgs.flake = { self, inputs, config }` — use `flak
 - Fast verify: `nix eval .#nixosConfigurations.<host>.config.system.build.toplevel.drvPath`; full check: `nix flake check`
 - Build one package: `nix build .#<pkg>`
 - Format with nixfmt (2-space RFC style): `nixfmt <file>`, verify `nixfmt --check <file>`. `nix fmt` is broken here (bare nixfmt 1.4 rejects stdin without `-`).
+- Static lint: `nix run nixpkgs#statix -- check .`
+- Verify cheapest-first: targeted `nix eval` → `nixfmt --check <file>` → `statix check .` → real-machine rebuild
 
 ## Gotchas
 
@@ -58,3 +60,7 @@ All modules receive `specialArgs.flake = { self, inputs, config }` — use `flak
 - `hardware-configuration.nix` (naix/redmi) is hand-written with disko disk config — never regenerate with `nixos-generate-config`.
 - `allowUnfree = true` set in `modules/flake/per-system.nix`; `pkgs.mergeJson` (from `lib/merge-json.nix` via overlay) is the utility for injecting defaults into app-managed JSON configs.
 - `direnv allow` loads the devshell (python + python-registry, used by `packages/bt-keys-info`).
+- `nixos-rebuild switch` (`nh os switch`) only restarts the touched user services; changes touching the session startup chain (greetd → compositor → env import → daemon autostart, portal config) require re-login (exit labwc; greetd re-pulls immediately) or a full reboot to verify.
+- Before reading upstream source (nixpkgs / home-manager / noctalia) online, get the already-fetched store path first: `nix eval --raw --impure --expr '(builtins.getFlake "<repo>").inputs.<name>.outPath'`, then grep it.
+- `nixvim` intentionally does NOT `follows nixpkgs` (upstream pins its own nixpkgs; adding follows triggers an eval warning). Don't "fix" it.
+- Home-manager user services have no `preStart`; do pre-service init with `Service.ExecStartPre` (e.g. noctalia's storage-key generation).

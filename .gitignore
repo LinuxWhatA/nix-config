@@ -3,3 +3,4 @@ result
 *.pyc
 *.qcow2
 *.fd
+.codebuddy

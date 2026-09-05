@@ -23,88 +23,29 @@
     power-profiles-daemon.enable = true;
   };
 
-  # 录屏/截图仅 wlr 实现，其他接口需 gtk/kde 回退
+  # 门户后端：录屏/截图仅 wlr 实现，故默认 wlr 优先、其余接口以 * 兜底
   xdg.portal = {
     enable = true;
-    wlr.enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk
-    ];
-    configPackages = [ pkgs.labwc ];
-    # labwc 会话的 XDG_CURRENT_DESKTOP 为 labwc，需为该桌面单独指定后端
+    wlr.enable = true; # 追加 xdg-desktop-portal-wlr
+    # gnome-keyring 后端由 services.gnome.gnome-keyring 自动追加，此处只须补 gtk
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    # config.labwc 一旦设置即整体覆盖 labwc 包自带的 labwc-portals.conf，
+    # 需写全以保持相同语义：default=wlr;*、Inhibit=none
     config.labwc = {
-      default = [ "gtk" ];
-      "org.freedesktop.impl.portal.Access" = [ "gtk" ];
-      "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
-      "org.freedesktop.impl.portal.Notification" = [ "gtk" ];
-      "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
-      "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
-      "org.freedesktop.impl.portal.Screenshot" = [ "wlr" ];
+      default = [
+        "wlr"
+        "*"
+      ];
+      "org.freedesktop.impl.portal.Inhibit" = [ "none" ]; # Inhibit 接口无可复用后端，置 none
+      "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ]; # wlr/gtk 都不实现 Secret
     };
   };
 
   home-manager.users.${flake.config.me.username} = {
     imports = [
       flake.inputs.noctalia.homeModules.default
+      ./noctalia.nix
     ];
-
-    programs.noctalia = {
-      enable = true;
-      systemd.enable = true;
-      settings = {
-        theme = {
-          mode = "dark";
-          source = "builtin";
-          builtin = "Catppuccin";
-        };
-        theme.templates = {
-          builtin_ids = [ "labwc" ];
-        };
-        bar.default = {
-          margin_ends = 0;
-          end = [
-            "network_tx"
-            "network_rx"
-            "tray"
-            "notifications"
-            "clipboard"
-            "network"
-            "bluetooth"
-            "volume"
-            "brightness"
-            "battery"
-            "control-center"
-            "session"
-          ];
-          start = [
-            "launcher"
-            "wallpaper"
-            "workspaces"
-            "media"
-          ];
-        };
-        widget.network_rx = {
-          glyph = "arrow-narrow-down";
-          visualization = "none";
-        };
-        widget.network_tx = {
-          glyph = "arrow-narrow-up";
-          visualization = "none";
-        };
-        dock = {
-          auto_hide = true;
-          enabled = true;
-          launcher_position = "start";
-          reserve_space = false;
-        };
-        osd.kinds = {
-          keyboard_layout = false;
-        };
-        shell.panel = {
-          clipboard_position = "top_right";
-        };
-      };
-    };
 
     services = {
       # labwc 不提供输出缩放，需外部守护进程在热插拔时维持比例
@@ -119,20 +60,6 @@
                 scale = 1.75;
               }
             ];
-          }
-        ];
-      };
-
-      # 空闲 5 分钟关屏：交由 systemd 随 graphical-session.target 启停，
-      # 该服务不含 swayidle 之外的 PATH，wlopm 需写绝对路径
-      swayidle = {
-        enable = true;
-        timeouts = [
-          {
-            timeout = 300;
-            # 星号必须用引号保护：命令经 sh -c 执行，裸 * 会被展开成当前目录文件名
-            command = "${pkgs.wlopm}/bin/wlopm --off '*'";
-            resumeCommand = "${pkgs.wlopm}/bin/wlopm --on '*'";
           }
         ];
       };
@@ -151,6 +78,22 @@
     wayland.windowManager.labwc = {
       enable = true;
       xwayland.enable = true;
+      # environment 文件只覆盖 labwc 直接派生的进程（XWayland、Execute 键绑、autostart）。
+      # noctalia（launcher/dock）是 systemd 用户服务，从 launcher 拉起的应用继承的是
+      # systemd/D-Bus 用户环境——默认只导入 DISPLAY/WAYLAND_DISPLAY/XDG_CURRENT_DESKTOP 三个，
+      # 输入法变量不在此列，故 XWayland 应用（如 wechat）拿不到 GTK_IM_MODULE 而无法输入中文。
+      # 这里的变量名在 autostart 时刻从本进程环境取值（即下面的 environment 文件内容），
+      # 导入 systemd 与 D-Bus 激活环境后，launcher/门户激活拉起的程序才能继承。
+      systemd.variables = [
+        "DISPLAY"
+        "WAYLAND_DISPLAY"
+        "XDG_CURRENT_DESKTOP"
+        "GTK_IM_MODULE"
+        "QT_IM_MODULE"
+        "QT_IM_MODULES"
+        "SDL_IM_MODULE"
+        "XMODIFIERS"
+      ];
       environment = [
         "XDG_CURRENT_DESKTOP=labwc:wlroots"
         "XDG_SESSION_TYPE=wayland"
@@ -169,8 +112,8 @@
         "XCURSOR_THEME=Adwaita"
       ];
       # 只放需要继承合成器环境的一次性命令：autostart 是顺序执行的 shell 脚本，
-      # 任何常驻进程都会阻塞脚本，导致 HM 追加在后面的 systemd 集成段无法执行。
-      # 守护进程（polkit agent、swayidle 等）改由 systemd 用户服务托管。
+      # 任何常驻进程都会阻塞脚本，导致 HM 追加在后面的 systemd 集成段无法执行；
+      # 守护进程一律由 systemd 用户服务托管，不得放入 autostart。
       autostart = [
         "fcitx5 -d --replace"
         # XWayland 不跟随输出缩放，需单独设置；延时等待 XWayland 就绪
@@ -293,32 +236,11 @@
       };
     };
 
-    # polkit 认证代理：该包只提供 XDG autostart 文件，labwc 不会读取，
-    # 需由 systemd 用户服务拉起；绑定 graphical-session.target 以保证启动时
-    # WAYLAND_DISPLAY 已被 dbus-update-activation-environment 导入 systemd 环境
-    systemd.user.services.polkit-kde-authentication-agent-1 = {
-      Unit = {
-        Description = "KDE polkit authentication agent";
-        PartOf = [ "graphical-session.target" ];
-        After = [ "graphical-session.target" ];
-        ConditionEnvironment = "WAYLAND_DISPLAY";
-      };
-      Service = {
-        ExecStart = "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1";
-        Restart = "on-failure";
-      };
-      Install.WantedBy = [ "graphical-session.target" ];
-    };
   };
 
   environment.systemPackages = with pkgs; [
-    kdePackages.polkit-kde-agent-1
-    swayidle
-    wlopm
     wl-clipboard
     adwaita-icon-theme
     xsetroot
   ];
-  # 不再安装 XDG applications.menu：noctalia 启动器与 labwc 根菜单都直接消费 .desktop 文件，
-  # 仅为一份菜单把整套 plasma-workspace 拉进系统闭包并不划算
 }
