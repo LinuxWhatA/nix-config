@@ -8,7 +8,6 @@
   nodejs_22,
   electron,
   glib,
-  openssl,
 }:
 
 let
@@ -52,7 +51,6 @@ stdenv.mkDerivation (finalAttrs: {
     pnpm
     pnpmConfigHook
     nodejs_22
-    openssl
   ];
 
   env = {
@@ -80,10 +78,8 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r packages $out/lib/dev-sidecar/packages
     cp -r node_modules $out/lib/dev-sidecar/node_modules
 
-    # CA 证书（随机生成，供 ~/.dev-sidecar 与系统证书库使用）
-    cd $out
-    bash ${./generate-cert.sh}
-
+    # CA 不在构建期生成：私钥写入 store 全局可读（0444），且每次重建都会换新信任锚。
+    # 改由 modules/nixos/gui/dev-sidecar.nix 首次激活时生成到 ~/.dev-sidecar（私钥 600）
     # 启动脚本：gsettings 等命令需在 PATH 中
     mkdir -p $out/bin
     cat > $out/bin/dev-sidecar <<EOF

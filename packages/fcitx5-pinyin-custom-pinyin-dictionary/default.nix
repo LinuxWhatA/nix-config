@@ -1,6 +1,5 @@
 {
   lib,
-  fetchurl,
   stdenvNoCC,
 }:
 
@@ -8,13 +7,12 @@ stdenvNoCC.mkDerivation {
   pname = "fcitx5-pinyin-custom-pinyin-dictionary";
   version = "2026-01-01-unstable";
 
-  src = fetchurl {
-    url = "file://${./CustomPinyinDictionary_Fcitx.dict}";
-    hash = "sha256-Y2d7DhvNknbo7u9BVTq1Mr9gYSeFWNnvo2KbDr6INuU=";
-  };
+  # 本地词库文件直接作 src（flake 内容寻址），免去 fetchurl file:// 中转与手工维护的 hash
+  src = ./CustomPinyinDictionary_Fcitx.dict;
+  dontUnpack = true;
 
-  unpackPhase = ''
-    install -Dm555 $src $out/share/fcitx5/pinyin/dictionaries/CustomPinyinDictionary.dict
+  installPhase = ''
+    install -Dm444 $src $out/share/fcitx5/pinyin/dictionaries/CustomPinyinDictionary.dict
   '';
 
   meta = {

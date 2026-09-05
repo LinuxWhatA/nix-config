@@ -16,6 +16,8 @@ let
         if [ -d "$out/share/applications" ]; then
           for f in "$out"/share/applications/*.desktop; do
             [ -f "$f" ] || continue
+            # 已含该分类则跳过，避免 Categories=Network;Network; 式重复
+            grep -qE "^Categories=(.*;)?${category}(;|$)" "$f" && continue
             sed 's/^Categories=/Categories=${category};/' "$f" > "$f.tmp"
             mv "$f.tmp" "$f"
           done
