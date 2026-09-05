@@ -38,11 +38,13 @@ in
       };
       bar.default = {
         margin_ends = 0;
+        capsule = true;
         start = [
-          "launcher"
-          "workspaces"
-          "media"
+          "clock"
+          "weather"
+          "active_window"
         ];
+        center = [ ];
         end = [
           "network_tx"
           "network_rx"
