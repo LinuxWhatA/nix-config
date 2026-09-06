@@ -3,17 +3,35 @@
   pkgs,
   ...
 }:
+let
+  # greetd 直拉模型下合成器退出后无人收回 graphical-session.target：它被常驻的
+  # portal/gvfs 等 PartOf 服务维持 active，注销重登时集成段 start labwc-session.target
+  # （BindsTo graphical，反向不停它）不会重新激活该目标，wantedBy 的 noctalia（收到
+  # logout 正常退出 exit 0，Restart=on-failure 不触发）便不再拉起。故把 target 生命周期
+  # 绑到合成器进程：wrapper 前台跑 labwc，其退出（注销/崩溃）后收回图形会话目标，
+  # greetd 重拉的下个会话才能经 BindsTo 从 inactive 重新激活并拉起全部随动服务。
+  labwcSession = pkgs.writeShellScript "labwc-session" ''
+    ${pkgs.labwc}/bin/labwc
+    systemctl --user stop graphical-session.target 2>/dev/null || true
+  '';
+in
 {
   # labwc 为独立合成器，需自行补齐系统级认证与电源能力
   security.polkit.enable = true;
 
   services = {
-    # greetd 直接拉起 labwc：labwc 无显示管理器集成，需显式指定会话入口
+    # greetd 直拉 labwc-session wrapper（定义见文件头）：labwc 无显示管理器集成，
+    # 需显式指定会话入口，wrapper 顺带在合成器退出时收回图形会话目标。
+    # 该 autologin 模型是有意的安全设计（勿作缺口修补）：单用户机开机免密直达，
+    # 会话内容保护靠手动锁屏（W-l session lock，解锁要密码）；注销仅干净重开图形
+    # 会话，不设登录墙/注销后自动锁——autologin 下"会话启动即锁"会连重启一起锁死，
+    # 且与锁屏自带的注销/重启动作互为死循环。防整机被他人使用属系统入口层
+    # （LUKS/取消 autologin/固件密码），桌面层不覆盖。
     greetd = {
       enable = true;
       settings = {
         default_session = {
-          command = "${pkgs.labwc}/bin/labwc";
+          command = "${labwcSession}";
           user = flake.config.me.username;
         };
       };
@@ -60,7 +78,8 @@
       };
     };
 
-    # Wayland 光标随输出缩放自动放大，基准保持 24 避免二次放大；XWayland 需单独处理
+    # 光标统一取逻辑基准 24：原生光标随输出 scale(1.75) 放大为 42px 物理，
+    # XWayland root 光标取同基准（理由见 autostart 的 xsetroot 注释）
     home.pointerCursor = {
       enable = true;
       name = "Adwaita";
@@ -89,6 +108,7 @@
         "SDL_IM_MODULE"
         "XMODIFIERS"
       ];
+
       environment = [
         "XDG_CURRENT_DESKTOP=labwc:wlroots"
         "XDG_SESSION_TYPE=wayland"
@@ -102,7 +122,7 @@
         "QT_IM_MODULES=wayland;fcitx;ibus"
         # SDL2 应用需要显式指定
         "SDL_IM_MODULE=fcitx"
-        # Wayland 光标尺寸由输出缩放自动放大，保持基准避免二次缩放
+        # 与 pointerCursor 同基准的运行时值：labwc 按此逻辑尺寸加载光标主题
         "XCURSOR_SIZE=24"
         "XCURSOR_THEME=Adwaita"
       ];
@@ -111,8 +131,9 @@
       # 守护进程一律由 systemd 用户服务托管，不得放入 autostart。
       autostart = [
         "fcitx5 -d --replace"
-        # XWayland 不跟随输出缩放，需单独设置；延时等待 XWayland 就绪
-        "sh -c 'sleep 1; xsetroot -xcf ${pkgs.adwaita-icon-theme}/share/icons/Adwaita/cursors/left_ptr 42 2>/dev/null || true' &"
+        # XWayland root 光标不经整数 buffer_scale 折算，合成器按输出 scale 放大，
+        # root 图须用逻辑基准 24px 才与原生一致（实测校准）；XWayland 就绪前设置必失败，故延时
+        "sh -c 'sleep 1; xsetroot -xcf ${pkgs.adwaita-icon-theme}/share/icons/Adwaita/cursors/left_ptr 24 2>/dev/null || true' &"
       ];
       rc = {
         # 间隙与缩略图切换器为 Noctalia 官方推荐的视觉协同
@@ -231,7 +252,6 @@
         };
       };
     };
-
   };
 
   environment.systemPackages = with pkgs; [
