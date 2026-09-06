@@ -1,13 +1,13 @@
-{
-  flake,
-  lib,
-  ...
-}:
-
+# redmi 硬件差异（内核、参数、数据盘）；公共 btrfs+tmpfs 布局在 hardware.btrfsRoot
+{ flake, lib, ... }:
 rec {
-  imports = [
-    flake.inputs.disko.nixosModules.disko
-  ];
+  imports = [ flake.config.nixosModules.hardware.btrfs-root ];
+
+  hardware.btrfsRoot = {
+    enable = true;
+    device = "/dev/nvme0n1";
+    swapSize = "16G";
+  };
 
   boot.initrd.availableKernelModules = [
     "nvme"
@@ -22,71 +22,6 @@ rec {
     "acpi.ec_no_wakeup=1"
     "no_console_suspend"
   ];
-
-  disko.devices.disk.main = {
-    type = "disk";
-    device = "/dev/nvme0n1";
-    content = {
-      type = "gpt";
-      partitions = {
-        ESP = {
-          size = "512M";
-          type = "EF00";
-          content = {
-            type = "filesystem";
-            format = "vfat";
-            mountpoint = "/boot";
-            mountOptions = [ "umask=0077" ];
-          };
-        };
-        NixOS = {
-          size = "100%";
-          content = {
-            type = "btrfs";
-            extraArgs = [ "-LNixOS" ];
-            subvolumes = {
-              "/home" = {
-                mountOptions = [
-                  "compress=zstd"
-                  "noatime"
-                ];
-                mountpoint = "/home";
-              };
-              "/persist" = {
-                mountOptions = [
-                  "compress=zstd"
-                  "noatime"
-                ];
-                mountpoint = "/persist";
-              };
-              "/nix" = {
-                mountOptions = [
-                  "compress=zstd"
-                  "noatime"
-                ];
-                mountpoint = "/nix";
-              };
-              "/swap" = {
-                mountOptions = [ "noatime" ];
-                mountpoint = "/swap";
-                swap.swapfile.size = "16G";
-              };
-            };
-          };
-        };
-      };
-    };
-  };
-
-  fileSystems."/" = {
-    device = "tmpfs";
-    fsType = "tmpfs";
-    options = [
-      "noatime"
-      "mode=755"
-    ];
-  };
-  fileSystems."/persist".neededForBoot = true;
 
   fileSystems."/mnt/Data" = {
     device = "/dev/disk/by-label/Data";
@@ -117,13 +52,6 @@ rec {
     fsType = "ntfs3";
     options = fileSystems."/mnt/Data".options;
   };
-
-  services.btrfs.autoScrub.enable = true;
-  services.btrfs.autoScrub.fileSystems = [
-    "/nix"
-    "/home"
-    "/persist"
-  ];
 
   networking.useDHCP = lib.mkDefault true;
 }

@@ -2,7 +2,9 @@
 { flake, ... }:
 {
   imports = [
-    ../redmi/grub.nix
+    # 公共 grub 已覆盖本箱想验证的 boot/loader 求值面；redmi 专属 GRUB 差异
+    # （a1ive 编译链、Windows/PE 启动项）不该经主机互相引用进测试箱
+    flake.config.nixosModules.hardware.grub
     ./configuration.nix
     flake.config.nixosModules.base.host
     flake.config.nixosModules.base.nix

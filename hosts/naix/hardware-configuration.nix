@@ -1,13 +1,13 @@
-{
-  lib,
-  flake,
-  ...
-}:
-
+# naix 硬件差异（内核、数据盘、VM 变体）；公共 btrfs+tmpfs 布局在 hardware.btrfsRoot
+{ flake, lib, ... }:
 rec {
-  imports = [
-    flake.inputs.disko.nixosModules.disko
-  ];
+  imports = [ flake.config.nixosModules.hardware.btrfs-root ];
+
+  hardware.btrfsRoot = {
+    enable = true;
+    device = "/dev/disk/by-diskseq/1";
+    swapSize = "8G";
+  };
 
   boot.initrd.availableKernelModules = [
     "nvme"
@@ -21,66 +21,6 @@ rec {
     "nct6775"
   ];
 
-  disko.devices.disk.main = {
-    imageSize = "32G";
-    type = "disk";
-    device = "/dev/disk/by-diskseq/1";
-    content = {
-      type = "gpt";
-      partitions = {
-        ESP = {
-          priority = 1;
-          size = "512M";
-          type = "EF00";
-          content = {
-            type = "filesystem";
-            format = "vfat";
-            mountpoint = "/boot";
-            mountOptions = [ "umask=0077" ];
-          };
-        };
-        nixos = {
-          size = "100%";
-          content = {
-            type = "btrfs";
-            extraArgs = [ "-Lnixos" ];
-            subvolumes = {
-              "/home" = {
-                mountOptions = [ "compress=zstd" ];
-                mountpoint = "/home";
-              };
-              "/persist" = {
-                mountOptions = [ "compress=zstd" ];
-                mountpoint = "/persist";
-              };
-              "/nix" = {
-                mountOptions = [
-                  "compress=zstd"
-                  "noatime"
-                ];
-                mountpoint = "/nix";
-              };
-              "/swap" = {
-                mountOptions = [ "noatime" ];
-                mountpoint = "/swap";
-                swap.swapfile.size = "8G";
-              };
-            };
-          };
-        };
-      };
-    };
-  };
-  fileSystems."/" = {
-    device = "tmpfs";
-    fsType = "tmpfs";
-    options = [
-      "noatime"
-      "mode=755"
-    ];
-  };
-  fileSystems."/persist".neededForBoot = true;
-
   # nix build .#nixosConfigurations.naix.config.system.build.vmWithDisko
   virtualisation.vmVariantWithDisko = {
     virtualisation = {
@@ -92,7 +32,7 @@ rec {
 
   fileSystems."/mnt/Files" = {
     device = "/dev/disk/by-label/Files";
-    fsType = "ntfs3";
+    fsType = "ntfs";
     options = [
       "defaults"
       "nodev" # 禁止设备文件
@@ -111,13 +51,6 @@ rec {
     fsType = "ntfs";
     options = fileSystems."/mnt/Files".options;
   };
-
-  services.btrfs.autoScrub.enable = true;
-  services.btrfs.autoScrub.fileSystems = [
-    "/nix"
-    "/home"
-    "/persist"
-  ];
 
   networking.useDHCP = lib.mkDefault true;
 }

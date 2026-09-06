@@ -27,9 +27,6 @@
     fhs
     cdrtools
     python3
-    proton-run
-    dwproton-run
-    umu-launcher
   ];
 
   programs = {
