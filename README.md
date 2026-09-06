@@ -25,7 +25,7 @@
 - `README.md` 和 `.envrc`：项目说明和开发环境配置。
 
 ### 系统配置
-- `configurations/nixos/`：按设备（naix、redmi、wsl）组织的 NixOS 配置，每台设备由 `default.nix` 组合清单 + 分类模块构成，Home Manager 用户环境内嵌于系统配置中。
+- `hosts/`：按设备（naix、redmi、wsl）组织的 NixOS 配置，每台设备由 `default.nix` 组合清单 + 分类模块构成，Home Manager 用户环境内嵌于系统配置中。
 
 ### 模块
 - `modules/nixos/`：NixOS 系统模块，包括：
@@ -69,7 +69,7 @@
 
 ### 自定义
 
-- 修改 `configurations/nixos/<设备>/` 下的设备配置以适配您的硬件（`default.nix` 为组合清单，一行一个模块）。
+- 修改 `hosts/<设备>/` 下的设备配置以适配您的硬件（`default.nix` 为组合清单，一行一个模块）。
 - 通过 `modules/` 中的模块扩展功能，按需启用。
 
 ## 许可证

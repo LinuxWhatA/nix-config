@@ -3,7 +3,7 @@
 #
 # 规则（scanTree 借鉴 vic/import-tree：递归 + 结构保留，目录 → 嵌套 attrset，
 # default.nix 即键 "default"）：
-#   configurations/nixos/<host>/default.nix → nixosConfigurations.<host>
+#   hosts/<host>/default.nix                 → nixosConfigurations.<host>
 #   modules/nixos/<dir>/<file>.nix           → nixosModules.<dir>.<file>（如 nixosModules.desktop.plasma6）
 #   modules/nixos/<dir>/default.nix          → nixosModules.<dir>.default（bundle，如 base）
 #   modules/home/<dir>/<file>.nix            → homeModules.<dir>.<file>（如 homeModules.gui.opencode）
@@ -103,7 +103,7 @@ in
     homeModules = scanTree "${self}/modules/home" (fn: fn);
 
     flake = {
-      nixosConfigurations = scan "${self}/configurations/nixos" mkNixosSystem;
+      nixosConfigurations = scan "${self}/hosts" mkNixosSystem;
       overlays = scan "${self}/overlays" (fn: import fn specialArgs);
     };
   };
