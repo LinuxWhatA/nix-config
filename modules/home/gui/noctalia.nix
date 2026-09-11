@@ -89,6 +89,9 @@ in
           "firefox"
         ];
       };
+      wallpaper.default = {
+        path = "${config.programs.noctalia.package}/share/noctalia/assets/noctalia-wallpaper.png";
+      };
       hot_corners = {
         enabled = true;
         top_left = {

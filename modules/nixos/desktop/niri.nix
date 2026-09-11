@@ -170,9 +170,11 @@ in
 
       # 启动项原则：常驻进程一律由 systemd 用户服务托管，此处只放一次性/自带驻留命令。
       # niri 不消费 XDG autostart，fcitx5 在此显式拉起：-d 自行 daemonize、
-      # --replace 接管已有实例，避免出现重复实例
+      # --replace 接管已有实例，避免出现重复实例。包取 i18n.inputMethod.package
+      # （locale.nix 声明 addons 后由 nixpkgs 包装的 fcitx5-with-addons），
+      # 直接写 pkgs.fcitx5 会另起一个不带词库/主题的实例
       extraConfig = ''
-        spawn-at-startup "${pkgs.fcitx5}/bin/fcitx5" "-d" "--replace"
+        spawn-at-startup "${config.i18n.inputMethod.package}/bin/fcitx5" "-d" "--replace"
       '';
     };
 

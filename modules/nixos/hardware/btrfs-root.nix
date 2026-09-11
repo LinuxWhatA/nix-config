@@ -33,7 +33,7 @@ in
   config = lib.mkIf cfg.enable {
     disko.devices.disk.main = {
       type = "disk";
-      device = cfg.device;
+      inherit (cfg) device;
       content = {
         type = "gpt";
         partitions = {
@@ -47,11 +47,11 @@ in
               mountOptions = [ "umask=0077" ];
             };
           };
-          nixos = {
+          NixOS = {
             size = "100%";
             content = {
               type = "btrfs";
-              extraArgs = [ "-Lnixos" ];
+              extraArgs = [ "-LNixOS" ];
               subvolumes = {
                 "/home" = {
                   mountOptions = [

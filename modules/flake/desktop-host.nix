@@ -20,6 +20,7 @@ in
       nixosModules.hardware.graphics
       nixosModules.hardware.persist
       nixosModules.services.fwupd
+      nixosModules.services.linyaps
       nixosModules.services.networking
       nixosModules.services.pipewire
       nixosModules.virtualization.qemu
