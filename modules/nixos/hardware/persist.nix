@@ -18,6 +18,8 @@
       "/etc/NetworkManager/system-connections"
       "/var/lib/bluetooth"
       "/var/lib/libvirt"
+      # Droidloom 的 Android 数据（ext4 镜像、用户文件、个人配置）按用户写在这里
+      "/var/lib/droidloom"
       "/var/lib/fprint"
       "/var/lib/systemd"
       "/var/lib/nixos"
