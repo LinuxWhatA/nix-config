@@ -20,6 +20,7 @@
     # Nix dev
     nixd
     nixfmt
+    statix
     nix-info
     nix-alien
 
@@ -27,6 +28,7 @@
     fhs
     cdrtools
     python3
+    cgroupRun
   ];
 
   programs = {

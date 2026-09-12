@@ -10,18 +10,30 @@ let
   withCategory =
     category: pkg:
     prev.symlinkJoin {
-      inherit (pkg) name;
+      inherit (pkg) name meta;
       paths = [ pkg ];
+      nativeBuildInputs = [ prev.desktop-file-utils ];
       postBuild = ''
-        if [ -d "$out/share/applications" ]; then
-          for f in "$out"/share/applications/*.desktop; do
-            [ -f "$f" ] || continue
-            # 已含该分类则跳过，避免 Categories=Network;Network; 式重复
-            grep -qE "^Categories=(.*;)?${category}(;|$)" "$f" && continue
-            sed 's/^Categories=/Categories=${category};/' "$f" > "$f.tmp"
-            mv "$f.tmp" "$f"
-          done
-        fi
+        for f in "$out"/share/applications/*.desktop; do
+          desktop-file-edit --add-category=${category} "$f"
+        done
+      '';
+    };
+
+  # desktop 条目的 Exec 写的是命令名（按 PATH 解析），所以在 bin 这层包一次，终端敲 wps 与从菜单
+  # 启动就是同一条路，不必再给 desktop 的 Exec 加前缀。
+  withCgroupRun =
+    pkg:
+    prev.symlinkJoin {
+      inherit (pkg) name meta;
+      paths = [ pkg ];
+      nativeBuildInputs = [ prev.makeWrapper ];
+      postBuild = ''
+        for entry in ${pkg}/bin/*; do
+          wrapped="$out/bin/$(basename "$entry")"
+          rm "$wrapped"
+          makeWrapper ${cgroupRun}/bin/cgroup-run "$wrapped" --add-flags "$entry"
+        done
       '';
     };
 
@@ -32,13 +44,35 @@ let
       exec ${prev.umu-launcher}/bin/umu-run "$@"
     '';
 
-  # setup.sh 的 waFindInstalled 遍历 $SOURCE_PATH/apps/* 生成 installed.bat，
-  # postPatch 在 cp -r ./ $out/src/ 之前执行，新 app 会被一起复制。
-  # 提为 let 绑定：launcher 需引用同一构建，且 attrset 内不可自引用。
+  # 命令跑在 systemd --user 的 transient service 里：主进程一退出单元即停止，KillMode=control-group
+  # 按 cgroup 连坐收走残留（先 SIGTERM 超时再 SIGKILL），不看应用内部结构、也不要求它配合信号——
+  # 这就是「关窗后留一堆孤儿」的黑箱应用的解法。用法：`cgroup-run <命令> [参数…]`。
+  #
+  # --pipe 与 --pty 同时给，由 systemd-run 按 stdio 自选（有 TTY 走 --pty，否则 --pipe）；--pty 隐含
+  # 同步等待，--wait 给 --pipe 分支补上；TimeoutStopSec=5 是因为默认 90s 会吊住终端。
+  cgroupRun = prev.writeShellScriptBin "cgroup-run" ''
+    if [ "$#" -eq 0 ]; then
+      echo "用法: cgroup-run <命令> [参数…]" >&2
+      exit 2
+    fi
+    exec ${prev.systemd}/bin/systemd-run \
+      --user \
+      --quiet \
+      --collect \
+      --service-type=exec \
+      --wait \
+      --pipe \
+      --pty \
+      --property=KillMode=control-group \
+      --property=TimeoutStopSec=5 \
+      --same-dir \
+      -- "$@"
+  '';
+
+  # setup.sh 从 apps/* 扫描已装应用，改动必须在 postPatch 落地才进 $out/src；提为 let 绑定是因为
+  # launcher 要与 final.winapps 同一次构建。sed 让产物里的启动路径走 PATH，store path 变化不失效。
   winapps-patched = inputs.winapps.packages.x86_64-linux.winapps.overrideAttrs (old: {
     postPatch = (old.postPatch or "") + ''
-      # desktop 文件与 ~/.local/bin 启动脚本一律使用相对路径 winapps（PATH 解析），
-      # 避免 store path 变化后失效；launcher 据此以 '^winapps ' 匹配发现应用
       sed -i 's|/nix/store/[^ ]*/bin/winapps |winapps |g' setup.sh
     '';
   });
@@ -50,28 +84,21 @@ in
   }) (builtins.attrNames (builtins.readDir ../packages))
 ))
 // {
-  inherit mergeJson;
+  inherit mergeJson cgroupRun;
 
   nix-alien = inputs.nix-alien.packages.x86_64-linux.nix-alien;
 
-  # amdgpu gfxhub page fault 缓解：Chromium GPU 进程改走 radv(Vulkan) 而非 radeonsi(GL)
-  # argv.json 白名单不支持 use-angle 开关，只能在启动 wrapper 里注入
-  # VK_ICD_FILENAMES：Chromium 捆绑的 vulkan-loader 找不到 NixOS 的 ICD 路径，
-  #   不指定则 ANGLE 报 VK_ERROR_INCOMPATIBLE_DRIVER（-9）导致 GPU 进程退出
-  #
-  # 使用 symlinkJoin：原始 vscode 从 cache.nixos.org 获取，仅创建符号链接 + wrapProgram，
-  # build 开销极小。若改用 overrideAttrs 会创建新的 store path，绕过二进制缓存。
+  # amdgpu gfxhub page fault 缓解：GPU 进程改走 radv(Vulkan) 而非 radeonsi(GL)；argv.json 白名单不含
+  # use-angle，只能在 wrapper 注入。会话 XDG_DATA_DIRS 不含 driver link，自带 loader 找不到 ICD 会报
+  # VK_ERROR_INCOMPATIBLE_DRIVER；指 /run/opengl-driver/share 让它自行枚举。用 symlinkJoin 以免重编译。
   vscode = prev.symlinkJoin {
-    name = "${prev.vscode.name}";
-    version = "${prev.vscode.version}";
+    inherit (prev.vscode) name version meta;
     paths = [ prev.vscode ];
-    meta = prev.vscode.meta;
-    buildInputs = [ prev.makeWrapper ];
+    nativeBuildInputs = [ prev.makeWrapper ];
     postBuild = ''
       wrapProgram "$out/bin/code" \
         --add-flags "--use-angle=vulkan" \
-        --set VK_ICD_FILENAMES "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json" \
-        --prefix LD_LIBRARY_PATH : "/run/opengl-driver/lib"
+        --prefix XDG_DATA_DIRS : "/run/opengl-driver/share"
     '';
   };
 
@@ -80,20 +107,17 @@ in
 
   winapps = winapps-patched;
 
-  # 本地包定义见 packages/winapps-launcher（含 VM_NAME export 修复，上游 winapps
-  # 主仓库捆绑的 launcher 副本未同步该修复）
-  # 传入 final.winapps（注入版），保证 launcher 的 WINAPPS_PATH 与系统 winapps 一致
+  # 传 final.winapps（注入版）保证 launcher 的 WINAPPS_PATH 与系统一致；包内另有上游未同步的 VM_NAME 修复
   winapps-launcher = prev.callPackage ../packages/winapps-launcher {
     inherit (final) winapps;
   };
 
   motrix-next = withCategory "Network" prev.motrix-next;
-  wpsoffice-cn = withCategory "Office" prev.wpsoffice-cn;
+  wpsoffice-cn = withCategory "Office" (withCgroupRun prev.wpsoffice-cn);
 
-  # 上游 tmpfiles 模板把 hook 目录定在 CMAKE_INSTALL_PREFIX 下，Nix 里就是只读 store 内的
-  # 路径：systemd-tmpfiles --create 建不出来，报错并以 73 退出，令 systemd-tmpfiles-setup
-  # 被判失败（后续规则仍会处理，但失败状态会掩盖真正的 tmpfiles 问题）。store 内本就无法
-  # 放 hook 脚本，删掉该行；/var/lib/linglong、/run/linglong 等仍由包内其余行创建
+  # 上游 tmpfiles 模板把 hook 目录定在 CMAKE_INSTALL_PREFIX 下，即只读 store 内的路径：建不出来而报错
+  # 并以 73 退出，令 systemd-tmpfiles-setup 被判失败（后续规则仍执行，但会掩盖真正的 tmpfiles 问题）。
+  # store 内本就放不了 hook 脚本，故删该行；/var/lib/linglong、/run/linglong 等仍由包内其余行创建
   linyaps = prev.linyaps.overrideAttrs (old: {
     postInstall = (old.postInstall or "") + ''
       sed -i -e "\|^# Create a directory to place the hook script$|d" \

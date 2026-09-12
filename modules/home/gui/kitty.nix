@@ -8,6 +8,10 @@
       size = 11;
     };
     themeFile = "Catppuccin-Mocha";
+    # ctrl+backspace 默认发 0x08（=Ctrl+H，只删一字符）；转发成 Ctrl+W 才是删词
+    keybindings = {
+      "ctrl+backspace" = "send_key ctrl+w";
+    };
     settings = {
       enable_audio_bell = false; # 关闭音频提示音
       copy_on_select = "yes"; # 选中即复制
@@ -27,7 +31,7 @@
 
       # 标签栏
       tab_title_template = "[{index}] {title}";
-      tab_bar_edge = "bottom";
+      tab_bar_edge = "top";
       tab_bar_style = "powerline";
       tab_powerline_style = "slanted";
       tab_bar_min_tabs = 1; # 避免标签栏消失
