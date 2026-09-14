@@ -17,9 +17,8 @@
       "SHARE_HISTORY"
       "HIST_FCNTL_LOCK"
     ];
-    # initContent（initExtra 已弃用，见 HM modules/programs/zsh/deprecated.nix）
     initContent = lib.mkOrder 1000 ''
-      # Linux TTY / dumb / Windows Terminal 回退纯文本符号预设（直接引用 starship 包内预设，随版本同步）
+      # Linux TTY / dumb / Windows Terminal 回退纯文本符号预设
       # WT_SESSION 为 Windows Terminal 官方环境变量，经 WSLENV 传入 WSL
       if [[ "$TERM" == linux || "$TERM" == dumb || -n "$WT_SESSION" ]]; then
         export STARSHIP_CONFIG=${pkgs.starship}/share/starship/presets/plain-text-symbols.toml

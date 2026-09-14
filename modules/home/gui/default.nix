@@ -1,5 +1,11 @@
+let
+  exclude = [
+    "default.nix"
+    "deepseek.nix"
+  ];
+in
 {
   imports = map (fn: ./${fn}) (
-    builtins.filter (fn: fn != "default.nix") (builtins.attrNames (builtins.readDir ./.))
+    builtins.filter (fn: !builtins.elem fn exclude) (builtins.attrNames (builtins.readDir ./.))
   );
 }

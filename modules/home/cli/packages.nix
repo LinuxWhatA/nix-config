@@ -8,12 +8,14 @@
 
   home.packages = with pkgs; [
     # Unix tools
-    sd
-    gnumake
+    yq # YAML
+    sd # sed
     less
     rar
+    duf # du
+    htop
+    snitch # 网络监控
     usbutils
-    fastfetch
     pciutils
     vulkan-tools
 
@@ -32,9 +34,12 @@
   ];
 
   programs = {
-    nix-index-database.comma.enable = true;
     fzf.enable = true;
     jq.enable = true;
     btop.enable = true;
+    ripgrep.enable = true;
+    fastfetch.enable = true;
+    opencode.enable = true;
+    nix-index-database.comma.enable = true;
   };
 }

@@ -13,6 +13,5 @@ in
 
   home-manager.users.${flake.config.me.username}.imports = [
     flake.config.homeModules.cli.default
-    flake.config.homeModules.gui.opencode
   ];
 }

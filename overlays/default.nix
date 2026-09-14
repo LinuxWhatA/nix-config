@@ -124,4 +124,18 @@ in
              -e "\|^d $out/etc/linglong/config\.d |d" "$out/lib/tmpfiles.d/linglong.conf"
     '';
   });
+
+  # 20260910 的 yellow_carp DMUB 固件（v4.0.74）在本机 680M 上被内核拒绝（`Error getting DMUB
+  # FW meta info` → `failed to load ucode DMCUB`），开机只黑屏；上游惯例是 revert 固件，尚未修，
+  # 故钉回 20260810（v4.0.76）。固件修好后删掉这段。
+  linux-firmware = prev.linux-firmware.overrideAttrs (old: rec {
+    version = "20260810";
+    name = "${old.pname}-${version}";
+    src = prev.fetchFromGitLab {
+      owner = "kernel-firmware";
+      repo = "linux-firmware";
+      tag = version;
+      hash = "sha256-P/fPpqaatp8Z2GV+I/OChiWGn6AhV+8w1RMFuX/LqHc=";
+    };
+  });
 }

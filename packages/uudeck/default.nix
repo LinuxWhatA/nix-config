@@ -2,7 +2,7 @@
 
 stdenvNoCC.mkDerivation {
   pname = "uudeck";
-  version = "2025-04-12-unstable";
+  version = "1.0";
 
   src = ./uuplugin_monitor.sh;
   unpackPhase = ''
