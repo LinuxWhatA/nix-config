@@ -25,14 +25,9 @@
   environment.systemPackages = [
     pkgs.sni-host
     pkgs.tray-host
-    pkgs.kdePackages.dolphin
     pkgs.xdg-utils # xdg-open/xdg-mime,托盘菜单"打开目录"依赖
     pkgs.glib # xdg-open 无桌面环境时的 gio 兜底
   ];
-  # WSLg 无桌面环境,xdg-open/gio 依此注册打开目录的默认文件管理器
-  xdg.mime.defaultApplications = {
-    "inode/directory" = "org.kde.dolphin.desktop";
-  };
 
   networking.hostName = "wsl";
 
