@@ -11,7 +11,7 @@
       default = "saved";
       splashImage = null;
       gfxmodeEfi = "1024x768";
-      configurationLimit = 10;
+      configurationLimit = 5;
       theme = "${pkgs.grub-cyberre-theme}/grub/themes/CyberRe";
     };
   };

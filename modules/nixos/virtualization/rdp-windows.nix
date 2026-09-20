@@ -11,8 +11,10 @@ let
     name = "RDPWindows";
     uuid = "678e2c46-f13a-4b5d-ae75-48c5abe9769b";
     type = "kvm";
+    # 宿主可用内存仅 ~14.6GB（原声明 14.65GB 超过宿主可用，宾客机与宿主互相挤占，落到 zram/swap）；
+    # 不设 currentMemory：balloon 只会被宿主主动 inflate，Guest 无法自行涨回
     memory = {
-      count = 15360000;
+      count = 8388608;
     };
     memoryBacking = {
       source = {
@@ -22,8 +24,9 @@ let
         mode = "shared";
       };
     };
+    # 宿主 16 线程要同时跑桌面和 FreeRDP 解码，留给宾客机的核数少于宿主总线程数
     vcpu = {
-      count = 10;
+      count = 8;
     };
     os = {
       firmware = "efi";

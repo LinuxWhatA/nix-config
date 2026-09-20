@@ -15,6 +15,6 @@
     WAFLAVOR="libvirt"
     RDP_SCALE="180"
     REMOVABLE_MEDIA="/run/media"
-    RDP_FLAGS="/cert:tofu /sound /microphone /clipboard +home-drive /a:drive,Data,/mnt/Data"
+    RDP_FLAGS="/cert:tofu /network:lan /bpp:32 /sound /microphone /clipboard +home-drive /a:drive,Data,/mnt/Data"
   '';
 }

@@ -12,7 +12,6 @@
     psmisc
     net-tools
     android-tools
-    ntfs3g
   ];
 
   programs = {

@@ -18,6 +18,7 @@
     usbutils
     pciutils
     vulkan-tools
+    ntfs3g # ntfsfix
 
     # Nix dev
     nixd
