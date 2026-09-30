@@ -15,6 +15,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # 工程 inputs：（nixfmt + statix）格式化与静态检查，随 `nix fmt` 与 `nix flake check` 落地
+    treefmt-nix = {
+      url = "git+https://gitcode.com/gh_mirrors/tr/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # 功能 inputs
     hardware = {
       url = "git+https://gitee.com/mirrors/nixos-hardware";

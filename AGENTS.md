@@ -1,6 +1,6 @@
 # AGENTS.md
 
-NixOS 配置仓库（flake-parts + 自定义目录自动接线）。注释与文档一律中文（含本文件）；新注释只写"为什么"（动机、约束、取舍），禁历史或变更式表述。无 CI、无测试，靠求值验证。单用户仓库，分支 `master`，远端 gitee；提交用约定式提交，主题用中文。
+NixOS 配置仓库（flake-parts + 自定义目录自动接线）。注释与文档一律中文（含本文件）；新注释只写"为什么"（动机、约束、取舍），禁历史或变更式表述。无 CI、无测试：验证靠 `nix flake check`（treefmt 格式/lint + 各主机承诺断言）与实机 rebuild。单用户仓库，分支 `master`，远端 gitee；提交用约定式提交，主题用中文。
 
 ## 目录结构
 
@@ -10,10 +10,12 @@ lib/merge-json.nix             # JSON 合并工具（经 overlay 暴露为 pkgs.
 modules/                       # NixOS / Home-manager 模块
 ├── flake/                     # flake 相关模块
 │   ├── autowire.nix           # 接线：扫描目录生成 outputs，声明并填充 nixosModules / homeModules
+│   ├── checks.nix             # 承诺闸门 host-baseline：断言各主机既定交付（nix flake check）
 │   ├── config.nix             # 顶层 me 选项（导入 ../../config.nix 的数据）
 │   ├── desktop-host.nix       # 桌面主机顶层组合（dendritic：装配为 nixosModules.desktop-host）
 │   ├── packages.nix           # 把 overlay 包暴露为 flake packages（唯一来源）
-│   └── per-system.nix         # perSystem（pkgs、formatter、devshell、allowUnfree）
+│   ├── per-system.nix         # perSystem（pkgs、devshell、allowUnfree）
+│   └── treefmt.nix            # treefmt-nix：nixfmt + statix，供 `nix fmt` 与 flake check
 ├── home/                      # Home-manager 用户模块
 │   ├── cli/                   # CLI 工具（git、zsh、nh、fd、direnv…；default.nix 批量导入）
 │   └── gui/                   # GUI 应用（firefox、kitty、vscode、noctalia、mangohud…；default 为批量导入）
@@ -51,13 +53,14 @@ flake.nix                      # flake 入口
 - 重建：`sudo nixos-rebuild switch --flake .#<host>`（仓库在 `/home/lwa/nix-config`；已配 `nh`，`nh clean` keep-since 30d）
 - 快速验证：`nix eval .#nixosConfigurations.<host>.config.system.build.toplevel.drvPath`；全量检查：`nix flake check`
 - 单包构建：`nix build .#<pkg>`
-- 格式化（nixfmt，2 空格 RFC 风格）：`nixfmt <file>`，校验 `nixfmt --check <file>`。`nix fmt` 在本仓库不可用（裸 nixfmt 1.4 拒绝无 `-` 的 stdin）
-- 静态检查：`nix run nixpkgs#statix -- check .`
-- 验证按成本从小到大：定向 `nix eval` → `nixfmt --check <file>` → `statix check .` → 实机 rebuild
+- 格式化与静态检查：`nix fmt`（treefmt 驱动 nixfmt + statix，就地修复；`nix fmt -- --no-cache` 绕开按文件缓存），单文件校验 `nixfmt --check <file>`
+- 检查：`nix flake check` = treefmt（格式 + statix）+ `checks.host-baseline`（各主机承诺断言，失败一次列出全部缺口）。它会连带求值 `packages.*`，冷 store 缺 FOD 时报 `path '…-source.drv' is not valid`，先 `nix eval --raw '.#<pkg>.drvPath'` 预热；只求值用 `--no-build`
+- 验证按成本从小到大：定向 `nix eval` → `nix build '.#checks.x86_64-linux.treefmt'` → `nix flake check` → 实机 rebuild
 
 ## 注意事项
 
 - flake inputs 刻意锁定国内镜像（git.nju.edu.cn / gitee / gitcode），勿"修"回 github。
+- `checks.host-baseline`（`modules/flake/checks.nix`）把各主机刻意保留的交付写成断言，只读配置、不做构建：新增这类承诺时补一行；**新增主机必须同时登记进 `perHost`**，否则集合断言会拦下。`modules/flake/per-system.nix` 不要再设 `formatter`——treefmt-nix 用 `mkDefault` 设它，硬写会盖回去使 `nix fmt` 坏掉。
 - `hardware-configuration.nix`（naix/redmi）为手写 + disko 磁盘配置，勿用 `nixos-generate-config` 重生成。
 - `allowUnfree = true` 设在 `modules/flake/per-system.nix`；`pkgs.mergeJson`（`lib/merge-json.nix`，经 overlay）用于向应用自管 JSON 注入默认值。
 - `direnv allow` 加载 devshell（python + python-registry，供 `packages/bt-keys-info` 用）。

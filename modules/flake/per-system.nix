@@ -11,7 +11,6 @@
     in
     {
       _module.args.pkgs = pkgs;
-      formatter = pkgs.nixfmt;
       # 开发环境
       devShells.default = pkgs.mkShell {
         name = "nix-config-shell";
