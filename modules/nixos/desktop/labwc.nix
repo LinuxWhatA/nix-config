@@ -14,6 +14,33 @@ let
     ${pkgs.labwc}/bin/labwc
     systemctl --user stop graphical-session.target 2>/dev/null || true
   '';
+
+  # W-k 一览：只列 rc.xml 里的显式键位——labwc 编译内置的默认键位（A-Tab、W-Return…）
+  # 不在配置文件里，也没有导出接口，要列全只能人工同步上游表。
+  keybindings = pkgs.writeShellScript "labwc-keybindings" ''
+    # -G 取 GTK 深色变体（本机未设 GTK 主题）；-k /dev/null 关缓存——dmenu 会把上次选中的排到最前
+    ${pkgs.python3}/bin/python3 <<'PY' | ${pkgs.wofi}/bin/wofi --dmenu -i -G -k /dev/null -p '快捷键'
+    import os
+    import re
+    import xml.etree.ElementTree as ET
+
+    config = os.path.join(
+        os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")),
+        "labwc/rc.xml")
+    root = ET.parse(config).getroot()
+    for keybind in root.iter("keybind"):
+        key = keybind.get("key", "?")
+        for action in keybind.findall("action"):
+            name = action.get("name", "?")
+            rest = [v for k, v in action.attrib.items() if k != "name"]
+            # Execute 直接显示命令；store 路径去掉 /nix/store/<hash>- 前缀，免得整列被哈希挤满
+            if name == "Execute" and rest:
+                detail = re.sub(r"^/nix/store/[0-9a-z]{32}-", "", rest[0])
+            else:
+                detail = " ".join([name] + rest)
+            print(f"{key:<22} → {detail}")
+    PY
+  '';
 in
 {
   # labwc 为独立合成器，需自行补齐系统级认证与电源能力
@@ -148,14 +175,14 @@ in
           osd."@style" = "thumbnail";
         };
         keyboard = {
-          # 保留上游全部默认键位，自定义仅补充无冲突项
+          # 保留上游全部默认键位（仅 XF86 音量/亮度被下面显式覆盖）
           default = true;
           keybind = [
             {
-              "@key" = "W-t";
+              "@key" = "W-k";
               action = {
                 "@name" = "Execute";
-                "@command" = "xdg-terminal-exec";
+                "@command" = "${keybindings}";
               };
             }
             {
@@ -180,7 +207,7 @@ in
               };
             }
             {
-              "@key" = "W-q";
+              "@key" = "W-w";
               action = {
                 "@name" = "Close";
               };
@@ -213,6 +240,8 @@ in
                 "@command" = "noctalia msg settings-toggle";
               };
             }
+            # labwc 内置默认把这些键绑给 pactl / brightnessctl，本机两个命令都没装，
+            # 按下等于空转；这里重新声明覆盖默认（同名键位去重时后声明者胜出）。
             {
               "@key" = "XF86AudioRaiseVolume";
               action = {

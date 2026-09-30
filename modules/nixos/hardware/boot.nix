@@ -19,9 +19,12 @@
       themePackages = [ pkgs.plymouth-550w-theme ];
     };
     loader.timeout = lib.mkDefault 3;
+    # 社区 silent boot 配方：udev 只记错误级；并关掉控制台光标
     kernelParams = [
       "quiet"
       "plymouth.nolog"
+      "udev.log_level=3"
+      "vt.global_cursor_default=0"
     ];
     consoleLogLevel = 0;
     initrd.verbose = false;
