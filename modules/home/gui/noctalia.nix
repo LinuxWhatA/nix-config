@@ -1,9 +1,9 @@
 # Noctalia 桌面伴侣（launcher/dock/bar/剪贴板/控制中心）的用户态声明。
-# 选项全部来自上游 homeModules.default（下方 imports），属纯 HM 模块，
-# 必须放 home/gui：autowire 会把 modules/nixos 子树暴露成 nixos 模块，
-# 一段纯 HM 配置若落到那边就会被误当系统模块接线。
+# 选项与包都由 HM 自带的 programs.noctalia 提供（包即 nixpkgs 的 noctalia），勿再引入上游 noctalia
+# flake 的 homeModules.default——它与 HM 模块声明同一组选项，两者同时导入必然冲突。
+# 属纯 HM 模块，必须放 home/gui：autowire 会把 modules/nixos 子树暴露成
+# nixos 模块，一段纯 HM 配置若落到那边就会被误当系统模块接线。
 {
-  flake,
   config,
   lib,
   pkgs,
@@ -23,10 +23,6 @@ let
   '';
 in
 {
-  imports = [
-    flake.inputs.noctalia.homeModules.default
-  ];
-
   programs.noctalia = {
     enable = true;
     systemd.enable = true;

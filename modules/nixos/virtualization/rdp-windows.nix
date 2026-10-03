@@ -156,7 +156,7 @@ let
         {
           type = "spice";
           image = {
-            compression = false;
+            compression = "off";
           };
         }
       ];

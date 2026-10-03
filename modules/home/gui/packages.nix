@@ -16,5 +16,6 @@
     proton-run
     dwproton-run
     umu-launcher
+    dsh-desktop-next
   ];
 }
