@@ -1,61 +1,69 @@
-# Droidloom 的构建器（上游 tools/droidloom-package）
+# Droidloom 运行期载荷（上游 pacman 包对：droidloom-runtime + droidloom-image）
 #
-# 为什么只打包构建器：Droidloom 由 droidloom-runtime（宿主程序）与 droidloom-image
-# （Android 镜像）两个 pacman 包组成，上游既无 release 也无 tag，没有任何可下载的
-# 预编译产物；唯一的构建入口会在 rootless Podman 的 Arch 容器里跑 makepkg，联网拉取
-# 并编译固定的 AOSP 稀疏源（约 120 GiB）。这条链依赖网络、容器与 FHS 布局，无法在
-# Nix 沙箱内表达，因此本包只做构建，产物是 pacman 包。
+# 上游把这两个包发在同一个 release 里，tag 固定叫 `packages`（与包版本无关，版本号
+# 只出现在资产文件名中，也没有独立 tag），故按需拼 URL 用 fetchurl 取；哈希取 GitHub
+# 资产自带的 digest 字段。
 #
-# 用法（在 droidloom 源码 checkout 内执行，或用 --source 指定；输出在
-# dist/arch/<version>-<release>/）：
-#   nix run .#droidloom -- build
-# 产出的包对由 packages/droidloom-runtime 收进 store，运行期接线见
-# modules/nixos/virtualization/droidloom.nix。
+# 载荷重排为 Nix 布局（bin/lib/share），上游二进制与生成的 cell.json 里硬编码的
+# /usr/... 路径由 modules/nixos/virtualization/droidloom.nix 用符号链接垫平。
 {
   lib,
-  rustPlatform,
-  fetchFromGitHub,
-  makeWrapper,
-  podman,
-  rsync,
+  stdenvNoCC,
+  fetchurl,
+  zstd,
 }:
 let
-  # 构建器在宿主上调 podman/rsync，并在启动自检两者的 --version
-  runtimePath = lib.makeBinPath [
-    podman
-    rsync
-  ];
+  version = "0.1.0-20";
+
+  archive =
+    name: hash:
+    fetchurl {
+      name = "droidloom-${name}-${version}-x86_64.pkg.tar.zst";
+      url = "https://github.com/denialwm/droidloom/releases/download/packages/droidloom-${name}-${version}-x86_64.pkg.tar.zst";
+      inherit hash;
+    };
 in
-rustPlatform.buildRustPackage (finalAttrs: {
+stdenvNoCC.mkDerivation {
   pname = "droidloom";
-  version = "0.1.0-unstable-2026-09-10";
+  inherit version;
 
-  src = fetchFromGitHub {
-    owner = "denialwm";
-    repo = "droidloom";
-    rev = "e380cde064be3847b4d5ee6e8f4e874eb76f9742";
-    hash = "sha256-WCTzxbhWt3l6D0eJJ1sJMmB7z7X4MlKWHmqBoRfO6rQ=";
-  };
+  srcs = [
+    (archive "runtime" "sha256-K24ogIgCFzKB5RCiu/DMJ55dkmHcJc1vXwCf5DLBcOk=")
+    (archive "image" "sha256-0OFN74bJ4FnUfoKq2R92QTG54NCx5eAtaPyM4G01Mmc=")
+  ];
 
-  cargoLock.lockFile = "${finalAttrs.src}/Cargo.lock";
+  nativeBuildInputs = [ zstd ];
 
-  # 只构建构建器：其余 workspace 成员是 Android 侧组件，或依赖 Android 构建环境
-  cargoBuildFlags = [ "-p droidloom-package" ];
-  cargoInstallFlags = [ "-p droidloom-package" ];
+  # 两个包安装到同一前缀，解到一棵树里合并
+  unpackPhase = ''
+    runHook preUnpack
+    mkdir payload
+    for archive in $srcs; do
+      zstd -dc "$archive" | tar -x -C payload
+    done
+    runHook postUnpack
+  '';
 
-  nativeBuildInputs = [ makeWrapper ];
+  # 载荷里有大量 Android 侧 ELF（bionic 与厂商库）与 2.5 GiB 镜像，一律保持上游字节
+  dontFixup = true;
 
-  doCheck = false; # 用例跑完整 Android 构建，需要容器与网络
-
-  postInstall = ''
-    wrapProgram "$out/bin/droidloom-package" --prefix PATH : ${runtimePath}
+  # 只装运行时真正读取的目录：/usr/share 下的 polkit action 与 libalpm 钩子属 pacman
+  # 集成件，NixOS 侧由模块自己声明
+  installPhase = ''
+    runHook preInstall
+    mkdir -p $out/bin $out/lib $out/share
+    cp -a payload/usr/bin/. $out/bin/
+    cp -a payload/usr/lib/droidloom $out/lib/
+    cp -a payload/usr/lib/systemd $out/lib/
+    cp -a payload/usr/share/droidloom $out/share/
+    runHook postInstall
   '';
 
   meta = {
-    description = "Build Droidloom runtime and Android image packages (upstream builder)";
+    description = "Droidloom runtime and Android image payload (upstream Arch packages)";
     homepage = "https://github.com/denialwm/droidloom";
     license = lib.licenses.gpl3Plus;
-    mainProgram = "droidloom-package";
     platforms = lib.platforms.linux;
+    mainProgram = "droidloomctl";
   };
-})
+}

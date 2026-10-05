@@ -13,6 +13,7 @@ in
       nixosModules.base.default
       nixosModules.desktop.console
       nixosModules.desktop.labwc
+      nixosModules.gui.uur
       nixosModules.gui.thunar
       nixosModules.gui.clash
       nixosModules.gui.steam

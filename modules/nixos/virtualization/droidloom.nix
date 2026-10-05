@@ -1,4 +1,4 @@
-# Droidloom：把 Android 应用跑在原生 Wayland 窗口里（运行期载荷见 packages/droidloom-runtime）
+# Droidloom：把 Android 应用跑在原生 Wayland 窗口里（运行期载荷见 packages/droidloom）
 #
 # 上游只认 Arch/Omarchy：装包靠 pacman，运行时还认一堆 /usr/... 绝对路径（二进制自身、
 # helper 读的模板、生成的 cell.json），首次配置由 droidloom-package-helper 以 root 写
@@ -11,29 +11,29 @@
 #     故由 envfs-watchdog 定时探测并重挂（见 systemd.services.envfs-watchdog）
 #   - cell 的 cgroup 绕法：上游让 Android 跑在非初始 cgroup namespace 里，netd 却用 flags=0
 #     往该 ns 的根挂 BPF 程序 → EPERM → netd abort → cell 关机。本模块让 cell 的 init 先 bind，
-#     把可见根换成「ns 根的后代」，见 droidloom-netd-rc 与 systemd.services.droidloom-cell-cgroup-fix
-#   - 系统服务 droidloomd 与用户服务 droidloom/droidloom-applications 照抄上游单元
-#     注意：用户单元**故意不设** wantedBy（不随会话自启），开机后要跑 cell 就一条
-#     `droidloomctl start`（实测：该命令会连带把两个用户单元拉起来，denial_socket
-#     native-bridge.sock 随之生成，应用目录也能列出；无需先 systemctl --user start）。
-#     不要用 `droidloomctl start --cell`：从普通 shell 跑它会因 PATH 里没有 nft 而 ENOENT。
+#     把可见根换成「ns 根的后代」，见 droidloom-netd-rc 与 droidloomd 的 ExecStartPre
+#   - 系统服务 droidloomd 与用户服务 droidloom/droidloom-applications 照抄上游单元；
+#     用户单元**故意不设** wantedBy（不随会话自启，理由见该单元内的注释）
 #   - 首次配置仍交回上游 helper（INSTALL.md 里 sudo 的那条路径），做成 oneshot：它写出的
 #     /etc/droidloom/* 属运行期状态，且本机 / 是 tmpfs，声明式管不到
 #   - polkit 授权本用户起停 droidloomd.service（上游由 helper 写规则文件，这里声明式给）
 {
   flake,
   config,
+  lib,
   pkgs,
   ...
 }:
 let
   me = flake.config.me.username;
-  payload = pkgs.droidloom-runtime;
-  systemctl = "${config.systemd.package}/bin/systemctl";
+  payload = pkgs.droidloom;
+  systemctl = lib.getExe' config.systemd.package "systemctl";
 
   # droidloom-wayland 是外部二进制、没有 rpath，NEEDED 里的 libgbm/libxkbcommon 起不来，
   # 用 wrapper 补 LD_LIBRARY_PATH：libgbm 取 nixpkgs 自己的 gbm 包（mesa 的输出里没有它），
-  # /run/opengl-driver/lib 提供系统 DRI 驱动
+  # /run/opengl-driver/lib 提供系统 DRI 驱动。makeWrapper 现在只是 setup hook（往构建 shell
+  # 注入同名函数，输出里没有这个可执行文件），所以只能留在 nativeBuildInputs 里用，不能
+  # 换成 lib.getExe' 拼路径。
   droidloom-wayland =
     pkgs.runCommandLocal "droidloom-wayland"
       {
@@ -42,7 +42,7 @@ let
       ''
         makeWrapper ${payload}/bin/droidloom-wayland $out/bin/droidloom-wayland \
           --prefix LD_LIBRARY_PATH : "${
-            pkgs.lib.makeLibraryPath [
+            lib.makeLibraryPath [
               pkgs.libgbm
               pkgs.libxkbcommon
             ]
@@ -89,14 +89,14 @@ let
 
   # / 是 tmpfs：cellroot 子 cgroup 与 cell.json 的覆盖每开机都要重建（cell.json 由 helper 在开机时重写），
   # 且 helper 之后还可能重写一次，所以这份脚本同时挂在 droidloomd 的 ExecStartPre 上（起 cell 前必跑）。
-  # 注意 Nix 的 '' 字符串只剥掉「最靠左那一行的缩进」，所以 heredoc 里的 Python 必须和结束的 '' 同列，
-  # 否则会残留缩进 → IndentationError（踩过）。
+  # 注意 Nix 的 '' 字符串按「各行最小缩进」整体剥离，所以 heredoc 里那几行 Python 必须与
+  # `set -eu` 同列，否则会残留缩进 → IndentationError（踩过）。
   droidloom-cell-cgroup-fix = pkgs.writeShellScript "droidloom-cell-cgroup-fix" ''
     set -eu
     root=/sys/fs/cgroup/system.slice/droidloomd.service/cellroot
     mkdir -p "$root/system" "$root/apps"
-    ${pkgs.python3}/bin/python3 - "${droidloom-netd-rc}" <<'PY'
-    import json, sys
+    ${lib.getExe pkgs.python3} - "${droidloom-netd-rc}" <<'PY'
+    import json, os, sys
     rc = sys.argv[1]
     path = "/etc/droidloom/cell.json"
     with open(path) as fh:
@@ -104,20 +104,20 @@ let
     for o in d["android_file_overrides"]:
         if o.get("target") == "/system/etc/init/netd.rc":
             o["source"] = rc
-    with open(path, "w") as fh:
+    # 写坏 cell.json 会让 cell 起不来，所以先写临时文件再原子替换
+    with open(path + ".new", "w") as fh:
         json.dump(d, fh, ensure_ascii=False, indent=1)
+    os.replace(path + ".new", path)
     PY
   '';
 
-  # NixOS 的 uid 由激活期分配（求值期 option 是 null），插不进 ExecStart，故运行时取
+  # 首次配置交回上游 helper：它按上游 INSTALL.md 的方式做缺失项（含写 /etc/droidloom 的
+  # cell.json 与 runtime.env、建 Android 数据）。/ 是 tmpfs，故每次开机都要重跑。
+  # 0.1.0-20 起 helper 只有 `prepare` 一个子命令、不收参数，目标桌面用户靠 SUDO_USER
+  # 识别（等价于 sudo 调用），所以单元里以 root 跑时显式补上。
   droidloom-setup = pkgs.writeShellScript "droidloom-setup" ''
-    set -eu
-    uid="$(${pkgs.coreutils}/bin/id -u ${me})"
-    home="$(${pkgs.glibc.getent}/bin/getent passwd ${me} | ${pkgs.coreutils}/bin/cut -d: -f6)"
-    exec ${payload}/lib/droidloom/droidloom-package-helper setup \
-      --uid "$uid" \
-      --data-home "$home/.local/share" \
-      --state-home "$home/.local/state"
+    export SUDO_USER=${me}
+    exec ${payload}/lib/droidloom/droidloom-package-helper prepare
   '';
 in
 {
@@ -186,8 +186,10 @@ in
         path = runtimePath;
         serviceConfig = {
           Type = "simple";
-          # 每次启动都补建 cell 的 cgroup 子树并重写 netd.rc 覆盖（cell 关机会清掉、
-          # helper 也可能重写 cell.json，见 droidloom-netd-rc 的注释）
+          # 上游 netd 的 cgroup-BPF EPERM 绕法（详见 droidloom-netd-rc 的注释）：预建 cell 的
+          # cgroup 子树，并把 /system/etc/init/netd.rc 的覆盖指向我们那份带 bind 的 rc。
+          # 每次启动前都重跑：cell 关机会清掉子树，helper 也会重写 cell.json；
+          # droidloom-setup 排在 droidloomd 之前，故此处 cell.json 必然已就绪。
           ExecStartPre = "${droidloom-cell-cgroup-fix}";
           ExecStart = "${payload}/bin/droidloomd";
           RuntimeDirectory = "droidloom";
@@ -205,33 +207,16 @@ in
         };
       };
 
-      # 上游 netd 的 cgroup-BPF EPERM 绕法（详见 droidloom-netd-rc 的注释）：
-      # 预建 cell 的 cgroup 子树，并把 /system/etc/init/netd.rc 的覆盖指向我们那份带 bind 的 rc。
-      # 必须在 helper 写出 cell.json 之后、droidloomd 之前。
-      droidloom-cell-cgroup-fix = {
-        description = "Droidloom cell cgroup workaround (upstream netd BPF attach EPERM)";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "droidloom-setup.service" ];
-        before = [ "droidloomd.service" ];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-          ExecStart = "${droidloom-cell-cgroup-fix}";
-        };
-      };
-
       # envfs 的 FUSE 连接会被 cell 的关机路径作废（详见文件头注释），宿主侧挡不住，只能自愈：
-      # 定时探一次 /usr/bin/env，坏了就重挂 usr-bin.mount（几秒内恢复，VSCode、bash 脚本、
-      # droidloomd 自己都因此不再需要人工救场）。
+      # 定时探一次 /usr/bin/env，坏了才重挂 usr-bin.mount（几秒内恢复，VSCode、bash 脚本、
+      # droidloomd 自己都因此不再需要人工救场）。探针用 ExecCondition：条件不满足时
+      # 单元不算失败、也不执行动作，正好是"没事就不动"。
       envfs-watchdog = {
         description = "Re-mount envfs when its FUSE connection was aborted";
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = pkgs.writeShellScript "envfs-watchdog" ''
-            if ! test -e /usr/bin/env; then
-              exec ${systemctl} restart usr-bin.mount
-            fi
-          '';
+          ExecCondition = "${lib.getBin pkgs.coreutils}/bin/test -e /usr/bin/env";
+          ExecStart = "${systemctl} restart usr-bin.mount";
         };
       };
     };
@@ -278,6 +263,8 @@ in
         # FUSE 连接作废（`/usr/bin`、`/bin` 全部 ENOTCONN → VSCode 的 `#!/usr/bin/env`、`#!/bin/bash`
         # 脚本全挂）。开机自启等于每次开机都中招；在查清并修掉那个作废者之前先手动起。
         # wantedBy = [ "graphical-session.target" ];
+        # 手动起时用 `droidloomctl start`：它会连带把这两个用户单元拉起来（0.1.0-20 的
+        # start 没有 --cell 选项，完整启动就是它）。
         path = runtimePath;
         unitConfig.ConditionPathExists = "/etc/droidloom/cell.json";
         serviceConfig = {

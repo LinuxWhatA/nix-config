@@ -105,6 +105,28 @@ in
   proton-run = mkProtonRun "proton-run" prev.proton-ge-bin.steamcompattool;
   dwproton-run = mkProtonRun "dwproton-run" prev.dwproton-bin.steamcompattool;
 
+  # uur 把 wine 写死为 wineWow64Packages.stable，而 UU 远程依赖的补丁多在 staging。package.nix 只取
+  # 该集合的 .stable，故传一个 stable 指向 staging 的集合即可换掉它；上游若改用其它成员会直接报错。
+  #
+  # 部署 hook DLL 时用的是 std::fs::copy，而它连源文件权限位一起复制，只读 store 里是 0444，于是
+  # 目标也变只读，第二次 uur run 覆盖时 EACCES。改成"读完再写"即幂等（已端到端验证）。只替换每次
+  # 启动都会执行的那 3 处，写 *.uur-original 备份的两处是一次性的。
+  uur =
+    (inputs.uur.packages.x86_64-linux.uur.override {
+      wineWow64Packages = {
+        stable = final.wineWow64Packages.staging;
+      };
+    }).overrideAttrs
+      (old: {
+        postPatch = (old.postPatch or "") + ''
+          sed -i \
+            -e 's|std::fs::copy(&from, &to)|std::fs::write(\&to, std::fs::read(\&from)?)|' \
+            -e 's|std::fs::copy(&source, &target)|std::fs::write(\&target, std::fs::read(\&source)?)|' \
+            -e 's|std::fs::copy(&mux_source, &mux_target)|std::fs::write(\&mux_target, std::fs::read(\&mux_source)?)|' \
+            src/session.rs
+        '';
+      });
+
   winapps = winapps-patched;
 
   # 传 final.winapps（注入版）保证 launcher 的 WINAPPS_PATH 与系统一致；包内另有上游未同步的 VM_NAME 修复

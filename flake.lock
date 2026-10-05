@@ -442,6 +442,7 @@
         "nixvim": "nixvim",
         "plasma-manager": "plasma-manager",
         "treefmt-nix": "treefmt-nix",
+        "uur": "uur",
         "winapps": "winapps"
       }
     },
@@ -513,6 +514,26 @@
       "original": {
         "type": "git",
         "url": "https://gitcode.com/gh_mirrors/tr/treefmt-nix"
+      }
+    },
+    "uur": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790276691,
+        "narHash": "sha256-ntPbi0DqhAFq95mgBzw+dstOhYkJb9qJl1ftjDjEHz4=",
+        "ref": "refs/heads/master",
+        "rev": "5245c9ee61c396e7a8bfbf718d6a403547cb2962",
+        "revCount": 23,
+        "type": "git",
+        "url": "https://github.com/panxuc/uur"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/panxuc/uur"
       }
     },
     "winapps": {
