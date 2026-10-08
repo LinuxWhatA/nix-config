@@ -15,7 +15,6 @@ in
     flake.config.nixosModules.desktop-host
     flake.config.nixosModules.virtualization.waydroid
 
-    ./grub.nix
     ./configuration.nix
   ];
 }

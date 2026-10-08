@@ -6,7 +6,6 @@ NixOS 配置仓库（flake-parts + 自定义目录自动接线）。注释与文
 
 ```
 hosts/                         # 各主机配置（naix、redmi、wsl；test = 模块测试箱）
-lib/merge-json.nix             # JSON 合并工具（经 overlay 暴露为 pkgs.mergeJson）
 modules/                       # NixOS / Home-manager 模块
 ├── flake/                     # flake 相关模块
 │   ├── autowire.nix           # 接线：扫描目录生成 outputs，声明并填充 nixosModules / homeModules
@@ -60,9 +59,9 @@ flake.nix                      # flake 入口
 ## 注意事项
 
 - flake inputs 刻意锁定国内镜像（git.nju.edu.cn / gitee / gitcode），勿"修"回 github。
-- `checks.host-baseline`（`modules/flake/checks.nix`）把各主机刻意保留的交付写成断言，只读配置、不做构建：新增这类承诺时补一行；**新增主机必须同时登记进 `perHost`**，否则集合断言会拦下。`modules/flake/per-system.nix` 不要再设 `formatter`——treefmt-nix 用 `mkDefault` 设它，硬写会盖回去使 `nix fmt` 坏掉。
+- `checks.host-baseline`（`modules/flake/checks.nix`）把刻意保留的交付写成断言，只读配置、不做构建：新增这类承诺时补一行。断言一律写成**条件式通用不变量**（前提成立才校验，如"有 ntfs 挂载才查挂载选项"），不点名主机，故新增主机自动纳入、无需登记。`modules/flake/per-system.nix` 不要再设 `formatter`——treefmt-nix 用 `mkDefault` 设它，硬写会盖回去使 `nix fmt` 坏掉。
 - `hardware-configuration.nix`（naix/redmi）为手写 + disko 磁盘配置，勿用 `nixos-generate-config` 重生成。
-- `allowUnfree = true` 设在 `modules/flake/per-system.nix`；`pkgs.mergeJson`（`lib/merge-json.nix`，经 overlay）用于向应用自管 JSON 注入默认值。
+- `allowUnfree = true` 与 overlays 只在 `flake.config.pkgsArgs`（`modules/flake/config.nix`）定义一处，系统侧（`modules/nixos/base/nix.nix`）与 flake 侧（`per-system.nix`）共用，勿在任一处另写。`pkgs.mergeJson`（`packages/merge-json/`，经 overlay 别名）用于向应用自管 JSON 注入默认值。
 - `direnv allow` 加载 devshell（python + python-registry，供 `packages/bt-keys-info` 用）。
 - flake 求值只认 git 已跟踪文件：新文件须先 `git add -N <path>`（intent-to-add：不产生暂存内容，`git reset -- <path>` 可撤销）才会被 `nix eval` / `nix build` 看到。
 - `nixos-rebuild switch`（`nh os switch`）只重启被改动的用户服务；涉及会话启动链（greetd → 合成器 → 环境导入 → 守护自启、portal 配置）的改动须重新登录（退出 labwc，greetd 随即重拉）或整机重启验证。

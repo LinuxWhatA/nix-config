@@ -14,7 +14,6 @@ in
     flake.config.nixosModules.desktop-host
     flake.config.nixosModules.virtualization.rdp-windows
 
-    ./grub.nix
     ./configuration.nix
   ];
 }

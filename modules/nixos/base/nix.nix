@@ -4,18 +4,9 @@
   ...
 }:
 
-let
-  inherit (flake) inputs;
-  inherit (inputs) self;
-in
 {
-  environment.etc."nixos".source = flake.inputs.self;
-  nixpkgs = {
-    config = {
-      allowUnfree = true;
-    };
-    overlays = lib.attrValues self.overlays;
-  };
+  # pkgs 的构造参数来自 flake.config.pkgsArgs（与 flake 侧共用同一份，勿在此另写）
+  nixpkgs = flake.config.pkgsArgs;
 
   nix = {
     channel.enable = false;
