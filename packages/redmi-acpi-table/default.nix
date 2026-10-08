@@ -14,6 +14,7 @@
 #
 # 注意：升级 BIOS 后需重新 dump 并更新 dsdt.dsl / patch.diff
 {
+  lib,
   stdenv,
   acpica-tools,
   cpio,
@@ -47,6 +48,7 @@ stdenv.mkDerivation {
 
   meta = {
     description = "Patched DSDT (PPPB buffer OOB fix) as uncompressed acpi_override cpio for Redmi Book Pro 14 2022";
+    license = lib.licenses.unfree;
     platforms = [ "x86_64-linux" ];
   };
 }

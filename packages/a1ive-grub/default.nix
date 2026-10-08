@@ -60,8 +60,11 @@ stdenv.mkDerivation {
     bash
   ];
 
+  # GRUB 自己管栈布局与地址空间（生成 EFI 映像时做绝对地址假设），默认加固的
+  # PIE/stackprotector/fortify 会直接让构建或产物失效
   hardeningDisable = [ "all" ];
 
+  # 上游代码依赖 GNU 扩展；nixpkgs 默认 std 更严，编译期会挂在一批隐式声明上
   NIX_CFLAGS_COMPILE = [ "-std=gnu11" ];
 
   preConfigure = ''

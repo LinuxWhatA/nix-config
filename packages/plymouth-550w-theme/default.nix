@@ -26,6 +26,7 @@ stdenvNoCC.mkDerivation {
   meta = {
     description = "Plymouth theme showing the 550W logo from The Wandering Earth, based on spinner";
     homepage = "https://github.com/Davidyz/plymouth-theme-550w";
+    license = lib.licenses.unfree;
     platforms = lib.platforms.all;
   };
 }
