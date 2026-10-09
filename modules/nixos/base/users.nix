@@ -17,4 +17,7 @@
   };
 
   home-manager.backupFileExtension = "hm-backup";
+  # 备份名固定，故第二次 activation 会被上一次留下的 .hm-backup 挡住（HM 直接失败退出，
+  # 整个用户环境都激活不了）。允许覆盖旧备份：冲突时用最新的替掉过期的，才叫幂等。
+  home-manager.overwriteBackup = true;
 }
