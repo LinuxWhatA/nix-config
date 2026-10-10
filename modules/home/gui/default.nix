@@ -2,6 +2,7 @@ let
   exclude = [
     "default.nix"
     "deepseek.nix"
+    "noctalia.nix"
   ];
 in
 {

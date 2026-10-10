@@ -16,8 +16,6 @@ let
   # 只借 pkgs 造 check 产物，与某一台具体主机无关：naix 改名或删除不该让门禁先炸。
   pkgs = withSystem "x86_64-linux" ({ pkgs, ... }: pkgs);
 
-  # 读不到的选项一律当前提不成立（`or` 兜属性缺失，未赋值的 option 会 throw，由 safe 兜）：
-  # 缺项是"这台主机没有这个东西"，不是缺口。
   invariants =
     name: cfg:
     let
@@ -29,15 +27,19 @@ let
       autologinUser = c.services.getty.autologinUser or null;
       sshdOn = c.services.openssh.enable or false;
 
-      # 图形会话的两半：启动链接的是 labwc，配置来自 Home-manager
-      labwcSession = lib.hasInfix "labwc-session" (
-        c.services.greetd.settings.default_session.command or ""
-      );
-      hmLabwc = c.home-manager.users.${me}.wayland.windowManager.labwc.enable or false;
-      graphical = labwcSession || hmLabwc;
+      # 未赋值的 option 一访问就抛错，`or` 兜不住（会被下层 safe 折成假缺口），故统一走 tryEval
+      read =
+        fallback: f:
+        let
+          r = builtins.tryEval f;
+        in
+        if r.success then r.value else fallback;
+
+      # 有图形会话只看会话注册表：合成器登记在 displayManager 下，greetd 直拉与 target 只是下游表现
+      graphical = (read [ ] c.services.displayManager.sessionPackages) != [ ];
       # portal 的 config 默认 {}：取深层键缺了就报缺口，而不是求值报错
       portalSecret = lib.any (g: (g."org.freedesktop.impl.portal.Secret" or [ ]) != [ ]) (
-        lib.attrValues (c.xdg.portal.config or { })
+        lib.attrValues (read { } c.xdg.portal.config)
       );
 
       sudoRs = c.security.sudo-rs.enable or false;
@@ -78,9 +80,13 @@ let
           );
       }
       {
+        # 测试箱只声明 tmpfs 根、不挂持久化根，无从谈 neededForBoot：把"声明了 /persist"也算进
+        # 前提，这条才对没有持久化根的主机成立
         n = "${name}: 根是 tmpfs 时 /persist 必须 neededForBoot";
         ok =
-          (c.fileSystems."/".fsType or "") != "tmpfs" || (c.fileSystems."/persist".neededForBoot or false);
+          (c.fileSystems."/".fsType or "") != "tmpfs"
+          || (c.fileSystems."/persist" or null) == null
+          || (read false c.fileSystems."/persist".neededForBoot);
       }
       {
         # 内核不认 ntfs 的 force 选项；数据盘起不来不该拖住整机，故 nofail 是硬要求
@@ -91,10 +97,6 @@ let
             (c.boot.supportedFilesystems.ntfs or false)
             && lib.all (f: hasOpt f "nofail" && !(hasOpt f "force")) ntfs
           );
-      }
-      {
-        n = "${name}: greetd 拉的会话在 Home-manager 里确有配置";
-        ok = !labwcSession || hmLabwc;
       }
       {
         n = "${name}: 图形会话的必备栈齐全（PipeWire/蓝牙/keyring/Secret 门户）";

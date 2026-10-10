@@ -1,6 +1,12 @@
 {
   description = "NixOS configuration of LinuxWhatA";
 
+  # denial 缓存
+  nixConfig = {
+    extra-substituters = [ "https://denial.cachix.org" ];
+    extra-trusted-public-keys = [ "denial.cachix.org-1:wd8YTnvPmugFrtdMJWtR1XdVknR3/g2nmBJkT+vAruo=" ];
+  };
+
   inputs = {
     # 原则性 inputs
     nixpkgs.url = "git+https://git.nju.edu.cn/nix-mirror/nixpkgs?ref=nixpkgs-unstable&shallow=1";
@@ -80,10 +86,8 @@
       url = "git+https://gitcode.com/GitHub_Trending/be/Betterfox";
       flake = false;
     };
-    denial-nixos = {
-      url = "git+https://github.com/BeyondtheApex/nixos-denial-compositor-flake-config";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # 上游明确不建议 follows nixpkgs：那会改掉 denial engine 的缓存键，故保持它自带的锁定
+    denial.url = "git+https://github.com/denialwm/denial";
     uur = {
       url = "git+https://github.com/panxuc/uur";
       inputs.nixpkgs.follows = "nixpkgs";

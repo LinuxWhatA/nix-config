@@ -30,6 +30,7 @@ in
     home-manager.users.${me}.imports = [
       homeModules.cli.default
       homeModules.gui.default
+      homeModules.gui.noctalia
     ];
   };
 }
