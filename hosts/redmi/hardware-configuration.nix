@@ -38,10 +38,6 @@
       "fmask=133" # 文件权限: 644
       "x-gvfs-show" # 在文件管理器中显示盘符
       "windows_names" # 提高与Windows的兼容性
-      "noauto"
-      "x-systemd.automount"
-      "x-systemd.device-timeout=5s"
-      "x-systemd.mount-timeout=10s"
     ];
   };
 

@@ -11,6 +11,13 @@ let
     name = "RDPWindows";
     uuid = "678e2c46-f13a-4b5d-ae75-48c5abe9769b";
     type = "kvm";
+    # 声明客体 OS，virt-manager 才能套用对应 guest 的默认值（固件、显卡、CPU 型号等）
+    metadata = with nixvirt.xml; [
+      (elem "libosinfo:libosinfo"
+        [ (attr "xmlns:libosinfo" "http://libosinfo.org/xmlns/libvirt/domain/1.0") ]
+        [ (elem "libosinfo:os" [ (attr "id" "http://microsoft.com/win/11") ] [ ]) ]
+      )
+    ];
     # 宿主可用内存仅 ~14.6GB（原声明 14.65GB 超过宿主可用，宾客机与宿主互相挤占，落到 zram/swap）；
     # 不设 currentMemory：balloon 只会被宿主主动 inflate，Guest 无法自行涨回
     memory = {
@@ -108,7 +115,7 @@ let
             type = "vpc";
           };
           source = {
-            file = "/mnt/Windows/OS/Windows.vhd";
+            file = "/mnt/Data/OS/Windows.vhd";
           };
           target = {
             dev = "sda";
@@ -184,10 +191,8 @@ let
           type = "spicevmc";
         }
       ];
-      watchdog = {
-        model = "itco";
-        action = "reset";
-      };
+      # q35 的 iTCO watchdog 由 libvirt 隐式补齐（action 同样是 reset），
+      # 且它在命令行里只表现为 -global ICH9-LPC.noreboot=off，不产生 -device
       filesystem = [
         {
           type = "mount";
