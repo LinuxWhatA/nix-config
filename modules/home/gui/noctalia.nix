@@ -88,12 +88,6 @@ in
       wallpaper.default = {
         path = "${config.programs.noctalia.package}/share/noctalia/assets/noctalia-wallpaper.png";
       };
-      hot_corners = {
-        enabled = true;
-        top_left = {
-          action = "launcher";
-        };
-      };
       osd.kinds = {
         keyboard_layout = false;
       };
