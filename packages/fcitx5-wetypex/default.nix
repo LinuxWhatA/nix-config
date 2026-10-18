@@ -182,6 +182,13 @@ stdenv.mkDerivation (finalAttrs: {
       -e "s|'--symlink','usr/bin','/bin',||" \
       "$out/share/fcitx5-wetypex/setup_runtime.py"
 
+    # NixOS 的信任根是 /etc/ssl/certs → /etc/static/ssl/certs → store 的链接链，上游按
+    # FHS 只绑了首段：/etc/static 缺席则沙箱内 CA 悬空，引擎 TLS 校验失败(code:60)、握手
+    # error:2001，表现为配对签不出匹配码、云候选恒不可用；仅带 /etc 绑定的三个脚本涉及。
+    fhs_ca='--ro-bind-try /etc/ca-certificates /etc/ca-certificates'
+    substituteInPlace "$out"/bin/fcitx5-wetypex-{account,ai,backend} \
+      --replace-fail "$fhs_ca" "--ro-bind /etc/static/ssl /etc/static/ssl $fhs_ca"
+
     for f in account ai backend setup sync syncd update voice; do
       wrapProgram "$out/bin/fcitx5-wetypex-$f" --prefix PATH : "${runtimePath}"
     done
