@@ -23,6 +23,7 @@
           fcitx5-pinyin-custom-pinyin-dictionary
           fcitx5-material-color
           qt6Packages.fcitx5-chinese-addons
+          fcitx5-wetypex
         ];
         settings.addons = {
           pinyin.globalSection.CloudPinyinEnabled = "True";

@@ -6,8 +6,8 @@
     scrcpy
     wechat
     fsearch
+    rayburst
     xunlei-uos
-    motrix-next
     moonlight-qt
     wpsoffice-cn
     winetricks

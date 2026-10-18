@@ -1,5 +1,6 @@
 # 承诺闸门：`nix flake check` 除了"配置能求值"，还断言各主机确实交付了刻意保留的东西
-# （无登录墙的会话链、keyring 与门户 Secret、磁盘骨架、ntfs 数据盘）。
+# （无登录墙的会话链、keyring 与门户 Secret、磁盘骨架、ntfs 数据盘），以及 wetypex 的
+# json-c 补丁所针对的版本钉子是否解除。
 #
 # 每条断言都写成"条件式不变量"：前提成立才校验（有图形会话才查图形栈、有 ntfs 挂载才查挂载
 # 选项）。这样规则与具体机器无关——wsl/test 这类没有桌面栈的主机不会被误报，新增主机也自动
@@ -15,6 +16,11 @@ let
   me = config.me.username;
   # 只借 pkgs 造 check 产物，与某一台具体主机无关：naix 改名或删除不该让门禁先炸。
   pkgs = withSystem "x86_64-linux" ({ pkgs, ... }: pkgs);
+
+  # wetypex 的 json-c 缺陷只存在于 0.18（根因见该包 postPatch 注释），上游 0.19 起已修：
+  # nixpkgs 跟到 0.19 那天补丁即冗余，本 check 转红提醒删除。只判版本。
+  # 包名带下划线：nixpkgs 26.11 起 by-name 禁连字符。
+  jsoncVersion = pkgs.json_c.version;
 
   invariants =
     name: cfg:
@@ -128,13 +134,25 @@ let
   fails = lib.filter (c: !c.ok) (map safe claims);
 in
 {
-  flake.checks.x86_64-linux.host-baseline =
-    if fails == [ ] then
-      pkgs.runCommand "host-baseline-ok" { } "echo '各主机既定承诺都在' > $out"
-    else
-      # 失败留成一个"红了的 check"（有名字、有构建日志），而不是把整棵 flake 求值打挂
-      pkgs.runCommand "host-baseline-gaps" { } ''
-        printf 'host-baseline 缺口：%s\n' "${lib.concatMapStringsSep "；" (c: c.n) fails}" >&2
-        exit 1
-      '';
+  flake.checks.x86_64-linux = {
+    host-baseline =
+      if fails == [ ] then
+        pkgs.runCommand "host-baseline-ok" { } "echo '各主机既定承诺都在' > $out"
+      else
+        # 失败留成一个"红了的 check"（有名字、有构建日志），而不是把整棵 flake 求值打挂
+        pkgs.runCommand "host-baseline-gaps" { } ''
+          printf 'host-baseline 缺口：%s\n' "${lib.concatMapStringsSep "；" (c: c.n) fails}" >&2
+          exit 1
+        '';
+
+    # json-c 到 0.19（修复版下限）即转红：补丁已冗余，提醒删除
+    wetypex-jsonc-strict =
+      if lib.versionAtLeast jsoncVersion "0.19" then
+        pkgs.runCommand "wetypex-jsonc-strict-redundant" { } ''
+          echo '清理提醒：json-c 已到 ${jsoncVersion}（>= 0.19 修复版），packages/fcitx5-wetypex 去 STRICT 的 postPatch 已成冗余，请删除。' >&2
+          exit 1
+        ''
+      else
+        pkgs.runCommand "wetypex-jsonc-strict-needed" { } "touch $out";
+  };
 }

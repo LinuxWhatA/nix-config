@@ -121,7 +121,7 @@ in
     inherit (final) winapps;
   };
 
-  motrix-next = withCategory "Network" prev.motrix-next;
+  rayburst = withCategory "Network" prev.rayburst;
   wpsoffice-cn = withCategory "Office" (withCgroupRun prev.wpsoffice-cn);
 
   # 上游 tmpfiles 模板把 hook 目录定在 CMAKE_INSTALL_PREFIX 下，即只读 store 内的路径：建不出来而报错
