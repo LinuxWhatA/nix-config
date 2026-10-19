@@ -1,4 +1,9 @@
-{ flake, pkgs, ... }:
+{
+  config,
+  flake,
+  pkgs,
+  ...
+}:
 
 {
   services.displayManager.sddm = {
@@ -74,8 +79,9 @@
         "kcminputrc"."Keyboard"."NumLock" = 0; # 开启数字键盘
         "klipperrc"."General"."IgnoreImages" = false; # 启用剪切板图片
         "klipperrc"."General"."MaxClipItems" = 200; # 剪切板最大条目数
+        # 社区推荐 launcher 变体：fcitx5 自带同名 org.fcitx.Fcitx5 D-Bus 激活服务
         "kwinrc"."Wayland"."InputMethod" =
-          "/run/current-system/sw/share/applications/org.fcitx.Fcitx5.desktop"; # 设置虚拟键盘以支持Fcitx（sw 路径解析到 with-addons 包装器 Exec，拼音插件可用）
+          "${config.i18n.inputMethod.package}/share/applications/fcitx5-wayland-launcher.desktop";
         "kwinrc"."Plugins"."wobblywindowsEnabled" = true; # 窗口惯性晃动特效
         "kwinrc"."Plugins"."squashEnabled" = false; # 关闭（收缩）最小化动画
         "kwinrc"."Plugins"."magiclampEnabled" = true; # 开启（神灯）最小化动画
