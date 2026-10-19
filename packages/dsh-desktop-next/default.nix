@@ -100,6 +100,12 @@ stdenv.mkDerivation (finalAttrs: {
     mv "extracted/opt/DSH NEXT/"* "$out/opt/dsh-desktop-next/"
     mv extracted/usr/share/* "$out/share/"
 
+    for size in 48 128 256 512; do
+      install -dm755 "$out/share/icons/hicolor/''${size}x''${size}/apps"
+      ln -s "../../1024x1024/apps/dsh-desktop-next.png" \
+        "$out/share/icons/hicolor/''${size}x''${size}/apps/dsh-desktop-next.png"
+    done
+
     # 走 Vulkan：deb 不带 EGL/GL，ANGLE 的 native EGL 初始化必然失败、GPU 进程反复重启。
     # 会话 XDG_DATA_DIRS 不含 driver link，Vulkan loader 找不到 ICD（与 vscode 同一根因）。
     makeWrapper "$out/opt/dsh-desktop-next/dsh-desktop-next" "$out/bin/dsh-desktop-next" \
