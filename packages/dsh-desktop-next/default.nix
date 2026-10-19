@@ -34,13 +34,13 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "dsh-desktop-next";
-  version = "2.0.17";
+  version = "2.0.19";
   strictDeps = true;
   __structuredAttrs = true;
 
   src = fetchurl {
     url = "https://github.com/anywhere-labs/dsh-desktop/releases/download/v${finalAttrs.version}-next/DSH-NEXT-${finalAttrs.version}-next-amd64.deb";
-    hash = "sha256-Fw+FQhNj76Kvoc4FVK1AmNbXjE1qv2tM+Rz9X/8EZ28=";
+    hash = "sha256-zpo+f4DtFQIypZ/yPH3jupRewmOOuppMExybk/KB5Bs=";
   };
 
   nativeBuildInputs = [

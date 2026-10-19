@@ -2,7 +2,6 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  fetchpatch,
   gtk3,
   pcre2,
   glib,
@@ -18,22 +17,14 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "fsearch";
-  version = "0.3.1";
+  version = "0.3.2";
 
   src = fetchFromGitHub {
     owner = "cboxdoerfer";
     repo = "fsearch";
     rev = finalAttrs.version;
-    hash = "sha256-ahIsSR6z7zKCBPqz/W1ATdsJc9krbeXOECa0T8djR6U=";
+    hash = "sha256-IdcNjlloyJEGZ1BbGxaeLGUiDhrku9fIXM45LwQ8iRc=";
   };
-
-  # 上游修复 #727（新窗口菜单/Ctrl+N 无效），0.3.2 发布后可移除
-  patches = [
-    (fetchpatch {
-      url = "https://github.com/cboxdoerfer/fsearch/commit/0257fd0a77b28d38fc07ab5981d8e5698147c835.patch";
-      hash = "sha256-2FKo3PGkhoZYAzxvAitUvB8Zw51RJNNLrs3N02VoKIA=";
-    })
-  ];
 
   nativeBuildInputs = [
     desktop-file-utils

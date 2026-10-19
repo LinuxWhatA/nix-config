@@ -81,7 +81,11 @@ in
         "wlr"
         "*"
       ];
-      "org.freedesktop.impl.portal.Inhibit" = [ "none" ]; # Inhibit 接口无可复用后端，置 none
+      # Inhibit 只有 gtk 后端实现了（wlr 只管截图/录屏）。无 gnome-session 时 gtk 退到
+      # org.freedesktop.ScreenSaver 分支，只受理 IDLE——noctalia 提供了该名字，故观影等
+      # 空闲抑制真的生效；注销/挂起类（fsearch 退出时LOGOUT|SUSPEND）仍会被后端拒，
+      # 但 xdp 对前端是先返回 handle 再异步失败，应用侧不再报 UnknownMethod。
+      "org.freedesktop.impl.portal.Inhibit" = [ "gtk" ];
       "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ]; # wlr/gtk 都不实现 Secret
     };
   };
