@@ -6,6 +6,8 @@ in
 final: prev:
 let
 
+  # category 形如 "Network;FileTransfer"（分号分隔的多分类，与上游 deb/rpm 模板一致）：
+  # 必须引号化后再插值，否则 shell 会在分号处断句，desktop-file-edit 收不到文件参数
   withCategory =
     category: pkg:
     prev.symlinkJoin {
@@ -14,7 +16,7 @@ let
       nativeBuildInputs = [ prev.desktop-file-utils ];
       postBuild = ''
         for f in "$out"/share/applications/*.desktop; do
-          desktop-file-edit --add-category=${category} "$f"
+          desktop-file-edit --add-category=${prev.lib.escapeShellArg category} "$f"
         done
       '';
     };
@@ -87,6 +89,8 @@ in
   mergeJson = final.merge-json;
   inherit cgroupRun;
 
+  # 取 flake 产物而非它的 overlay：让它用自带 flake.lock 的 nixpkgs pin 构建，
+  # 我们顶到上游测试腐化时不会连带它（详见 flake.nix 里该 input 的注释）
   nix-alien = inputs.nix-alien.packages.x86_64-linux.nix-alien;
 
   # amdgpu gfxhub page fault 缓解：GPU 进程改走 radv(Vulkan) 而非 radeonsi(GL)；argv.json 白名单不含
@@ -116,12 +120,15 @@ in
 
   winapps = winapps-patched;
 
-  # 传 final.winapps（注入版）保证 launcher 的 WINAPPS_PATH 与系统一致；包内另有上游未同步的 VM_NAME 修复
+  # 传 final.winapps（注入版）：launcher 在 ~/.local/bin 里以 '^winapps ' 匹配应用条目，
+  # 该形态由注入版 setup.sh 生成；换 prev.winapps 则条目是 store 路径，launcher 扫不到
   winapps-launcher = prev.callPackage ../packages/winapps-launcher {
     inherit (final) winapps;
   };
 
-  rayburst = withCategory "Network" prev.rayburst;
+  # nixpkgs 产物 Categories 为空：上游只在 deb/rpm 的 desktopTemplate 里写 Network;FileTransfer，
+  # tauri.conf.json 无 bundle.categories，通用打包路径不带分类。补齐后与上游模板一致
+  rayburst = withCategory "Network;FileTransfer" prev.rayburst;
   wpsoffice-cn = withCategory "Office" (withCgroupRun prev.wpsoffice-cn);
 
   # 上游 tmpfiles 模板把 hook 目录定在 CMAKE_INSTALL_PREFIX 下，即只读 store 内的路径：建不出来而报错

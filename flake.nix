@@ -55,14 +55,10 @@
       url = "git+https://git.nju.edu.cn/nix-mirror/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-alien = {
-      url = "git+https://gitcode.com/gh_mirrors/ni/nix-alien";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-compat.follows = "flake-compat";
-        nix-index-database.follows = "nix-index-database";
-      };
-    };
+    # ! 勿给 nix-alien 加 inputs.follows：其 README 明示不支持（自带 flake.lock 里的
+    # nixpkgs 与 nix-index-database 是上游测试过的配套；换成我们的 pin，我们顶到上游
+    # 测试腐化时会连带阻断整机构建）。更新走 `nix flake update nix-alien`
+    nix-alien.url = "git+https://gitcode.com/gh_mirrors/ni/nix-alien";
     flake-utils = {
       url = "git+https://gitcode.com/gh_mirrors/fl/flake-utils";
     };

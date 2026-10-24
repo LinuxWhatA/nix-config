@@ -18,6 +18,7 @@ in
       timeout = 5;
       grub = {
         extraConfig = "set enable_progress_indicator=0";
+        useOSProber = true;
         extraInstallCommands = ''
           # 模块与字体（源码编译产物）
           ${bin}/cp -rf ${a1ive}/lib/grub/x86_64-efi /boot/grub/
@@ -46,10 +47,6 @@ in
           menuentry "WePE" --class windows {
             search -s -f /OS/WePE_64_V2.3.iso
             map -f /OS/WePE_64_V2.3.iso;
-          }
-
-          menuentry "Reboot (R)" --hotkey "r" {
-            reboot;
           }
 
           menuentry "Halt (H)" --hotkey "h" {
