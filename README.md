@@ -12,10 +12,10 @@
 
 项目结构清晰，包含以下主要功能模块：
 
-- **系统配置**：支持不同硬件设备（naix、redmi）的 NixOS 系统配置，以及 WSL（Windows Subsystem for Linux）配置。
+- **系统配置**：支持不同硬件设备（naix、redmi）的 NixOS 系统配置、WSL（Windows Subsystem for Linux）配置，以及 `test`（模块求值测试箱，只接线不装桌面）。
 - **通用模块**：提供适用于 NixOS 和 Home Manager 的通用配置模块，如字体、SSH、包管理、GUI 支持等。
-- **可选功能**：包括 Docker、NVIDIA 驱动、QEMU、RustDesk、ToDesk、VirtualBox、Waydroid、XRDP 等可选模块。
-- **自定义包**：包含自定义 Nix 包，如 ntloader、grub-cyberre-theme、winfonts、uudeck 等。
+- **可选功能**：包括 Docker、QEMU、VirtualBox、Waydroid、RDP-Windows、NFS/Nix-Server、RustDesk、ToDesk、Sunshine、XRDP、向日葵、linyaps、fwupd 等可选模块。
+- **自定义包**：包含自定义 Nix 包，如 ntloader、a1ive-grub、grub-cyberre-theme、winfonts、fsearch 等。
 
 ## 目录结构说明
 
@@ -25,19 +25,19 @@
 - `README.md` 和 `.envrc`：项目说明和开发环境配置。
 
 ### 系统配置
-- `hosts/`：按设备（naix、redmi、wsl）组织的 NixOS 配置，每台设备由 `default.nix` 组合清单 + 分类模块构成，Home Manager 用户环境内嵌于系统配置中。
+- `hosts/`：按设备（naix、redmi、wsl、test）组织的 NixOS 配置，每台设备由 `default.nix` 组合清单 + 分类模块构成，Home Manager 用户环境内嵌于系统配置中。
 
 ### 模块
 - `modules/nixos/`：NixOS 系统模块，包括：
   - `base/`：基础模块（字体、Locale、Nix、OpenSSH、用户等，所有主机共享）
-  - `desktop/`：桌面环境（Console、COSMIC、GNOME、Plasma6、XFCE）
-  - `gui/`：桌面应用（Clash、Dev-Sidecar、Plymouth、Steam、UUDeck）
-  - `hardware/`：硬件（蓝牙、图形驱动、persist、boot 等）
-  - `services/`：服务（网络、NFS、Nix-Server、Pipewire、RustDesk、SunloginClient、Sunshine、ToDesk、v2raya、Xrdp 等）
-  - `virtualization/`：虚拟化（Docker、QEMU、RDP-Windows、VirtualBox、Waydroid）
+  - `desktop/`：桌面环境（Console、COSMIC、Denial、GNOME、labwc、niri、Plasma6、XFCE）
+  - `gui/`：桌面应用（Clash、Steam、Thunar、UU 远程）
+  - `hardware/`：硬件（蓝牙、图形驱动、persist、boot〔含 plymouth〕等）
+  - `services/`：服务（网络、NFS、Nix-Server、Pipewire、RustDesk、SunloginClient、Sunshine、ToDesk、Xrdp、fwupd、linyaps 等）
+  - `virtualization/`：虚拟化（Docker、Droidloom、QEMU、RDP-Windows、VirtualBox、Waydroid）
 - `modules/home/`：Home Manager 用户模块，由系统托管注入：
   - `cli/`：命令行工具（direnv、fd、git、nh、packages、xdg、zsh）
-  - `gui/`：图形应用（deepseek、Firefox、Heroic、MangoHud、opencode、VSCode、winapps）
+  - `gui/`：图形应用（deepseek、Firefox、Heroic、Kitty、MangoHud、Noctalia、VSCode、winapps、通用 GUI 包）
 - `modules/flake/`：flake-parts 模块（`autowire.nix` 扫描装配并声明模块树选项，`desktop-host.nix` 顶层组合桌面特性，`packages.nix` 暴露 overlay 包）。
 
 ### 自定义包

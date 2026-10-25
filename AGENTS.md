@@ -21,9 +21,9 @@ modules/                       # NixOS / Home-manager 模块
 └── nixos/                     # NixOS 系统模块
     ├── base/                  # 全主机共享基础（default.nix 批量导入：users、host、fonts、openssh 等）
     ├── desktop/               # 桌面环境（console、gnome、plasma6、xfce、cosmic、labwc、niri…）
-    ├── gui/                   # GUI 相关系统配置（clash、dev-sidecar、steam、thunar、uudeck）
+    ├── gui/                   # GUI 相关系统配置（clash、steam、thunar、uur）
     ├── hardware/              # 硬件（bluetooth、boot〔含 plymouth〕、graphics、grub、persist）
-    ├── services/              # 系统服务（pipewire、v2raya、nfs-server…）
+    ├── services/              # 系统服务（pipewire、fwupd、linyaps、nfs-server…）
     └── virtualization/        # 虚拟化（docker、qemu、virtualbox、waydroid…）
 overlays/default.nix           # overlay：callPackage packages/ 下各包
 packages/                      # 自定义包（overlay 是唯一入口）

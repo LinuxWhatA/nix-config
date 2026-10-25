@@ -23,9 +23,7 @@
   environment.etc."nixos".enable = false;
 
   environment.systemPackages = [
-    pkgs.sni-host
-    pkgs.tray-host
-    pkgs.xdg-utils # xdg-open/xdg-mime,托盘菜单"打开目录"依赖
+    pkgs.xdg-utils # xdg-open/xdg-mime，Windows 侧默认程序打开文件依赖
     pkgs.glib # xdg-open 无桌面环境时的 gio 兜底
   ];
 

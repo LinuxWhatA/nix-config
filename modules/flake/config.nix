@@ -34,7 +34,7 @@ in
       type = userSubmodule;
     };
 
-    # 构造 pkgs 的公共参数：系统侧（base/pkgs.nix）与 flake 侧（per-system.nix）
+    # 构造 pkgs 的公共参数：系统侧（base/nix.nix 的 nixpkgs）与 flake 侧（per-system.nix）
     # 都从这里取，否则两边各写一遍 overlays/allowUnfree，产物会与系统里装的分叉
     pkgsArgs = lib.mkOption {
       type = lib.types.attrsOf lib.types.raw;

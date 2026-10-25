@@ -6,30 +6,35 @@
 }:
 
 {
-  services.displayManager.sddm = {
-    enable = true;
-    theme = "breeze";
-    wayland.enable = true;
-    enableHidpi = true;
-    settings = {
-      General.DisplayServer = "wayland";
-      Autologin = {
-        Session = "plasma.desktop";
-        User = flake.config.me.username;
-      };
+  services = {
+    displayManager.sddm = {
+      enable = true;
+      enableHidpi = true;
     };
-  };
-  services.desktopManager.plasma6.enable = true;
-  environment.plasma6.excludePackages = with pkgs; [ kdePackages.elisa ];
-  programs.kdeconnect.enable = true;
+    # 免密自动登录走通用选项：Autologin 由 sddm 模块生成，会话名跟随 plasma6 的
+    # defaultSession，换 DM 或改会话名都不必再动这里
+    displayManager.autoLogin = {
+      enable = true;
+      user = "${flake.config.me.username}";
+    };
+    desktopManager.plasma6.enable = true;
 
-  xdg.portal = {
-    enable = true;
-    extraPortals = [
-      pkgs.kdePackages.xdg-desktop-portal-kde
-    ];
-    config.plasma.default = [ "kde" ];
+    # Secret 门户与 keyring：Plasma 原生栈由 kwallet 承接（plasma-workspace 的
+    # kde-portals.conf 经 configPackages 下发），不重复声明；gnome-keyring 作兼容层，
+    # 供直接查 org.freedesktop.secret 的应用使用
+    gnome.gnome-keyring.enable = true;
   };
+
+  environment.plasma6.excludePackages = with pkgs.kdePackages; [
+    kate
+    krdp
+    elisa
+    okular
+    khelpcenter
+    baloo-widgets
+    plasma-browser-integration
+  ];
+  programs.kdeconnect.enable = true;
 
   home-manager.users.${flake.config.me.username} = {
     imports = [ flake.inputs.plasma-manager.homeModules.plasma-manager ];
@@ -51,7 +56,7 @@
               iconTasks.launchers = [
                 # 图标任务管理器
                 "applications:org.kde.dolphin.desktop"
-                "applications:org.kde.konsole.desktop"
+                "applications:kitty.desktop"
                 "applications:firefox.desktop"
                 "applications:code.desktop"
               ];

@@ -9,19 +9,21 @@
     swapSize = "16G";
   };
 
-  boot.initrd.availableKernelModules = [
-    "nvme"
-    "xhci_pci"
-    "usb_storage"
-    "sd_mod"
-  ];
-  boot.initrd.kernelModules = [ "ntfs" ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.kernelParams = [
-    "amdgpu.abmlevel=0"
-    "acpi.ec_no_wakeup=1"
-    "no_console_suspend"
-  ];
+  boot = {
+    initrd.availableKernelModules = [
+      "nvme"
+      "xhci_pci"
+      "usb_storage"
+      "sd_mod"
+    ];
+    initrd.kernelModules = [ "ntfs" ];
+    kernelModules = [ "kvm-amd" ];
+    kernelParams = [
+      "amdgpu.abmlevel=0"
+      "acpi.ec_no_wakeup=1"
+      "no_console_suspend"
+    ];
+  };
 
   fileSystems."/mnt/Data" = {
     device = "/dev/disk/by-label/Data";

@@ -37,11 +37,13 @@
       # 防止 gnulib/gcc 等被回收后从网络重新下载。
       keep-outputs = true;
 
-      substituters = lib.mkDefault [
+      # mkDefault 赢不过 nixpkgs 的 mkAfter 默认值，故 mkForce
+      substituters = lib.mkForce [
         "https://mirror.nju.edu.cn/nix-channels/store"
         "https://mirrors.ustc.edu.cn/nix-channels/store"
         "https://mirror.sjtu.edu.cn/nix-channels/store"
         # "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+        "https://cache.nixos.org/"
       ];
     };
   };

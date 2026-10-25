@@ -5,11 +5,9 @@
   # 不导出 GTK_IM_MODULE/QT_IM_MODULE——原生 Wayland 客户端经 text-input 协议输入，
   # 用不到这两个变量；需要它们的仅剩 XWayland 传统客户端，由各桌面会话按需注入，
   # 故不在此做全局声明，以免污染 tty/SSH 等非图形登录环境。
+  # 同理不设 LC_ALL：它会盖掉 LANG 与各 LC_* 分项，使 defaultLocale 形同虚设。
   i18n = {
     defaultLocale = "zh_CN.UTF-8";
-    extraLocaleSettings = {
-      LC_ALL = "zh_CN.UTF-8";
-    };
 
     inputMethod = {
       enable = true;

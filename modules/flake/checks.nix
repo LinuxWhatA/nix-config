@@ -1,10 +1,14 @@
-# 承诺闸门：`nix flake check` 除了"配置能求值"，还断言各主机确实交付了刻意保留的东西
-# （无登录墙的会话链、keyring 与门户 Secret、磁盘骨架、ntfs 数据盘），以及 wetypex 的
-# json-c 补丁所针对的版本钉子是否解除。
+# 承诺闸门：`nix flake check` 除了"配置能求值"，还断言各主机确实交付了刻意保留的东西：
+# 无登录墙的会话链（免密入口一律落到 me）、图形栈三大件与 Secret 门户、Home-manager
+# 用户环境接线、持久化与数据盘的启动安全、sshd hardening。
 #
 # 每条断言都写成"条件式不变量"：前提成立才校验（有图形会话才查图形栈、有 ntfs 挂载才查挂载
-# 选项）。这样规则与具体机器无关——wsl/test 这类没有桌面栈的主机不会被误报，新增主机也自动
-# 纳入，不必再来这里登记。判据只读配置、不做构建；新增承诺时照抄一行。
+# 选项、sshd 开了才查 hardening）。这样规则与具体机器无关——wsl/test 这类没有桌面栈的主机
+# 不会被误报，新增主机也自动纳入，不必再来这里登记。判据只读配置、不做构建；新增承诺时照抄一行。
+#
+# 收录标准（奥卡姆剃刀）：只留"静默或延迟发生"的缺口。模块系统求值自会红的事（如 sudo 与
+# sudo-rs 同开必撞 security.wrappers.sudo）、默认值本就如此的事（nix.channel.enable 默认
+# 关）、命名卫生（主机名与配置名一致）都不占位——它们要么到不了红，要么红了也不是交付缺口。
 {
   config,
   lib,
@@ -17,11 +21,6 @@ let
   # 只借 pkgs 造 check 产物，与某一台具体主机无关：naix 改名或删除不该让门禁先炸。
   pkgs = withSystem "x86_64-linux" ({ pkgs, ... }: pkgs);
 
-  # wetypex 的 json-c 缺陷只存在于 0.18（根因见该包 postPatch 注释），上游 0.19 起已修：
-  # nixpkgs 跟到 0.19 那天补丁即冗余，本 check 转红提醒删除。只判版本。
-  # 包名带下划线：nixpkgs 26.11 起 by-name 禁连字符。
-  jsoncVersion = pkgs.json_c.version;
-
   invariants =
     name: cfg:
     let
@@ -31,6 +30,8 @@ let
 
       greetdOn = c.services.greetd.enable or false;
       autologinUser = c.services.getty.autologinUser or null;
+      # sddm/cosmic-greeter 等通用 DM 的自动登录同属无密码入口（naix/redmi 的现役路径）
+      dmAutoLoginUser = c.services.displayManager.autoLogin.user or null;
       sshdOn = c.services.openssh.enable or false;
 
       # 未赋值的 option 一访问就抛错，`or` 兜不住（会被下层 safe 折成假缺口），故统一走 tryEval
@@ -44,18 +45,17 @@ let
       # 有图形会话只看会话注册表：合成器登记在 displayManager 下，greetd 直拉与 target 只是下游表现
       graphical = (read [ ] c.services.displayManager.sessionPackages) != [ ];
       # portal 的 config 默认 {}：取深层键缺了就报缺口，而不是求值报错
-      portalSecret = lib.any (g: (g."org.freedesktop.impl.portal.Secret" or [ ]) != [ ]) (
-        lib.attrValues (read { } c.xdg.portal.config)
-      );
-
-      sudoRs = c.security.sudo-rs.enable or false;
-      sudo = c.security.sudo.enable or false;
+      # Secret 只两条来路：xdg.portal.config 显式指派，或桌面自带的 portal 配置包
+      # （*-portals.conf，由上游桌面接管，如 Plasma 的 kde-portals.conf）。包内文件纯 eval
+      # 读不到——读它要么触发构建、要么碰本机 store 碰运气，包也无元数据声明，故只校验来路
+      # 存在、不逐包验证内容；手写 config 还会整文件遮蔽配置包，得不偿失
+      portalSecret =
+        lib.any (g: (g."org.freedesktop.impl.portal.Secret" or [ ]) != [ ]) (
+          lib.attrValues (read { } c.xdg.portal.config)
+        )
+        || (read [ ] c.xdg.portal.configPackages) != [ ];
     in
     [
-      {
-        n = "${name}: 主机名与配置名一致";
-        ok = c.networking.hostName == name;
-      }
       {
         # Home-manager 由 autowire 注入，但用户模块须逐主机经 home-manager.users.<me>.imports
         # 接线，而该选项无法给默认值：漏写的主机会静默地没有任何用户环境
@@ -63,20 +63,15 @@ let
         ok = c.home-manager.users.${me}.programs.zsh.enable or false;
       }
       {
-        n = "${name}: nix channel 关闭（一律走 flake）";
-        ok = !c.nix.channel.enable;
-      }
-      {
         n = "${name}: 免密入口一律落到 me（全链不留登录墙）";
         ok =
           (!greetdOn || c.services.greetd.settings.default_session.user == me)
-          && (autologinUser == null || autologinUser == me);
+          && (autologinUser == null || autologinUser == me)
+          && (dmAutoLoginUser == null || dmAutoLoginUser == me);
       }
       {
-        n = "${name}: 提权实现唯一";
-        ok = (sudoRs || sudo) && !(sudoRs && sudo);
-      }
-      {
+        # base/openssh 的 hardening 是统一交付：被整段删掉时无任何报错，sshd 只会静默回退到
+        # 上游默认（PermitRootLogin=prohibit-password、密码登录敞开），故留此断言
         n = "${name}: sshd 若开则拒 root 与密码登录";
         ok =
           !sshdOn
@@ -134,25 +129,13 @@ let
   fails = lib.filter (c: !c.ok) (map safe claims);
 in
 {
-  flake.checks.x86_64-linux = {
-    host-baseline =
-      if fails == [ ] then
-        pkgs.runCommand "host-baseline-ok" { } "echo '各主机既定承诺都在' > $out"
-      else
-        # 失败留成一个"红了的 check"（有名字、有构建日志），而不是把整棵 flake 求值打挂
-        pkgs.runCommand "host-baseline-gaps" { } ''
-          printf 'host-baseline 缺口：%s\n' "${lib.concatMapStringsSep "；" (c: c.n) fails}" >&2
-          exit 1
-        '';
-
-    # json-c 到 0.19（修复版下限）即转红：补丁已冗余，提醒删除
-    wetypex-jsonc-strict =
-      if lib.versionAtLeast jsoncVersion "0.19" then
-        pkgs.runCommand "wetypex-jsonc-strict-redundant" { } ''
-          echo '清理提醒：json-c 已到 ${jsoncVersion}（>= 0.19 修复版），packages/fcitx5-wetypex 去 STRICT 的 postPatch 已成冗余，请删除。' >&2
-          exit 1
-        ''
-      else
-        pkgs.runCommand "wetypex-jsonc-strict-needed" { } "touch $out";
-  };
+  flake.checks.x86_64-linux.host-baseline =
+    if fails == [ ] then
+      pkgs.runCommand "host-baseline-ok" { } "echo '各主机既定承诺都在' > $out"
+    else
+      # 失败留成一个"红了的 check"（有名字、有构建日志），而不是把整棵 flake 求值打挂
+      pkgs.runCommand "host-baseline-gaps" { } ''
+        printf 'host-baseline 缺口：%s\n' "${lib.concatMapStringsSep "；" (c: c.n) fails}" >&2
+        exit 1
+      '';
 }

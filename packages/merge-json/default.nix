@@ -10,6 +10,8 @@
 #   JSON 值可能含单引号（如字体名 "'FiraCode'"），用 echo '${json}' 会断裂
 #   shell 语法。here-document 以 quoted delimiter 写入临时文件，规避所有引号问题。
 #   fixjson 先规范化已有配置（容忍尾部逗号、注释等非标准 JSON），再交给 jq 合并。
+#   解析失败时保留原文件并跳过：应用可能正写到一半，或用了 JSON5 之外的扩展语法；
+#   此时若退回 {} 再写回，等于把用户配置静默清空——注入默认值不该有这种副作用。
 #
 # 用法（home.activation）：
 #   home.activation.mySettings = pkgs.mergeJson ".config/app/config.json" { key = "value"; };
@@ -27,7 +29,12 @@ file: defaults: ''
   cat > "$tmp" <<'MERGEJSON_EOF'
   ${builtins.toJSON defaults}
   MERGEJSON_EOF
-  ${fixjson}/bin/fixjson --minify "$file" > "$file.fix" 2>/dev/null && mv "$file.fix" "$file" || echo '{}' > "$file"
-  ${jq}/bin/jq -s add "$tmp" "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+  if ${fixjson}/bin/fixjson --minify "$file" > "$file.fix" 2>/dev/null; then
+    mv "$file.fix" "$file"
+    ${jq}/bin/jq -s add "$tmp" "$file" > "$file.tmp" && mv "$file.tmp" "$file" || rm -f "$file.tmp"
+  else
+    rm -f "$file.fix"
+    echo "mergeJson: 跳过 ${file}（fixjson 无法解析，保持原样）" >&2
+  fi
   rm -f "$tmp"
 ''
