@@ -16,26 +16,26 @@
 
   inputs = {
     # 原则性 inputs
-    nixpkgs.url = "git+https://git.nju.edu.cn/nix-mirror/nixpkgs?ref=nixpkgs-unstable&shallow=1";
-    nixpkgs-lib.url = "git+https://git.nju.edu.cn/nix-mirror/nixpkgs.lib";
-    flake-compat.url = "git+https://git.nju.edu.cn/nix-mirror/flake-compat";
+    nixpkgs.url = "git+https://git.nju.edu.cn/nix-mirror/nixpkgs.git?ref=nixpkgs-unstable&shallow=1";
+    nixpkgs-lib.url = "git+https://git.nju.edu.cn/nix-mirror/nixpkgs.lib.git?shallow=1";
+    flake-compat.url = "git+https://git.nju.edu.cn/nix-mirror/flake-compat.git?shallow=1";
     flake-parts = {
-      url = "git+https://gitcode.com/gh_mirrors/fl/flake-parts";
+      url = "git+https://gitcode.com/gh_mirrors/fl/flake-parts.git?shallow=1";
       inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     };
     home-manager = {
-      url = "git+https://git.nju.edu.cn/nix-mirror/home-manager";
+      url = "git+https://git.nju.edu.cn/nix-mirror/home-manager.git?shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # chaotic = {
-    #   url = "git+https://gitcode.com/gh_mirrors/nyx/nyx";
+    #   url = "git+https://gitcode.com/gh_mirrors/nyx/nyx.git";
     #   inputs.nixpkgs.follows = "nixpkgs";
     #   inputs.home-manager.follows = "home-manager";
     # };
 
     # 工程 inputs：（nixfmt + statix）格式化与静态检查，随 `nix fmt` 与 `nix flake check` 落地
     treefmt-nix = {
-      url = "git+https://gitcode.com/gh_mirrors/tr/treefmt-nix";
+      url = "git+https://gitcode.com/gh_mirrors/tr/treefmt-nix.git?shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -45,35 +45,35 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     impermanence = {
-      url = "git+https://git.nju.edu.cn/nix-mirror/impermanence";
+      url = "git+https://git.nju.edu.cn/nix-mirror/impermanence.git?shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
     disko = {
-      url = "git+https://git.nju.edu.cn/nix-mirror/disko";
+      url = "git+https://git.nju.edu.cn/nix-mirror/disko.git?shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     plasma-manager = {
-      url = "git+https://git.nju.edu.cn/nix-mirror/plasma-manager";
+      url = "git+https://git.nju.edu.cn/nix-mirror/plasma-manager.git?shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
     nixos-wsl = {
-      url = "git+https://git.nju.edu.cn/nix-mirror/NixOS-WSL";
+      url = "git+https://git.nju.edu.cn/nix-mirror/NixOS-WSL.git?shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-compat.follows = "flake-compat";
     };
     nix-index-database = {
-      url = "git+https://git.nju.edu.cn/nix-mirror/nix-index-database";
+      url = "git+https://git.nju.edu.cn/nix-mirror/nix-index-database.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # ! nix-alien 不支持 inputs.follows
-    nix-alien.url = "git+https://gitcode.com/gh_mirrors/ni/nix-alien";
+    nix-alien.url = "git+https://gitcode.com/gh_mirrors/ni/nix-alien.git";
     flake-utils = {
-      url = "git+https://gitcode.com/gh_mirrors/fl/flake-utils";
+      url = "git+https://gitcode.com/gh_mirrors/fl/flake-utils.git?shallow=1";
     };
     winapps = {
-      url = "git+https://gitcode.com/GitHub_Trending/wina/winapps";
+      url = "git+https://gitcode.com/GitHub_Trending/wina/winapps.git?shallow=1";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-compat.follows = "flake-compat";
@@ -81,7 +81,7 @@
       };
     };
     nixvim = {
-      url = "git+https://git.nju.edu.cn/nix-mirror/nixvim";
+      url = "git+https://git.nju.edu.cn/nix-mirror/nixvim.git?shallow=1";
       inputs.flake-parts.follows = "flake-parts";
     };
     NixVirt = {
@@ -89,13 +89,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     betterfox = {
-      url = "git+https://gitcode.com/GitHub_Trending/be/Betterfox";
+      url = "git+https://gitcode.com/GitHub_Trending/be/Betterfox.git";
       flake = false;
     };
     # denial 明确不建议 follows nixpkgs
     denial.url = "git+https://github.com/denialwm/denial";
     uur = {
       url = "git+https://github.com/panxuc/uur";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    wetypex = {
+      url = "git+https://github.com/panxuc/fcitx5-wetypex";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

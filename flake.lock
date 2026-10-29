@@ -29,11 +29,11 @@
         "rev": "7558fdc9c5aa4483d3010584fd0c2ea9f7e47c5e",
         "revCount": 692,
         "type": "git",
-        "url": "https://gitcode.com/GitHub_Trending/be/Betterfox"
+        "url": "https://gitcode.com/GitHub_Trending/be/Betterfox.git"
       },
       "original": {
         "type": "git",
-        "url": "https://gitcode.com/GitHub_Trending/be/Betterfox"
+        "url": "https://gitcode.com/GitHub_Trending/be/Betterfox.git"
       }
     },
     "denial": {
@@ -84,13 +84,14 @@
         "narHash": "sha256-3hSJlv8mUVnZPMWK2+CM7a9O+nR6Z4mCh27NfLCmTPc=",
         "ref": "refs/heads/master",
         "rev": "cedd626e11b635470fa6f9fdb8ad79b0075dd7f9",
-        "revCount": 1414,
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/disko"
+        "url": "https://git.nju.edu.cn/nix-mirror/disko.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/disko"
+        "url": "https://git.nju.edu.cn/nix-mirror/disko.git"
       }
     },
     "flake-compat": {
@@ -99,13 +100,14 @@
         "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
         "ref": "refs/heads/master",
         "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
-        "revCount": 91,
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/flake-compat"
+        "url": "https://git.nju.edu.cn/nix-mirror/flake-compat.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/flake-compat"
+        "url": "https://git.nju.edu.cn/nix-mirror/flake-compat.git"
       }
     },
     "flake-compat_2": {
@@ -134,13 +136,14 @@
         "narHash": "sha256-zTwuwezD0w3hpga6a6P8emidzAZFyWqlNeRBlpWOOl8=",
         "ref": "refs/heads/main",
         "rev": "024633cd702b10285db5cb19b40ad48d2399ba60",
-        "revCount": 497,
+        "shallow": true,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/fl/flake-parts"
+        "url": "https://gitcode.com/gh_mirrors/fl/flake-parts.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/fl/flake-parts"
+        "url": "https://gitcode.com/gh_mirrors/fl/flake-parts.git"
       }
     },
     "flake-utils": {
@@ -152,13 +155,14 @@
         "narHash": "sha256-kAuep2h5ajznlPMD9rnQyffWG8EM/C73lejGofXvdM8=",
         "ref": "refs/heads/main",
         "rev": "4022d587cbbfd70fe950c1e2083a02621806a725",
-        "revCount": 88,
+        "shallow": true,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/fl/flake-utils"
+        "url": "https://gitcode.com/gh_mirrors/fl/flake-utils.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/fl/flake-utils"
+        "url": "https://gitcode.com/gh_mirrors/fl/flake-utils.git"
       }
     },
     "hardware": {
@@ -192,13 +196,14 @@
         "narHash": "sha256-X6xa6sGA7RnJQuZGbFMC+K+KToWAlBDCCjJXfTwEPsw=",
         "ref": "refs/heads/master",
         "rev": "095fef2f265c3c0da4fe315efba8f8a04495ab34",
-        "revCount": 7575,
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/home-manager"
+        "url": "https://git.nju.edu.cn/nix-mirror/home-manager.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/home-manager"
+        "url": "https://git.nju.edu.cn/nix-mirror/home-manager.git"
       }
     },
     "impermanence": {
@@ -215,13 +220,14 @@
         "narHash": "sha256-s0TeXWG5Ci75Y/Hzon0Z7NrN/fG773Rc54/z6oPFszQ=",
         "ref": "refs/heads/master",
         "rev": "fa627f4c8b8e92f58f58a73d99ee4e1304e64eb2",
-        "revCount": 205,
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/impermanence"
+        "url": "https://git.nju.edu.cn/nix-mirror/impermanence.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/impermanence"
+        "url": "https://git.nju.edu.cn/nix-mirror/impermanence.git"
       }
     },
     "nix-alien": {
@@ -237,11 +243,11 @@
         "rev": "cf154192fd22073ef73cea0472d07f6d46c89db4",
         "revCount": 425,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/ni/nix-alien"
+        "url": "https://gitcode.com/gh_mirrors/ni/nix-alien.git"
       },
       "original": {
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/ni/nix-alien"
+        "url": "https://gitcode.com/gh_mirrors/ni/nix-alien.git"
       }
     },
     "nix-filter": {
@@ -293,11 +299,11 @@
         "rev": "93696586f3463024cceb089353539be95a38ae2b",
         "revCount": 650,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/nix-index-database"
+        "url": "https://git.nju.edu.cn/nix-mirror/nix-index-database.git"
       },
       "original": {
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/nix-index-database"
+        "url": "https://git.nju.edu.cn/nix-mirror/nix-index-database.git"
       }
     },
     "nixos-wsl": {
@@ -314,13 +320,14 @@
         "narHash": "sha256-5R5CFIKj06qTQevhg/rCFUSAMxfNgdn0oIBL57R7u0Y=",
         "ref": "refs/heads/main",
         "rev": "e45b24b7df093299072b13bf3144ed0ee340e769",
-        "revCount": 819,
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/NixOS-WSL"
+        "url": "https://git.nju.edu.cn/nix-mirror/NixOS-WSL.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/NixOS-WSL"
+        "url": "https://git.nju.edu.cn/nix-mirror/NixOS-WSL.git"
       }
     },
     "nixpkgs": {
@@ -345,13 +352,14 @@
         "narHash": "sha256-yp5c8UsnvGcJQ6hQcbXqpfK9qPhH1iNYdoVO6zjNamA=",
         "ref": "refs/heads/master",
         "rev": "bdfc468264d9078f56dcf98d6b4e37f539d37399",
-        "revCount": 22641,
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.lib"
+        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.lib.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.lib"
+        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.lib.git"
       }
     },
     "nixpkgsUnstable": {
@@ -388,19 +396,19 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1793195608,
-        "narHash": "sha256-lNZLwWf5tYNKjothaoFq/VZYvzaclmLafjgMdUlpJPQ=",
+        "lastModified": 1793225069,
+        "narHash": "sha256-sx1f99WGrDfJ83KKuQrqGPmot0rnDgmpLJDzpU2oHQQ=",
         "ref": "nixpkgs-unstable",
-        "rev": "58deea654ec5dd0644f31c840a07c29fa0592528",
+        "rev": "e62746b0b472753ef019baceab6f1e2e52014980",
         "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs"
+        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.git"
       },
       "original": {
         "ref": "nixpkgs-unstable",
         "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs"
+        "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.git"
       }
     },
     "nixpkgs_4": {
@@ -432,13 +440,14 @@
         "narHash": "sha256-yJ072hxngo/srNdLTp4BlFeo0hedwnKicI3TGlSXLFE=",
         "ref": "refs/heads/main",
         "rev": "453dc9c5037e6d1bec81d2a51ddacd58a2f44e9c",
-        "revCount": 4779,
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/nixvim"
+        "url": "https://git.nju.edu.cn/nix-mirror/nixvim.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/nixvim"
+        "url": "https://git.nju.edu.cn/nix-mirror/nixvim.git"
       }
     },
     "plasma-manager": {
@@ -455,13 +464,14 @@
         "narHash": "sha256-jZhZkzAwc7f3exzcTDJWP2WCAchCv0iNC3UF/QsahdQ=",
         "ref": "refs/heads/trunk",
         "rev": "a19a2a029fa180911bd89c554dca1616e10f4c1d",
-        "revCount": 327,
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/plasma-manager"
+        "url": "https://git.nju.edu.cn/nix-mirror/plasma-manager.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://git.nju.edu.cn/nix-mirror/plasma-manager"
+        "url": "https://git.nju.edu.cn/nix-mirror/plasma-manager.git"
       }
     },
     "root": {
@@ -485,6 +495,7 @@
         "plasma-manager": "plasma-manager",
         "treefmt-nix": "treefmt-nix",
         "uur": "uur",
+        "wetypex": "wetypex",
         "winapps": "winapps"
       }
     },
@@ -531,13 +542,14 @@
         "narHash": "sha256-qScE7Wz6Zg7eg8ItUpnkmKgst8weWschGe0E8jM4rj4=",
         "ref": "refs/heads/main",
         "rev": "4cfe8d7065cc8ca91c0a50361b6dd74920eeb1f5",
-        "revCount": 682,
+        "shallow": true,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/tr/treefmt-nix"
+        "url": "https://gitcode.com/gh_mirrors/tr/treefmt-nix.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://gitcode.com/gh_mirrors/tr/treefmt-nix"
+        "url": "https://gitcode.com/gh_mirrors/tr/treefmt-nix.git"
       }
     },
     "uur": {
@@ -560,6 +572,26 @@
         "url": "https://github.com/panxuc/uur"
       }
     },
+    "wetypex": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793260269,
+        "narHash": "sha256-zIAqQYufYpUBxCtwS7ZyWLFQv+WarfOA4ENXtP1Z4xY=",
+        "ref": "refs/heads/main",
+        "rev": "cfca5af6ad11abec037728025da4ebeb8fb08906",
+        "revCount": 67,
+        "type": "git",
+        "url": "https://github.com/panxuc/fcitx5-wetypex"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/panxuc/fcitx5-wetypex"
+      }
+    },
     "winapps": {
       "inputs": {
         "flake-compat": [
@@ -578,13 +610,14 @@
         "narHash": "sha256-Wj3GJcgfs+npb+uiWE5CFtV/OzTo0wCz31jwK8EPCI4=",
         "ref": "refs/heads/main",
         "rev": "42c7e8318280c6fc3426c7afebfc7f43b895f4c8",
-        "revCount": 930,
+        "shallow": true,
         "type": "git",
-        "url": "https://gitcode.com/GitHub_Trending/wina/winapps"
+        "url": "https://gitcode.com/GitHub_Trending/wina/winapps.git"
       },
       "original": {
+        "shallow": true,
         "type": "git",
-        "url": "https://gitcode.com/GitHub_Trending/wina/winapps"
+        "url": "https://gitcode.com/GitHub_Trending/wina/winapps.git"
       }
     }
   },

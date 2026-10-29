@@ -85,6 +85,8 @@ in
   }) (builtins.attrNames (builtins.readDir ../packages))
 ))
 // {
+  fcitx5-wetypex = inputs.wetypex.packages.x86_64-linux.default;
+
   # 目录名带连字符，callPackage 遍历给出的是 merge-json；对外仍用驼峰别名
   mergeJson = final.merge-json;
   inherit cgroupRun;
