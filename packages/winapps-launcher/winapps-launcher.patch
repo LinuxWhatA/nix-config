@@ -1,9 +1,8 @@
-diff --git a/winapps-launcher.sh b/winapps-launcher.sh
 --- a/winapps-launcher.sh
 +++ b/winapps-launcher.sh
-@@ -19,7 +19,7 @@ declare -rx EC_WIN_NOT_SPEC=6
+@@ -19,7 +19,7 @@
  declare -rx EC_NO_WIN_FOUND=7
-
+ 
  # Paths
 -declare -rx ICONS_PATH="./icons"
 +declare -rx ICONS_PATH="@out@/icons"
