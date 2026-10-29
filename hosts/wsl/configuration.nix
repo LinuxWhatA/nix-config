@@ -25,6 +25,7 @@
   environment.systemPackages = [
     pkgs.xdg-utils # xdg-open/xdg-mime，Windows 侧默认程序打开文件依赖
     pkgs.glib # xdg-open 无桌面环境时的 gio 兜底
+    pkgs.tray-tui # TUI 系统托盘
   ];
 
   networking.hostName = "wsl";

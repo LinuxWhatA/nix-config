@@ -1,8 +1,8 @@
 {
   description = "NixOS configuration of LinuxWhatA";
 
-  # denial 缓存
   nixConfig = {
+    # denial 缓存
     extra-substituters = [ "https://denial.cachix.org" ];
     extra-trusted-public-keys = [ "denial.cachix.org-1:wd8YTnvPmugFrtdMJWtR1XdVknR3/g2nmBJkT+vAruo=" ];
     # 系统侧 substituters 要 rebuild 后才生效，而 rebuild 自身就要下载
@@ -27,6 +27,11 @@
       url = "git+https://git.nju.edu.cn/nix-mirror/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # chaotic = {
+    #   url = "git+https://gitcode.com/gh_mirrors/nyx/nyx";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    #   inputs.home-manager.follows = "home-manager";
+    # };
 
     # 工程 inputs：（nixfmt + statix）格式化与静态检查，随 `nix fmt` 与 `nix flake check` 落地
     treefmt-nix = {
@@ -87,7 +92,7 @@
       url = "git+https://gitcode.com/GitHub_Trending/be/Betterfox";
       flake = false;
     };
-    # 上游明确不建议 follows nixpkgs：那会改掉 denial engine 的缓存键，故保持它自带的锁定
+    # denial 明确不建议 follows nixpkgs
     denial.url = "git+https://github.com/denialwm/denial";
     uur = {
       url = "git+https://github.com/panxuc/uur";

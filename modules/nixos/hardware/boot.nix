@@ -27,8 +27,9 @@
       "vt.global_cursor_default=0"
     ];
     consoleLogLevel = 0;
-    initrd.verbose = false;
   };
+  services.scx.enable = true;
+  services.scx.scheduler = "scx_rustland";
 
   # 缩短 systemd 默认超时（默认 90s），避免慢盘服务被误杀，社区常用 30s
   systemd.settings.Manager = {

@@ -35,7 +35,6 @@ in
     };
     upower.enable = true;
     gnome.gnome-keyring.enable = true;
-    power-profiles-daemon.enable = true;
   };
 
   # 门户后端：niri 非 wlroots，xdg-desktop-portal-wlr 不可用，录屏/截图须由

@@ -65,7 +65,6 @@ in
     };
     upower.enable = true;
     gnome.gnome-keyring.enable = true;
-    power-profiles-daemon.enable = true;
   };
 
   # 门户后端：录屏/截图仅 wlr 实现，故默认 wlr 优先、其余接口以 * 兜底

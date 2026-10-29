@@ -2,13 +2,14 @@
 
 {
   home.packages = with pkgs; [
-    vlc
-    scrcpy
+    vlc # 视频播放器
+    nomacs # 图片查看器
+    scrcpy # 手机投屏
     wechat
-    fsearch
-    rayburst
+    fsearch # 文件搜索
+    rayburst # 下载器
     xunlei-uos
-    moonlight-qt
+    moonlight-qt # 游戏流媒体
     wpsoffice-cn
     winetricks
     deepin-wine10-stable

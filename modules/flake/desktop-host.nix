@@ -20,6 +20,7 @@ in
       nixosModules.hardware.bluetooth
       nixosModules.hardware.graphics
       nixosModules.hardware.persist
+      nixosModules.hardware.power
       nixosModules.services.fwupd
       nixosModules.services.linyaps
       nixosModules.services.networking
