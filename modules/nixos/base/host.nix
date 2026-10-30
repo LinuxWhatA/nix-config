@@ -6,6 +6,9 @@
   # /etc/nixos 指向仓库本身：nh/nixos-rebuild 的就地入口
   environment.etc."nixos".source = flake.inputs.self;
 
+  # 记录构建时仓库 commit，nixos-version --configuration-revision 可查
+  system.configurationRevision = flake.inputs.self.rev or flake.inputs.self.dirtyRev or null;
+
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   system.stateVersion = lib.mkDefault "26.11";
   home-manager.users.${flake.config.me.username}.home.stateVersion = lib.mkDefault "26.11";
