@@ -132,14 +132,4 @@ in
   # tauri.conf.json 无 bundle.categories，通用打包路径不带分类。补齐后与上游模板一致
   rayburst = withCategory "Network;FileTransfer" prev.rayburst;
   wpsoffice-cn = withCategory "Office" (withCgroupRun prev.wpsoffice-cn);
-
-  # 上游 tmpfiles 模板把 hook 目录定在 CMAKE_INSTALL_PREFIX 下，即只读 store 内的路径：建不出来而报错
-  # 并以 73 退出，令 systemd-tmpfiles-setup 被判失败（后续规则仍执行，但会掩盖真正的 tmpfiles 问题）。
-  # store 内本就放不了 hook 脚本，故删该行；/var/lib/linglong、/run/linglong 等仍由包内其余行创建
-  linyaps = prev.linyaps.overrideAttrs (old: {
-    postInstall = (old.postInstall or "") + ''
-      sed -i -e "\|^# Create a directory to place the hook script$|d" \
-             -e "\|^d $out/etc/linglong/config\.d |d" "$out/lib/tmpfiles.d/linglong.conf"
-    '';
-  });
 }
