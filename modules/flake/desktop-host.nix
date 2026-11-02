@@ -13,6 +13,7 @@ in
       nixosModules.base.default
       nixosModules.desktop.console
       nixosModules.desktop.labwc
+      nixosModules.desktop.labwc-scale
       nixosModules.gui.uur
       nixosModules.gui.thunar
       nixosModules.gui.clash
@@ -28,10 +29,12 @@ in
       nixosModules.virtualization.qemu
     ];
 
-    home-manager.users.${me}.imports = [
-      homeModules.cli.default
-      homeModules.gui.default
-      homeModules.gui.noctalia
-    ];
+    home-manager.users.${me} = {
+      imports = [
+        homeModules.cli.default
+        homeModules.gui.default
+        homeModules.gui.noctalia
+      ];
+    };
   };
 }

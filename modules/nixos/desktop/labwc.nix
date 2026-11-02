@@ -1,6 +1,7 @@
 {
   flake,
   pkgs,
+  config,
   ...
 }:
 let
@@ -90,35 +91,6 @@ in
   };
 
   home-manager.users.${flake.config.me.username} = {
-    services = {
-      # labwc 不提供输出缩放，需外部守护进程在热插拔时维持比例
-      kanshi = {
-        enable = true;
-        settings = [
-          {
-            profile.name = "default";
-            profile.outputs = [
-              {
-                criteria = "*";
-                scale = 1.75;
-              }
-            ];
-          }
-        ];
-      };
-    };
-
-    # 光标统一取逻辑基准 24：原生光标随输出 scale(1.75) 放大为 42px 物理，
-    # XWayland root 光标取同基准（理由见 autostart 的 xsetroot 注释）
-    home.pointerCursor = {
-      enable = true;
-      name = "Adwaita";
-      package = pkgs.adwaita-icon-theme;
-      size = 24;
-      gtk.enable = true;
-      x11.enable = true;
-    };
-
     wayland.windowManager.labwc = {
       enable = true;
       xwayland.enable = true;
@@ -152,19 +124,12 @@ in
         "QT_IM_MODULES=wayland;fcitx;ibus"
         # SDL2 应用需要显式指定
         "SDL_IM_MODULE=fcitx"
-        # 与 pointerCursor 同基准的运行时值：labwc 按此逻辑尺寸加载光标主题
-        "XCURSOR_SIZE=24"
-        "XCURSOR_THEME=Adwaita"
       ];
-      # 只放需要继承合成器环境的一次性命令：autostart 是顺序执行的 shell 脚本，
-      # 任何常驻进程都会阻塞脚本，导致 HM 追加在后面的 systemd 集成段无法执行；
-      # 守护进程一律由 systemd 用户服务托管，不得放入 autostart。
-      autostart = [
-        "fcitx5 -d --replace"
-        # XWayland root 光标不经整数 buffer_scale 折算，合成器按输出 scale 放大，
-        # root 图须用逻辑基准 24px 才与原生一致（实测校准）；XWayland 就绪前设置必失败，故延时
-        "sh -c 'sleep 1; xsetroot -xcf ${pkgs.adwaita-icon-theme}/share/icons/Adwaita/cursors/left_ptr 24 2>/dev/null || true' &"
-      ];
+      # fcitx5 随会话启动（-d 自行后台化、--replace 接管已有实例，不阻塞 autostart
+      # 顺序执行）。放 autostart 而非 systemd 用户服务，是为继承会话内的 DISPLAY 等
+      # 合成器环境（用户实例拿不到）；WSL 覆盖为 --disable=wayland/waylandim 版本
+      # （见 hosts/wsl/default.nix）。
+      autostart = [ "${config.i18n.inputMethod.package}/bin/fcitx5 -d --replace" ];
       rc = {
         # 间隙与缩略图切换器为 Noctalia 官方推荐的视觉协同
         core.gap = 10;
@@ -288,7 +253,5 @@ in
 
   environment.systemPackages = with pkgs; [
     wl-clipboard
-    adwaita-icon-theme
-    xsetroot
   ];
 }
