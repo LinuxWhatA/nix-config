@@ -39,7 +39,7 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "deepin-wine10-stable";
-  version = "10.14deepin11";
+  version = "10.14deepin14";
 
   src = fetchurl {
     url = "https://pro-store-packages.uniontech.com/appstore/pool/appstore/d/deepin-wine10-stable/deepin-wine10-stable_${version}_amd64.deb";
@@ -48,7 +48,7 @@ stdenvNoCC.mkDerivation rec {
       "-A"
       "Debian APT-HTTP/1.3"
     ];
-    hash = "sha256-o0Epgs+xbY4g0pUId5rFrYo7OJpBc37rt/ZXobW5yw8=";
+    hash = "sha256-3VqdwMlKt85NOs5UPxqJRsTIsFnNHSwjrLuD5u/AQBg=";
   };
 
   nativeBuildInputs = [

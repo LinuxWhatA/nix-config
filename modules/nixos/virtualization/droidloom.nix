@@ -12,7 +12,8 @@
 #   - cell 的 cgroup 绕法：上游让 Android 跑在非初始 cgroup namespace 里，netd 却用 flags=0
 #     往该 ns 的根挂 BPF 程序 → EPERM → netd abort → cell 关机。本模块让 cell 的 init 先 bind，
 #     把可见根换成「ns 根的后代」，见 droidloom-netd-rc 与 droidloomd 的 ExecStartPre
-#   - 系统服务 droidloomd 与用户服务 droidloom/droidloom-applications 照抄上游单元；
+#   - 系统服务 droidloomd 与用户侧 droidloom / droidloom-applications / droidloom-audio(+socket)
+#     / droidloom-gpu(+socket) / droidloom-recovery 照抄上游单元（音频/GPU broker 的库搜索路径另补）；
 #     用户单元**故意不设** wantedBy（不随会话自启，理由见该单元内的注释）
 #   - 首次配置仍交回上游 helper（INSTALL.md 里 sudo 的那条路径），做成 oneshot：它写出的
 #     /etc/droidloom/* 属运行期状态，且本机 / 是 tmpfs，声明式管不到
@@ -29,25 +30,29 @@ let
   payload = pkgs.droidloom;
   systemctl = lib.getExe' config.systemd.package "systemctl";
 
-  # droidloom-wayland 是外部二进制、没有 rpath，NEEDED 里的 libgbm/libxkbcommon 起不来，
-  # 用 wrapper 补 LD_LIBRARY_PATH：libgbm 取 nixpkgs 自己的 gbm 包（mesa 的输出里没有它），
-  # /run/opengl-driver/lib 提供系统 DRI 驱动。makeWrapper 现在只是 setup hook（往构建 shell
-  # 注入同名函数，输出里没有这个可执行文件），所以只能留在 nativeBuildInputs 里用，不能
-  # 换成 lib.getExe' 拼路径。
-  droidloom-wayland =
-    pkgs.runCommandLocal "droidloom-wayland"
+  # 载荷里的宿主二进制是上游 Arch 包产物、没有 rpath：wayland 的 NEEDED 缺 libgbm/libxkbcommon，
+  # audio broker 缺 libpipewire，gpu broker 只在运行期 dlopen libvulkan.so.1。宿主会话的
+  # LD_LIBRARY_PATH 只有 /run/opengl-driver{,/32}/lib，故三者统一用 wrapper 补——rpath 只作用于
+  # 自身 NEEDED，dlopen 与驱动热插拔认环境变量。libgbm 取自 nixpkgs 的 gbm 包（mesa 输出里没有）。
+  # makeWrapper 现在只是 setup hook（往构建 shell 注入同名函数，输出里没有该可执行文件），
+  # 只能留在 nativeBuildInputs 里用，不能换成 lib.getExe' 拼路径。
+  hostBin =
+    name: libs:
+    pkgs.runCommandLocal name
       {
         nativeBuildInputs = [ pkgs.makeWrapper ];
       }
       ''
-        makeWrapper ${payload}/bin/droidloom-wayland $out/bin/droidloom-wayland \
-          --prefix LD_LIBRARY_PATH : "${
-            lib.makeLibraryPath [
-              pkgs.libgbm
-              pkgs.libxkbcommon
-            ]
-          }:/run/opengl-driver/lib"
+        makeWrapper ${payload}/bin/${name} $out/bin/${name} \
+          --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath libs}:/run/opengl-driver/lib"
       '';
+
+  droidloom-wayland = hostBin "droidloom-wayland" [
+    pkgs.libgbm
+    pkgs.libxkbcommon
+  ];
+  droidloom-audio = hostBin "droidloom-audio" [ pkgs.pipewire ];
+  droidloom-gpu-server = hostBin "droidloom-gpu-server" [ pkgs.vulkan-loader ];
 
   # 运行期按裸名调用这些工具（supervisor 用 ip/nft/iptables 建 cell 网络，mount/nsenter/unshare 进命名空间），
   # 而 NixOS 单元的 PATH 只有 coreutils/findutils/grep/sed/systemd，故单元里补上
@@ -113,8 +118,8 @@ let
 
   # 首次配置交回上游 helper：它按上游 INSTALL.md 的方式做缺失项（含写 /etc/droidloom 的
   # cell.json 与 runtime.env、建 Android 数据）。/ 是 tmpfs，故每次开机都要重跑。
-  # 0.1.0-20 起 helper 只有 `prepare` 一个子命令、不收参数，目标桌面用户靠 SUDO_USER
-  # 识别（等价于 sudo 调用），所以单元里以 root 跑时显式补上。
+  # helper 以 root 跑时靠 SUDO_USER 识别目标桌面用户（等价于 sudo 调用），故单元里显式补上；
+  # 只调 `prepare` 做首次配置，其余子命令是 pacman 安装钩子，NixOS 侧用不到。
   droidloom-setup = pkgs.writeShellScript "droidloom-setup" ''
     export SUDO_USER=${me}
     exec ${payload}/lib/droidloom/droidloom-package-helper prepare
@@ -138,6 +143,8 @@ in
     ln -s ${payload}/bin/droidloom-supervisor $out/droidloom-supervisor
     ln -s ${payload}/bin/droidloomctl $out/droidloomctl
     ln -s ${droidloom-wayland}/bin/droidloom-wayland $out/droidloom-wayland
+    ln -s ${droidloom-audio}/bin/droidloom-audio $out/droidloom-audio
+    ln -s ${droidloom-gpu-server}/bin/droidloom-gpu-server $out/droidloom-gpu-server
   '';
 
   # 上游契约要求单个连续 100000 段的 subordinate ID（Android 会话靠它映射 UID/GID），
@@ -182,7 +189,11 @@ in
       droidloomd = {
         description = "Droidloom Android cell lifecycle daemon";
         wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
+        requires = [ "droidloom-setup.service" ];
+        after = [
+          "network.target"
+          "droidloom-setup.service"
+        ];
         path = runtimePath;
         serviceConfig = {
           Type = "simple";
@@ -200,6 +211,7 @@ in
           MemoryHigh = "12G";
           MemoryMax = "14G";
           CPUQuota = "1400%";
+          OOMPolicy = "continue";
           KillMode = "mixed";
           Restart = "on-failure";
           RestartSec = 1;
@@ -215,7 +227,7 @@ in
         description = "Re-mount envfs when its FUSE connection was aborted";
         serviceConfig = {
           Type = "oneshot";
-          ExecCondition = "${lib.getBin pkgs.coreutils}/bin/test -e /usr/bin/env";
+          ExecCondition = "${lib.getBin pkgs.coreutils}/bin/test ! -e /usr/bin/env";
           ExecStart = "${systemctl} restart usr-bin.mount";
         };
       };
@@ -257,14 +269,23 @@ in
       droidloom = {
         description = "Droidloom Android application runtime";
         partOf = [ "graphical-session.target" ];
-        after = [ "graphical-session-pre.target" ];
-        wants = [ "droidloom-applications.service" ];
+        after = [
+          "graphical-session-pre.target"
+          "droidloom-audio.socket"
+          "droidloom-gpu.socket"
+        ];
+        wants = [
+          "droidloom-applications.service"
+          "droidloom-audio.socket"
+          "droidloom-gpu.socket"
+          "droidloom-recovery.service"
+        ];
         # 暂不随会话自启（手动 `systemctl --user start droidloom`）：cell 一旦运行会把宿主 envfs 的
         # FUSE 连接作废（`/usr/bin`、`/bin` 全部 ENOTCONN → VSCode 的 `#!/usr/bin/env`、`#!/bin/bash`
         # 脚本全挂）。开机自启等于每次开机都中招；在查清并修掉那个作废者之前先手动起。
         # wantedBy = [ "graphical-session.target" ];
-        # 手动起时用 `droidloomctl start`：它会连带把这两个用户单元拉起来（0.1.0-20 的
-        # start 没有 --cell 选项，完整启动就是它）。
+        # 手动起时用不带 `--cell` 的 `droidloomctl start`：`--cell` 只起 cell，不会拉起
+        # droidloom.service 与应用目录单元，故只有单元内部才用 `start --cell`。
         path = runtimePath;
         unitConfig.ConditionPathExists = "/etc/droidloom/cell.json";
         serviceConfig = {
@@ -286,6 +307,86 @@ in
           RestartSec = 1;
           TimeoutStartSec = 150;
           TimeoutStopSec = 150;
+        };
+      };
+
+      # socket 激活：Android 首次用到音频/Vulkan 时才起对应 broker
+      droidloom-audio = {
+        description = "Droidloom host audio broker";
+        wants = [ "pipewire.socket" ];
+        after = [ "pipewire.socket" ];
+        partOf = [ "droidloom.service" ];
+        requires = [ "droidloom-audio.socket" ];
+        serviceConfig = {
+          # 不启用文件系统命名空间：新建的 userns 只映射宿主用户，SO_PEERCRED 看不到 Android audioserver UID
+          ExecStart = "${droidloom-audio}/bin/droidloom-audio --socket %t/droidloom/audio.sock";
+          EnvironmentFile = "-%h/.config/droidloom/audio.env";
+          Restart = "on-failure";
+          RestartSec = 1;
+          NoNewPrivileges = true;
+          RestrictSUIDSGID = true;
+        };
+      };
+
+      droidloom-gpu = {
+        description = "Droidloom GPU server: Android Vulkan on the host driver";
+        partOf = [ "droidloom.service" ];
+        requires = [ "droidloom-gpu.socket" ];
+        serviceConfig = {
+          # helper 把 DROIDLOOM_GPU 等写进 runtime.env；上游另读的 environment.d 配置不在载荷里
+          EnvironmentFile = "-/etc/droidloom/runtime.env";
+          ExecStart = "${droidloom-gpu-server}/bin/droidloom-gpu-server";
+          Restart = "on-failure";
+          RestartSec = 1;
+          NoNewPrivileges = true;
+          RestrictSUIDSGID = true;
+        };
+      };
+
+      droidloom-recovery = {
+        description = "Droidloom Android cell crash recovery";
+        bindsTo = [ "droidloom.service" ];
+        partOf = [ "droidloom.service" ];
+        after = [ "droidloom.service" ];
+        # supervise 会调 ip/nft/nsenter，NixOS 单元的默认 PATH 只有 coreutils 等基础工具
+        path = runtimePath;
+        unitConfig = {
+          ConditionPathExists = "/etc/droidloom/cell.json";
+          StartLimitIntervalSec = 300;
+          StartLimitBurst = 5;
+        };
+        serviceConfig = {
+          Type = "simple";
+          ExecStartPre = "${systemctl} start droidloomd.service";
+          ExecStart = "${payload}/bin/droidloomctl supervise --cell";
+          Restart = "on-failure";
+          RestartSec = "5s";
+          TimeoutStartSec = 150;
+          TimeoutStopSec = 10;
+        };
+      };
+    };
+
+    user.sockets = {
+      droidloom-audio = {
+        description = "Droidloom private Android audio endpoint";
+        partOf = [ "droidloom.service" ];
+        socketConfig = {
+          ListenSequentialPacket = "%t/droidloom/audio.sock";
+          SocketMode = "0666";
+          DirectoryMode = "0700";
+          RemoveOnStop = true;
+        };
+      };
+
+      droidloom-gpu = {
+        description = "Droidloom GPU forwarding endpoint";
+        partOf = [ "droidloom.service" ];
+        socketConfig = {
+          ListenStream = "%t/droidloom/gpu.sock";
+          SocketMode = "0666";
+          DirectoryMode = "0700";
+          RemoveOnStop = true;
         };
       };
     };
