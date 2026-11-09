@@ -12,6 +12,7 @@
     moonlight-qt # 游戏流媒体
     wpsoffice-cn
     winetricks
+    wine-3dsmax
     deepin-wine10-stable
     wineWow64Packages.staging
     proton-run
