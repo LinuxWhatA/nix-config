@@ -40,7 +40,12 @@ in
       type = lib.types.attrsOf lib.types.raw;
       default = {
         overlays = builtins.attrValues self.overlays;
-        config.allowUnfree = true;
+        config = {
+          allowUnfree = true;
+          # 迅雷的官方二进制仍链接 gtk2，而 nixpkgs 已把它标成 broken（计划 27.05 移除）；
+          # 放行以免整机求值失败，待上游改用 gtk3 后删除
+          problems.handlers."gtk+".broken = "warn";
+        };
       };
       description = "Common arguments for importing nixpkgs";
     };

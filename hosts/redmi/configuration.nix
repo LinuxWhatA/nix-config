@@ -44,6 +44,12 @@ in
             ntboot --vhd --efi="''${prefix}/bootmgfw.efi" "/OS/Windows11.vhd";
           }
 
+          menuentry "Windows 11 (Test Mode)" --class windows {
+            savedefault
+            search -s -f /OS/Windows11.vhd
+            ntboot --vhd --testmode yes --efi="''${prefix}/bootmgfw.efi" "/OS/Windows11.vhd";
+          }
+
           menuentry "WePE" --class windows {
             search -s -f /OS/WePE_64_V2.3.iso
             map -f /OS/WePE_64_V2.3.iso;
