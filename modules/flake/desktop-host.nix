@@ -12,8 +12,7 @@ in
     imports = [
       nixosModules.base.default
       nixosModules.desktop.console
-      nixosModules.desktop.labwc
-      nixosModules.desktop.labwc-scale
+      nixosModules.desktop.gnome
       nixosModules.gui.uur
       nixosModules.gui.thunar
       nixosModules.gui.clash
@@ -33,7 +32,6 @@ in
       imports = [
         homeModules.cli.default
         homeModules.gui.default
-        homeModules.gui.noctalia
       ];
     };
   };

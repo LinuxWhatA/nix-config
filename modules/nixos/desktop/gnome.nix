@@ -10,6 +10,10 @@
     displayManager.gdm.enable = true;
     displayManager.gdm.autoSuspend = false;
     gnome.games.enable = false;
+    displayManager.autoLogin = {
+      enable = true;
+      user = flake.config.me.username;
+    };
   };
 
   environment.gnome.excludePackages = with pkgs; [
@@ -24,6 +28,8 @@
     gnome-music # 音乐
     gnome-weather # 天气
     gnome-contacts # 联系人
+    nautilus # 文件管理器（默认改用 Thunar）
+    gnome-console # 终端（默认改用 Kitty）
   ];
 
   # kde connect 端口
@@ -56,9 +62,10 @@
       settings = {
         "org/gnome/shell" = {
           favorite-apps = [
-            "org.gnome.Nautilus.desktop" # 文件管理器
-            "org.gnome.Console.desktop"
+            "thunar.desktop" # 文件管理器
+            "kitty.desktop"
             "firefox.desktop"
+            "clash-verge.desktop"
             "code.desktop"
           ];
         };
@@ -94,8 +101,8 @@
           ];
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
-          name = "Console";
-          command = "kgx";
+          name = "Kitty";
+          command = "kitty";
           binding = "<Control><Alt>t"; # 终端-快捷键
         };
         "org/gnome/desktop/wm/keybindings".show-desktop = [ "<Super>d" ]; # 隐藏所有窗口-快捷键

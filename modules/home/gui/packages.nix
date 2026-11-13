@@ -18,6 +18,7 @@
     proton-run
     dwproton-run
     umu-launcher
+    tracedraw
     dsh-desktop-next
   ];
 }
