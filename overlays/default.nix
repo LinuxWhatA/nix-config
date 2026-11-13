@@ -109,16 +109,6 @@ in
     '';
   };
 
-  # CMake 把 sysconfdir 展开成只读 store 路径，这条 tmpfiles 规则开机必然报
-  # "Failed to open path"；模板层剔除，其余 linglong 规则由上游模块随 enable 注入
-  linyaps = prev.linyaps.overrideAttrs (old: {
-    postPatch = (old.postPatch or "") + ''
-      substituteInPlace misc/lib/tmpfiles.d/linglong.conf \
-        --replace-fail 'd @CMAKE_INSTALL_FULL_SYSCONFDIR@/linglong/config.d 0755 root root - -' \
-                       '# Nix: sysconfdir 位于只读 store，此目录改由 NixOS 侧配置'
-    '';
-  });
-
   proton-run = mkProtonRun "proton-run" prev.proton-ge-bin.steamcompattool;
   dwproton-run = mkProtonRun "dwproton-run" prev.dwproton-bin.steamcompattool;
 

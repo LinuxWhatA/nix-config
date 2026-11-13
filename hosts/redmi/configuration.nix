@@ -32,22 +32,10 @@ in
           ${bin}/cp -f ${a1ive}/grubx64.efi /boot/EFI/NixOS-boot/
         '';
         extraEntries = ''
-          menuentry "Windows" --class windows {
+          menuentry "Windows VHD" --class windows {
             savedefault
             search -s -f /OS/Windows.vhd
             ntboot --vhd --efi="''${prefix}/bootmgfw.efi" "/OS/Windows.vhd";
-          }
-
-          menuentry "Windows 11" --class windows {
-            savedefault
-            search -s -f /OS/Windows11.vhd
-            ntboot --vhd --efi="''${prefix}/bootmgfw.efi" "/OS/Windows11.vhd";
-          }
-
-          menuentry "Windows 11 (Test Mode)" --class windows {
-            savedefault
-            search -s -f /OS/Windows11.vhd
-            ntboot --vhd --testmode yes --efi="''${prefix}/bootmgfw.efi" "/OS/Windows11.vhd";
           }
 
           menuentry "WePE" --class windows {
