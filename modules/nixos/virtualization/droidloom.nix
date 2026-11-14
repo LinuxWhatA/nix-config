@@ -13,7 +13,8 @@
 #     往该 ns 的根挂 BPF 程序 → EPERM → netd abort → cell 关机。本模块让 cell 的 init 先 bind，
 #     把可见根换成「ns 根的后代」，见 droidloom-netd-rc 与 droidloomd 的 ExecStartPre
 #   - 系统服务 droidloomd 与用户侧 droidloom / droidloom-applications / droidloom-audio(+socket)
-#     / droidloom-gpu(+socket) / droidloom-recovery 照抄上游单元（音频/GPU broker 的库搜索路径另补）；
+#     / droidloom-gpu(+socket) / droidloom-devices(+socket) / droidloom-recovery 照抄上游单元
+#     （音频/GPU broker 的库搜索路径另补）；
 #     用户单元**故意不设** wantedBy（不随会话自启，理由见该单元内的注释）
 #   - 首次配置仍交回上游 helper（INSTALL.md 里 sudo 的那条路径），做成 oneshot：它写出的
 #     /etc/droidloom/* 属运行期状态，且本机 / 是 tmpfs，声明式管不到
@@ -253,7 +254,7 @@ in
 
     user.services = {
       droidloom-applications = {
-        description = "Droidloom native application catalog";
+        description = "Droidloom native application catalog and theme";
         partOf = [ "droidloom.service" ];
         after = [ "droidloom.service" ];
         path = runtimePath;
@@ -273,11 +274,13 @@ in
           "graphical-session-pre.target"
           "droidloom-audio.socket"
           "droidloom-gpu.socket"
+          "droidloom-devices.socket"
         ];
         wants = [
           "droidloom-applications.service"
           "droidloom-audio.socket"
           "droidloom-gpu.socket"
+          "droidloom-devices.socket"
           "droidloom-recovery.service"
         ];
         # 暂不随会话自启（手动 `systemctl --user start droidloom`）：cell 一旦运行会把宿主 envfs 的
@@ -365,6 +368,27 @@ in
           TimeoutStopSec = 10;
         };
       };
+
+      # 宿主侧触觉/摄像头/指纹 broker：与 audio 同型，都是跨 UID 的 socket 激活端点，
+      # 故同样不启用文件系统命名空间（否则新建 userns 只映射宿主用户，SO_PEERCRED 看不到
+      # Android 的 system/cameraserver UID）。载荷里该二进制无缺失 NEEDED，无需 wrapper。
+      # 但该二进制对每个端点按 SO_PEERCRED 直接比对宿主 UID（实测：peer UID 1000 对 camera
+      # 默认 1047 → "rejected peer UID 1000, expected 1047"），不做偏移换算；而 cell 的 userns
+      # 以 subUidRanges 起点 100000 做映射（容器 uid N → 宿主 100000+N，见 droidloom-doctor 的
+      # 100000 段契约），故须显式给宿主映射后的 UID，否则默认 1000/1047/0 全部对不上。
+      # credential 端点默认 0（宿主 root）与上游一致，是否需改取决于 supervisor 实际以哪个 UID 运行。
+      droidloom-devices = {
+        description = "Droidloom host haptics, camera, fingerprint and credential broker";
+        partOf = [ "droidloom.service" ];
+        requires = [ "droidloom-devices.socket" ];
+        serviceConfig = {
+          ExecStart = "${payload}/bin/droidloom-devices --haptics-uid 101000 --camera-uid 101047 --fingerprint-uid 100000";
+          Restart = "on-failure";
+          RestartSec = 1;
+          NoNewPrivileges = true;
+          RestrictSUIDSGID = true;
+        };
+      };
     };
 
     user.sockets = {
@@ -384,6 +408,22 @@ in
         partOf = [ "droidloom.service" ];
         socketConfig = {
           ListenStream = "%t/droidloom/gpu.sock";
+          SocketMode = "0666";
+          DirectoryMode = "0700";
+          RemoveOnStop = true;
+        };
+      };
+
+      droidloom-devices = {
+        description = "Droidloom private Android haptics, camera, fingerprint and credential endpoints";
+        partOf = [ "droidloom.service" ];
+        socketConfig = {
+          ListenSequentialPacket = [
+            "%t/droidloom/haptics.sock"
+            "%t/droidloom/camera.sock"
+            "%t/droidloom/fingerprint.sock"
+            "%t/droidloom/credential.sock"
+          ];
           SocketMode = "0666";
           DirectoryMode = "0700";
           RemoveOnStop = true;

@@ -13,7 +13,7 @@
   zstd,
 }:
 let
-  version = "0.1.0-30";
+  version = "0.1.0-35";
 
   archive =
     name: hash:
@@ -28,8 +28,8 @@ stdenvNoCC.mkDerivation {
   inherit version;
 
   srcs = [
-    (archive "runtime" "sha256-JJWwY912sgk9KIF5XNbKU8YUMZ8eOnsp8dR/La+uY4o=")
-    (archive "image" "sha256-tGngZv2HRMDrLoejK4x3QYMkWlAQ9Cabl0DxFxkXLAA=")
+    (archive "runtime" "sha256-K3aRoma7dmD00ANgWr+ERP9Rx99GGN7WOLvQYPxIdZI=")
+    (archive "image" "sha256-FovaOOkgiDUU29sOFsTnex3SdO5yEs41k5NDeOnnndA=")
   ];
 
   nativeBuildInputs = [ zstd ];

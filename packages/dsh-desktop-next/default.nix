@@ -5,11 +5,11 @@
 }:
 let
   pname = "dsh-desktop-next";
-  version = "2.0.22";
+  version = "2.0.23";
 
   src = fetchurl {
     url = "https://github.com/anywhere-labs/dsh-desktop/releases/download/v${version}-next/DSH-NEXT-${version}-next-x86_64.AppImage";
-    hash = "sha256-U04xJC0pWnHPkqgAHrXH536cc2EmU1+pMCbtI7NzZGc=";
+    hash = "sha256-xE90bxeSx2JcCgEoAV/If7hCA/JwGUw8eFLi1aehdjY=";
   };
 
   appimageContents = appimageTools.extract {
