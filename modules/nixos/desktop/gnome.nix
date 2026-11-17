@@ -60,6 +60,10 @@
     dconf = {
       enable = true;
       settings = {
+        "org/gnome/desktop/interface" = {
+          icon-theme = "Adwaita";
+          cursor-theme = "Adwaita";
+        };
         "org/gnome/shell" = {
           favorite-apps = [
             "thunar.desktop" # 文件管理器
@@ -83,6 +87,7 @@
           transparency-mode = "DYNAMIC";
           click-action = "minimize-or-previews";
           scroll-action = "switch-workspace";
+          intellihide-mode = "ALL_WINDOWS";
         };
         "org/gnome/shell/keybindings".toggle-message-tray = [ "<Super>t" ]; # 通知列表快捷键
         "org/gnome/shell/extensions/clipboard-indicator" = {
