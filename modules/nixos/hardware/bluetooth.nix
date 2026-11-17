@@ -15,5 +15,10 @@
   };
 
   # MT7921 USB 蓝牙自动挂起导致配对设备连接缓慢/失败
-  boot.extraModprobeConfig = "options btusb enable_autosuspend=N";
+  boot.extraModprobeConfig = ''
+    options btusb enable_autosuspend=N
+    # MT7921 走 PCIe（mt7921e），ASPM 偶发导致整颗芯片挂死/不稳定；
+    # 与 WiFi 同用 2.4G 频段时此参数提高稳定性（代价是略增功耗）
+    options mt7921e disable_aspm=1
+  '';
 }
