@@ -18,8 +18,11 @@
         "sidebar.revamp" = true; # 侧栏
         "sidebar.verticalTabs" = true; # 垂直标签页
         "sidebar.visibility" = "expand-on-hover"; # 悬停时展开侧栏
+        "dom.webgpu.enabled" = true; # 启用 WebGPU
         "dom.security.https_only_mode" = false; # 允许 http
-        "browser.contentblocking.category" = "standard"; # 关闭严格模式
+        "browser.contentblocking.category" = "standard"; # 关闭严格模式（ETP 级别）
+        # betterfox 另开的脚本资源隔离不受 category 管辖，须显式还原为标准（release 默认 false）
+        "privacy.antitracking.isolateContentScriptResources" = false;
       };
     };
     policies = {
@@ -34,10 +37,10 @@
           installation_mode = "normal_installed";
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
         };
-        # 沉浸式翻译
-        "{5efceaa7-f3a2-4e59-a54b-85319448e305}" = {
+        # KISS Translator 简约双语对照翻译
+        "{fb25c100-22ce-4d5a-be7e-75f3d6f0fc13}" = {
           installation_mode = "normal_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/immersive-translate/latest.xpi";
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/kiss-translator/latest.xpi";
         };
       };
     };
