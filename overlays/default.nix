@@ -24,6 +24,9 @@ let
   # desktop 条目的 Exec 写的是命令名（按 PATH 解析），所以在 bin 这层包一次，终端敲 wps 与从菜单
   # 启动就是同一条路，不必再给 desktop 的 Exec 加前缀。
   withCgroupRun =
+    {
+      extraRunArgs ? [ ],
+    }:
     pkg:
     prev.symlinkJoin {
       inherit (pkg) name meta;
@@ -33,7 +36,12 @@ let
         for entry in ${pkg}/bin/*; do
           wrapped="$out/bin/$(basename "$entry")"
           rm "$wrapped"
-          makeWrapper ${cgroupRun}/bin/cgroup-run "$wrapped" --add-flags "$entry"
+          # extraRunArgs 是 cgroup-run 的前置参数，原样转发给 systemd-run（见下 cgroupRun）
+          makeWrapper ${cgroupRun}/bin/cgroup-run "$wrapped" \
+            ${
+              prev.lib.concatMapStringsSep " " (a: "--add-flags ${prev.lib.escapeShellArg a}") extraRunArgs
+            } \
+            --add-flags "$entry"
         done
       '';
     };
@@ -51,11 +59,24 @@ let
   #
   # --pipe 与 --pty 同时给，由 systemd-run 按 stdio 自选（有 TTY 走 --pty，否则 --pipe）；--pty 隐含
   # 同步等待，--wait 给 --pipe 分支补上；TimeoutStopSec=5 是因为默认 90s 会吊住终端。
+  # 前置 --setenv=NAME=VALUE 转给 systemd-run（transient unit 不继承调用者环境），其余参数是命令。
   cgroupRun = prev.writeShellScriptBin "cgroup-run" ''
     if [ "$#" -eq 0 ]; then
       echo "用法: cgroup-run <命令> [参数…]" >&2
       exit 2
     fi
+    setenvs=()
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+        --setenv=*)
+          setenvs+=("$1")
+          shift
+          ;;
+        *)
+          break
+          ;;
+      esac
+    done
     exec ${prev.systemd}/bin/systemd-run \
       --user \
       --quiet \
@@ -67,6 +88,7 @@ let
       --property=KillMode=control-group \
       --property=TimeoutStopSec=5 \
       --same-dir \
+      "''${setenvs[@]}" \
       -- "$@"
   '';
 
@@ -131,5 +153,12 @@ in
   # nixpkgs 产物 Categories 为空：上游只在 deb/rpm 的 desktopTemplate 里写 Network;FileTransfer，
   # tauri.conf.json 无 bundle.categories，通用打包路径不带分类。补齐后与上游模板一致
   rayburst = withCategory "Network;FileTransfer" prev.rayburst;
-  wpsoffice-cn = withCategory "Office" (withCgroupRun prev.wpsoffice-cn);
+  # WPS 捆绑旧 Qt 只有 fcitx4 插件且只能跑 XWayland，全局又不导出 QT_IM_MODULE（Wayland Qt
+  # 走 text-input），故输入法失效。经 --setenv 只给它注入 QT_IM_MODULE=fcitx（fcitx5 兼容
+  # fcitx4 D-Bus 协议）；用 --setenv 而非环境变量，因 systemd-run 的 unit 不继承调用者环境。
+  # 参考 fcitx/fcitx5#83、#1231。
+  wpsoffice-cn = prev.lib.pipe prev.wpsoffice-cn [
+    (withCgroupRun { extraRunArgs = [ "--setenv=QT_IM_MODULE=fcitx" ]; })
+    (withCategory "Office")
+  ];
 }
