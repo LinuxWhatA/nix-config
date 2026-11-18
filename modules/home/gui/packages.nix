@@ -18,7 +18,6 @@
     proton-run
     dwproton-run
     umu-launcher
-    tracedraw
     pdfcraft
     photocraft
     dsh-desktop-next
