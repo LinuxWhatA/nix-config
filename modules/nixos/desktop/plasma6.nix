@@ -26,13 +26,15 @@
   };
 
   environment.plasma6.excludePackages = with pkgs.kdePackages; [
-    kate
-    krdp
-    elisa
-    okular
-    khelpcenter
-    baloo-widgets
-    plasma-browser-integration
+    kate # 文本编辑器
+    ktexteditor # kate 插件
+    krdp # 远程桌面
+    elisa # 音乐播放器
+    okular # 文档查看器
+    konsole # 终端
+    gwenview # 文件管理器
+    khelpcenter # 帮助中心
+    plasma-browser-integration # 浏览器集成
   ];
   programs.kdeconnect.enable = true;
 
