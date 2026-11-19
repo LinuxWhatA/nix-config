@@ -17,11 +17,11 @@
 }:
 let
   pname = "tracedraw";
-  version = "0.48.0";
+  version = "0.49.0";
 
   src = fetchurl {
     url = "https://github.com/tracedraw/tracedraw/releases/download/v${version}/tracedraw-${version}-linux-amd64.AppImage";
-    hash = "sha256-0yvR6LaSbwMNQdCxaqxUSqwEoxRC7ptyXdkskav4T/g=";
+    hash = "sha256-pYtuaavGYl8/4JQJI19MMm6ppAlbRfqUz9wX+OJwNIk=";
   };
 
   appimageContents = appimageTools.extract {
