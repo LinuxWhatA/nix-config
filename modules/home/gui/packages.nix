@@ -3,7 +3,6 @@
 {
   home.packages = with pkgs; [
     vlc # 视频播放器
-    nomacs # 图片查看器
     scrcpy # 手机投屏
     wechat
     fsearch # 文件搜索
