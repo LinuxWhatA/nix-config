@@ -49,6 +49,11 @@ let
         for p in ${repo}/patches/wine-11.0/*.patch; do
           patch -p1 --batch -i "$p" || exit 1
         done
+        # Wine ≤11.8 的 drag_drop_drop 把 OLE 被拒后的 WM_DROPFILES 回退发到顶层窗口
+        # 而非 WS_EX_ACCEPTFILES 子窗口，3ds Max 材质编辑器（预览球是 DragDropWindow）
+        # 因此永远收不到拖入文件；上游 11.9 修复（e0d2ddb4 / Wine-Bug #59425）。
+        # 行号按 11.0 源码生成，patch 模糊匹配容差可掩盖上游补丁引起的漂移。
+        patch -p1 --batch -i ${./wine-11.0-dropfiles-target.patch} || exit 1
       '';
     });
 
