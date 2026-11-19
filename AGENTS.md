@@ -14,7 +14,8 @@ modules/                       # NixOS / Home-manager 模块
 │   ├── desktop-host.nix       # 桌面主机顶层组合（dendritic：装配为 nixosModules.desktop-host）
 │   ├── packages.nix           # 把 overlay 包暴露为 flake packages（唯一来源）
 │   ├── per-system.nix         # perSystem（pkgs、devshell、allowUnfree）
-│   └── treefmt.nix            # treefmt-nix：nixfmt + statix，供 `nix fmt` 与 flake check
+│   ├── treefmt.nix            # treefmt-nix：nixfmt + statix，供 `nix fmt` 与 flake check
+│   └── wshell-shell.nix       # winetricks 兼容层 devshell（`nix develop .#wshell`）：wine/mesa 只服务 .verb 产出，不混进默认环境
 ├── home/                      # Home-manager 用户模块
 │   ├── cli/                   # CLI 工具（git、zsh、nh、fd、direnv…；default.nix 批量导入）
 │   └── gui/                   # GUI 应用（firefox、kitty、vscode、noctalia、mangohud…；default 为批量导入）
@@ -65,6 +66,6 @@ flake.nix                      # flake 入口
 - `direnv allow` 加载 devshell（python + python-registry，供 `packages/bt-keys-info` 用）。
 - flake 求值只认 git 已跟踪文件：新文件须先 `git add -N <path>`（intent-to-add：不产生暂存内容，`git reset -- <path>` 可撤销）才会被 `nix eval` / `nix build` 看到。
 - `nixos-rebuild switch`（`nh os switch`）只重启被改动的用户服务；涉及会话启动链（greetd → 合成器 → 环境导入 → 守护自启、portal 配置）的改动须重新登录（退出 labwc，greetd 随即重拉）或整机重启验证。
-- 读 nixpkgs / home-manager / noctalia 等上游源码前，先取本机已 fetch 的 store 路径再 grep：`nix eval --raw --impure --expr '(builtins.getFlake "<repo>").inputs.<name>.outPath'`，勿急着联网。
+- 读 nixpkgs / home-manager / noctalia 等上游源码，一律**优先从 `/nix/store` 取本机已 fetch 的路径**再 grep：`nix eval --raw --impure --expr '(builtins.getFlake "<repo>").inputs.<name>.outPath'`；仅当 store 缺该源码时才联网 fetch，严禁先联网再查 store。
 - `nixvim` 刻意不 `follows nixpkgs`（上游 pin 自己的 nixpkgs；加了会触发 eval 警告），勿"修"。
 - Home-manager 用户服务没有 `preStart`；服务前初始化用 `Service.ExecStartPre`（例：noctalia 存储密钥生成）。
