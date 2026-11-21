@@ -13,6 +13,10 @@
     };
   };
 
+  environment.cosmic.excludePackages = with pkgs; [
+    cosmic-edit
+  ];
+
   environment.systemPackages = [
     pkgs.cosmic-ext-applet-minimon
   ];

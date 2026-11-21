@@ -6,6 +6,12 @@
 }:
 
 {
+  # KDE PIM 由 plasma6 模块默认开启（programs.kde-pim.enable = mkDefault true），
+  # 会带入 kontact/kmail/merkuro/ktnef/kdepim-runtime/akonadi 等；这些包不在
+  # environment.plasma6.excludePackages 的 optionalPackages 列表里，excludePackages 排不掉，
+  # 只能关掉整个 PIM 模块
+  programs.kde-pim.enable = false;
+
   services = {
     displayManager.sddm = {
       enable = true;
@@ -70,6 +76,7 @@
             }
             "org.kde.plasma.systemtray" # 系统托盘
             "org.kde.plasma.digitalclock" # 数字时钟
+            "org.kde.plasma.showdesktop" # 最小化所有窗口（显示桌面）
           ];
         }
       ];
