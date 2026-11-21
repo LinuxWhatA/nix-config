@@ -3,7 +3,7 @@
 #       NixOS 无 FHS 布局 → 用 buildFHSEnv 供齐；FHS 内 fontconfig 可见含 CJK 的系统字体，
 #       缩略图中文文字不变豆腐块。
 # 取舍：入口分流——TRACEDRAW_ENTRY=cli 走 headless 渲染（缩略图用），否则 GUI；两入口都经 bwrap
-#       进同一 FHS。desktop/图标/缩略图/MIME 由 extraInstallCommands 装 $out/share（AppImage 自装
+#       进同一 FHS。desktop/图标/缩略图由 extraInstallCommands 装 $out/share（AppImage 自装
 #       会写 ~/.local/share，store 里不可变）。
 {
   appimageTools,
@@ -17,11 +17,11 @@
 }:
 let
   pname = "tracedraw";
-  version = "0.49.0";
+  version = "0.50.0";
 
   src = fetchurl {
     url = "https://github.com/tracedraw/tracedraw/releases/download/v${version}/tracedraw-${version}-linux-amd64.AppImage";
-    hash = "sha256-pYtuaavGYl8/4JQJI19MMm6ppAlbRfqUz9wX+OJwNIk=";
+    hash = "sha256-vUY8/1f/kus/Iazjh0sx10+q7FrwwHcFoHL6paDiM9g=";
   };
 
   appimageContents = appimageTools.extract {
@@ -36,28 +36,16 @@ let
     exec env -u TRACEDRAW_ENTRY ${appimageContents}/usr/bin/tracedraw "$@"
   '';
 
-  # .cdr/.tdraw 缩略图（freedesktop .thumbnailer，KIO 以 QProcess 起 Exec；%i=输入、%o=输出、%s=尺寸）。
+  # .cdr 缩略图（freedesktop .thumbnailer，KIO 以 QProcess 起 Exec；%i=输入、%o=输出、%s=尺寸）。
   # .cdr 的真实 MIME 是 application/vnd.corel-draw，上游只写 application/x-cdr 历史别名，故必须补
   # canonical——否则 KDE 匹配不到 .cdr（打开方式同理，见下方 desktop-file-edit）。
+  # .tdraw 不在此列：它没有已注册 MIME（用户级包放 share/mime/packages 不会被 update-mime-database
+  # 扫到，注册也起不了作用），KDE 按 MIME 匹配，留着是死项。
   thumbnailer = writeText "tracedraw.thumbnailer" ''
     [Thumbnailer Entry]
     TryExec=tracedraw-cli
     Exec=tracedraw-cli thumbnail %i %o %s
-    MimeType=application/x-tdraw;application/x-cdr;application/vnd.corel-draw;
-  '';
-
-  # .tdraw 的 MIME 类型（上游 tracedraw-mime.xml），装进 share/mime/packages 由 update-mime-database
-  # 处理；.cdr 已由 shared-mime-info 定为 application/vnd.corel-draw，不在此定义。
-  mimeXml = writeText "tracedraw-mime.xml" ''
-    <?xml version="1.0" encoding="UTF-8"?>
-    <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
-      <mime-type type="application/x-tdraw">
-        <comment>TraceDraw drawing</comment>
-        <sub-class-of type="application/json"/>
-        <glob pattern="*.tdraw"/>
-        <icon name="tracedraw"/>
-      </mime-type>
-    </mime-info>
+    MimeType=application/x-cdr;application/vnd.corel-draw;
   '';
 in
 buildFHSEnv {
@@ -85,7 +73,6 @@ buildFHSEnv {
     cp -r --no-preserve=mode ${appimageContents}/usr/share/icons $out/share
 
     install -Dm444 ${thumbnailer} $out/share/thumbnailers/tracedraw.thumbnailer
-    install -Dm444 ${mimeXml} $out/share/mime/packages/tracedraw-mime.xml
   '';
 
   meta = {

@@ -15,8 +15,6 @@
     # .cdr 的真实 MIME 是 application/vnd.corel-draw；desktop 的 canonical 由包内 desktop-file-edit
     # 补齐（上游只写 application/x-cdr 历史别名），见 packages/tracedraw
     "application/vnd.corel-draw" = [ "tracedraw.desktop" ];
-    # .tdraw 需包内 tracedraw-mime.xml 注册 MIME 才生效；用户级 MIME 库未必重建，属尽力而为
-    "application/x-tdraw" = [ "tracedraw.desktop" ];
   };
 
   # KDE6 的缩略图机制（FilePreviewJob）原生支持 freedesktop .thumbnailer，插件 Id 就是文件名
