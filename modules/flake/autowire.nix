@@ -1,15 +1,9 @@
 # 接线（wiring）：扫描目录生成 flake outputs，并把低层模块收集到顶层 config 的
 # nixosModules / homeModules 选项（dendritic 装配点，主机从 config 引用）。
 #
-# 规则（scanTree 借鉴 vic/import-tree：递归 + 结构保留，目录 → 嵌套 attrset，
-# default.nix 即键 "default"）：
-#   hosts/<host>/default.nix                 → nixosConfigurations.<host>
-#   modules/nixos/<dir>/<file>.nix           → nixosModules.<dir>.<file>（如 nixosModules.desktop.plasma6）
-#   modules/nixos/<dir>/default.nix          → nixosModules.<dir>.default（bundle，如 base）
-#   modules/home/<dir>/<file>.nix            → homeModules.<dir>.<file>（如 homeModules.gui.opencode）
-#   modules/home/<dir>/default.nix           → homeModules.<dir>.default（bundle，如 cli）
-#   overlays/<name>.nix                      → overlays.<name>
-# 嵌套结构天然无同名冲突（如 cli/packages.nix 与 gui/packages.nix 分属不同键）。
+# scanTree 借鉴 denful/import-tree：递归 + 结构保留，目录 → 嵌套 attrset，default.nix 即键
+# "default"；嵌套结构天然无同名冲突（如 cli/packages.nix 与 gui/packages.nix 分属不同键）。
+# 各目录 → output 的完整映射是仓库级约定，见 AGENTS.md「接线机制」，不在此重复以免两处漂移。
 {
   self,
   inputs,
@@ -59,7 +53,7 @@ let
     else
       { };
 
-  # 递归导入目录树为嵌套 attrset（借鉴 vic/import-tree）：
+  # 递归导入目录树为嵌套 attrset（借鉴 denful/import-tree）：
   #   目录 → 子 attrset；.nix 文件 → 去后缀为键；default.nix 即键 "default"。
   # 结构保留、任意深度、无同名冲突。
   scanTree =
