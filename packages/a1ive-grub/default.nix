@@ -87,7 +87,7 @@ stdenv.mkDerivation {
   ];
 
   postInstall = ''
-    sed -i $out/lib/grub/*/modinfo.sh -e "/grub_target_cppflags=/ s|'.*'|' '|"
+    sed -i -e "/grub_target_cppflags=/ s|'.*'|' '|" $out/lib/grub/*/modinfo.sh
     substituteInPlace $out/lib/grub/*/modinfo.sh \
       --replace ${buildPackages.bash} ${bash}/bin/bash
 
