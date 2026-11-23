@@ -22,30 +22,7 @@
       lazygit.enable = true;
       bufferline.enable = true;
       nvim-autopairs.enable = true;
-    };
-    colorschemes.catppuccin.enable = true;
-    plugins.gitsigns = {
-      enable = true;
-      settings = {
-        current_line_blame = true;
-        trouble = true;
-      };
-    };
-    plugins.lsp = {
-      enable = true;
-      servers.nixd.enable = true;
-    };
-    # LSP 通知
-    plugins.fidget = {
-      enable = true;
-      settings.progress = {
-        suppress_on_insert = true;
-        ignore_done_already = true;
-        poll_rate = 1;
-      };
-    };
-    # 代码提示
-    plugins = {
+      # 代码提示
       luasnip.enable = true;
       cmp = {
         enable = true;
@@ -68,6 +45,27 @@
             "<CR>" = "cmp.mapping.confirm({ select = true })";
           };
         };
+      };
+    };
+    colorschemes.catppuccin.enable = true;
+    plugins.gitsigns = {
+      enable = true;
+      settings = {
+        current_line_blame = true;
+        trouble = true;
+      };
+    };
+    plugins.lsp = {
+      enable = true;
+      servers.nixd.enable = true;
+    };
+    # LSP 通知
+    plugins.fidget = {
+      enable = true;
+      settings.progress = {
+        suppress_on_insert = true;
+        ignore_done_already = true;
+        poll_rate = 1;
       };
     };
     # 代码诊断与格式化
