@@ -10,7 +10,13 @@
       programs = {
         nixfmt.enable = true;
         statix.enable = true;
-        # 不开 deadnix：模块函数的形参常按模块系统惯例写全而未被用到，它会把这类一并报出来。
+        # deadnix 默认会把「模块函数形参按惯例写全而未用到」（如 { config, lib, ... }）误报，
+        # 故豁免 lambda 形参；callPackage 的 attrset 模式名同理豁免。顶层未用绑定仍会抓出。
+        deadnix = {
+          enable = true;
+          no-lambda-arg = true;
+          no-lambda-pattern-names = true;
+        };
       };
     };
   };
