@@ -15,11 +15,11 @@
 }:
 let
   pname = "pdfcraft";
-  version = "0.21.1";
+  version = "0.22.0";
 
   src = fetchurl {
     url = "https://github.com/storytold/pdfcraft/releases/download/v${version}/pdfcraft-${version}-linux-x86_64.AppImage";
-    hash = "sha256-cwJ2zamt2z1I8mxgJobRj8W8Dr42CmCi9SLXDP1CjSE=";
+    hash = "sha256-dx9hsHqvjMF+c8sfk/vohSbyewqoL/MtBxDiw3X0kkg=";
   };
 
   appimageContents = appimageTools.extract {
