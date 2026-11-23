@@ -1,8 +1,16 @@
 {
-  services.xrdp = {
+  lib,
+  config,
+  ...
+}:
+{
+  # 会话启动脚本默认本仓主用的 plasma6 X11；不另设 option——nixpkgs 的
+  # services.xrdp.defaultWindowManager 已可被使用方主机以正常优先级覆盖，
+  # 这里用 mkDefault 仅替换默认值（xterm → plasma），通用服务不写死桌面。
+  config.services.xrdp = {
     enable = true;
     openFirewall = true;
-    defaultWindowManager = ''
+    defaultWindowManager = lib.mkDefault ''
       unset DBUS_SESSION_BUS_ADDRESS
       unset XDG_RUNTIME_DIR
       startplasma-x11
@@ -10,7 +18,7 @@
   };
 
   # 普通用户电源权限（XRDP，仅限 wheel）
-  security.polkit = {
+  config.security.polkit = {
     enable = true;
     extraConfig = ''
       polkit.addRule(function (action, subject) {
