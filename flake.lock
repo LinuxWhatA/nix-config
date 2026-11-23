@@ -208,11 +208,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794051415,
-        "narHash": "sha256-mJok3uMK0awq2MPKdSnvTxm3UD89KD3LclQzASgtY1s=",
+        "lastModified": 1795018746,
+        "narHash": "sha256-glQAHvZGgBVjzGIWgIZYSf3X10gvtO2LPR4rtyP/Soc=",
         "ref": "refs/heads/master",
-        "rev": "1a8ff4f57ffe1f732beaa1db842247a381ea471d",
-        "revCount": 2913,
+        "rev": "33475966110df258f52d05ec4d4cd6394637cbb9",
+        "revCount": 2930,
         "type": "git",
         "url": "https://gitee.com/mirrors/nixos-hardware"
       },
@@ -228,10 +228,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1794963576,
-        "narHash": "sha256-+CPrP74GDJ63f7bgEFC9Av4hbxc7K9WUNv1ZVRifRe8=",
+        "lastModified": 1795366757,
+        "narHash": "sha256-Tp4Kh4R7ID1f2mMCDlb2PiFQ/DZZsnXB2u2juWN+TT4=",
         "ref": "refs/heads/master",
-        "rev": "2b13c9cb3aa20653e6f8ee0b7f8331a53ea9b0a9",
+        "rev": "3b8140d21fa0a70b1b38c2ed29853dfe686234a6",
         "shallow": true,
         "type": "git",
         "url": "https://git.nju.edu.cn/nix-mirror/home-manager.git"
@@ -329,11 +329,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794739050,
-        "narHash": "sha256-PCGNIyAydZcdUXCxEXTjrS1+wWS+k9E+ENqBkUK2Mpg=",
+        "lastModified": 1795345257,
+        "narHash": "sha256-p1dA8lUFQTLJfDI2gaTZQ+CcMKw3nxvyHNbwpVMy2rY=",
         "ref": "refs/heads/main",
-        "rev": "9bd074026d6db75b59aae8cd6071b5f2fe27a36c",
-        "revCount": 659,
+        "rev": "905f3e6f1e78165e79457c0bbe7ec4b885a5fce1",
+        "revCount": 661,
         "type": "git",
         "url": "https://git.nju.edu.cn/nix-mirror/nix-index-database.git"
       },
@@ -384,10 +384,10 @@
     },
     "nixpkgs-lib": {
       "locked": {
-        "lastModified": 1794715557,
-        "narHash": "sha256-/clTJxLt3e+lo0+Wn99IMhlAAXQE6FB4lFBLRROeyKI=",
+        "lastModified": 1795321040,
+        "narHash": "sha256-u58viGYadc6FdnAYiO30nEHUZLNt4EoS7w/KoZ540QA=",
         "ref": "refs/heads/master",
-        "rev": "60b7a3d35d15b929550e9e1c7d565e527691b735",
+        "rev": "97d9a1dd84558f1fcab969db3fb0953c03fed7cc",
         "shallow": true,
         "type": "git",
         "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.lib.git"
@@ -432,10 +432,10 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1795095985,
-        "narHash": "sha256-DOTZsOOoEtOY0ysY9L6JzyDHZm4lGBr6P1bt1mFXcRw=",
+        "lastModified": 1795249095,
+        "narHash": "sha256-8JDgyVvWUZg5m9hNlL8Ge9aT647ng3Ukc8NPMiKNTPQ=",
         "ref": "nixpkgs-unstable",
-        "rev": "19cfded70b91ca0981373973c5b1efffdd4d6647",
+        "rev": "93a9ed0a866099a230ed5146a5bb7d16fd5c9b14",
         "shallow": true,
         "type": "git",
         "url": "https://git.nju.edu.cn/nix-mirror/nixpkgs.git"
@@ -615,11 +615,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795111314,
-        "narHash": "sha256-0zmj8lEtQbdQO1hTJSP/5ACeqltCZAcXh21b8w92tfY=",
+        "lastModified": 1795353384,
+        "narHash": "sha256-cq+xxk2kbsRAW+eVDisdhFcPOCpBOgxvOlao5C0VWhQ=",
         "ref": "refs/heads/main",
-        "rev": "0d55e7d2fb753abb8ff696a141b8f05953465d39",
-        "revCount": 152,
+        "rev": "68699d7c8320be745877b51ed3c63e347b4d1b81",
+        "revCount": 161,
         "type": "git",
         "url": "https://github.com/panxuc/fcitx5-wetypex"
       },
