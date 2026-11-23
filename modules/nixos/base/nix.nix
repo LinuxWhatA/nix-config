@@ -38,13 +38,8 @@
       keep-outputs = true;
 
       # mkDefault 赢不过 nixpkgs 的 mkAfter 默认值，故 mkForce
-      substituters = lib.mkForce [
-        "https://mirror.nju.edu.cn/nix-channels/store"
-        "https://mirrors.ustc.edu.cn/nix-channels/store"
-        "https://mirror.sjtu.edu.cn/nix-channels/store"
-        # "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-        "https://cache.nixos.org/"
-      ];
+      # 列表与 flake.nix 的 nixConfig 共用同一份（数据在 config.nix），避免两处漂移
+      substituters = lib.mkForce flake.config.nixSubstituters;
     };
   };
 }

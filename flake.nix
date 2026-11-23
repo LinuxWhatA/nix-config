@@ -6,6 +6,9 @@
     extra-substituters = [ "https://denial.cachix.org" ];
     extra-trusted-public-keys = [ "denial.cachix.org-1:wd8YTnvPmugFrtdMJWtR1XdVknR3/g2nmBJkT+vAruo=" ];
     # 系统侧 substituters 要 rebuild 后才生效，而 rebuild 自身就要下载
+    # 系统侧（base/nix.nix）取 config.nix 的 nixSubstituters；flake 的 nixConfig
+    # 不接受未求值表达式（import 等都会被判为 thunk 而报错），故此处只能是字面量——
+    # 增删镜像时两边同步
     substituters = [
       "https://mirror.nju.edu.cn/nix-channels/store"
       "https://mirrors.ustc.edu.cn/nix-channels/store"

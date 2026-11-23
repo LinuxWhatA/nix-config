@@ -34,6 +34,11 @@ in
       type = userSubmodule;
     };
 
+    # 数据源同在根 config.nix：flake 侧 nixConfig 与系统侧 nix.settings 取这一份
+    nixSubstituters = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+    };
+
     # 构造 pkgs 的公共参数：系统侧（base/nix.nix 的 nixpkgs）与 flake 侧（per-system.nix）
     # 都从这里取，否则两边各写一遍 overlays/allowUnfree，产物会与系统里装的分叉
     pkgsArgs = lib.mkOption {
