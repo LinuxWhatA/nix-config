@@ -37,7 +37,6 @@
     krdp # 远程桌面
     elisa # 音乐播放器
     okular # 文档查看器
-    konsole # 终端
     gwenview # 文件管理器
     khelpcenter # 帮助中心
     plasma-browser-integration # 浏览器集成

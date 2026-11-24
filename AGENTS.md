@@ -70,7 +70,7 @@ flake.nix                      # flake 入口
 - `hardware-configuration.nix`（naix/redmi/test）为手写 + disko 磁盘配置，勿用 `nixos-generate-config` 重生成。
 - `allowUnfree = true` 与 overlays 只在 `flake.config.pkgsArgs`（`modules/flake/config.nix`）定义一处，系统侧（`modules/nixos/base/nix.nix`）与 flake 侧（`per-system.nix`）共用，勿在任一处另写。`pkgs.mergeJson`（`packages/merge-json/`，经 overlay 别名）用于向应用自管 JSON 注入默认值。
 - `direnv allow` 加载 devshell（python + python-registry，供 `packages/bt-keys-info` 用）。
-- flake 求值只认 git 已跟踪文件：新文件须先 `git add -N <path>`（intent-to-add：不产生暂存内容，`git reset -- <path>` 可撤销）才会被 `nix eval` / `nix build` 看到。
+- flake 求值只认 git 已跟踪文件：新文件须先 `git add <path>` 才会被 `nix eval` / `nix build` 看到，除此之外不进暂存区。
 - `nixos-rebuild switch`（`nh os switch`）只重启被改动的用户服务；涉及会话启动链（greetd → 合成器 → 环境导入 → 守护自启、portal 配置）的改动须重新登录（退出 labwc，greetd 随即重拉）或整机重启验证。
 - 读 nixpkgs / home-manager / noctalia 等上游源码，一律**优先从 `/nix/store` 取本机已 fetch 的路径**再 grep：`nix eval --raw --impure --expr '(builtins.getFlake "<repo>").inputs.<name>.outPath'`；仅当 store 缺该源码时才联网 fetch，严禁先联网再查 store。
 - `nixvim` 刻意不 `follows nixpkgs`（上游 pin 自己的 nixpkgs；加了会触发 eval 警告），勿"修"。
