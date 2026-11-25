@@ -22,12 +22,17 @@
   # 白名单来自 Dolphin 的 ~/.config/dolphinrc [PreviewSettings] Plugins，新装插件不在其中就不会出图。
   # 故激活时把它追加进去（幂等：已在则跳过）。用 kread/kwriteconfig6 只改这一个键，不动 Dolphin 其它
   # 设置；注意激活脚本 PATH 只含 coreutils/grep 等，不含 kconfig，必须用绝对路径调用。
+  #
+  # 只在用户已有显式白名单时追加：键缺失时 Dolphin 用 KIO::PreviewJob::defaultPlugins()（全部可用
+  # 插件，自动包含 tracedraw），写成 ",tracedraw" 会让键存在并顶掉默认列表，反而禁用其它预览。
   home.activation.tracedrawDolphinThumbnailer = ''
     kreadconfig6=${pkgs.kdePackages.kconfig}/bin/kreadconfig6
     kwriteconfig6=${pkgs.kdePackages.kconfig}/bin/kwriteconfig6
-    plugins=$($kreadconfig6 --file dolphinrc --group PreviewSettings --key Plugins 2>/dev/null || true)
-    if ! printf '%s' "$plugins" | tr ',' '\n' | grep -qx tracedraw; then
-      $DRY_RUN_CMD $kwriteconfig6 --file dolphinrc --group PreviewSettings --key Plugins "''${plugins},tracedraw"
+    if $kreadconfig6 --file dolphinrc --group PreviewSettings --dump 2>/dev/null | grep -qE '^[[:space:]]*Plugins:'; then
+      plugins=$($kreadconfig6 --file dolphinrc --group PreviewSettings --key Plugins 2>/dev/null || true)
+      if [ -n "$plugins" ] && ! printf '%s' "$plugins" | tr ',' '\n' | grep -qx tracedraw; then
+        $DRY_RUN_CMD $kwriteconfig6 --file dolphinrc --group PreviewSettings --key Plugins "''${plugins},tracedraw"
+      fi
     fi
   '';
 }

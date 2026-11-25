@@ -70,7 +70,11 @@ flake.nix                      # flake 入口
 - `hardware-configuration.nix`（naix/redmi/test）为手写 + disko 磁盘配置，勿用 `nixos-generate-config` 重生成。
 - `allowUnfree = true` 与 overlays 只在 `flake.config.pkgsArgs`（`modules/flake/config.nix`）定义一处，系统侧（`modules/nixos/base/nix.nix`）与 flake 侧（`per-system.nix`）共用，勿在任一处另写。`pkgs.mergeJson`（`packages/merge-json/`，经 overlay 别名）用于向应用自管 JSON 注入默认值。
 - `direnv allow` 加载 devshell（python + python-registry，供 `packages/bt-keys-info` 用）。
-- flake 求值只认 git 已跟踪文件：新文件须先 `git add <path>` 才会被 `nix eval` / `nix build` 看到，除此之外不进暂存区。
+- 暂存区规则（**只约束 agent / 自动化工具**，不约束用户；用户可手动 `git add` / 改暂存区，agent 不得动用户布局）。flake 只纳入 git 索引里的文件（新文件未 `git add` 不可见），文件内容取工作区（含未暂存改动）；故 agent 只在**一种**情形动暂存区，其余一律不碰：
+  - **新文件**（`git cat-file -e HEAD:<path>` 失败 = HEAD 里没有）：首建时须 `git add <path>` 才会被 `nix eval` / `nix build` 看到。这是 agent **唯一**允许的暂存区操作。
+  - **已有文件的修改**（HEAD 里有的文件）：agent **永不** `git add`，改动留在工作区。`git diff`（工作区 vs 索引）就是"这次改了什么"，推进暂存区会把它藏起来。
+  - **已暂存的新文件后来又改了**（状态 `AM`）：改动部分也**不进暂存区**——索引只决定文件是否被纳入（nix 读到的仍是工作区内容，已实测），把后续改动留在工作区不影响 nix 求值，也让 `git diff` 展示后续改动，这样别人才知道你这次到底动了哪一行。
+  - **其余一律不动**：agent 也不对任何条目反暂存（`git restore --staged` / `git reset` 等），暂存区的取舍权在用户——用户审查后 `git add` 与否完全自由。
 - `nixos-rebuild switch`（`nh os switch`）只重启被改动的用户服务；涉及会话启动链（greetd → 合成器 → 环境导入 → 守护自启、portal 配置）的改动须重新登录（退出 labwc，greetd 随即重拉）或整机重启验证。
 - 读 nixpkgs / home-manager / noctalia 等上游源码，一律**优先从 `/nix/store` 取本机已 fetch 的路径**再 grep：`nix eval --raw --impure --expr '(builtins.getFlake "<repo>").inputs.<name>.outPath'`；仅当 store 缺该源码时才联网 fetch，严禁先联网再查 store。
 - `nixvim` 刻意不 `follows nixpkgs`（上游 pin 自己的 nixpkgs；加了会触发 eval 警告），勿"修"。

@@ -1,0 +1,17 @@
+# freedesktop 缩略图器：KDE6 PreviewJob 按 Exec 出图（GNOME 等其它实现也读同一规范）。
+# 源码级校验（kio-6.31/6.32 的 filepreviewjob.cpp）：KIO 的 standardThumbnailers() 只读本文件
+# 的 MimeType 与 Exec，忽略 TryExec；插件 Id 取文件名（max）。
+# Dolphin 只请求 dolphinrc [PreviewSettings] Plugins 白名单里的 Id，未登记的新插件不出图，
+# 登记见 modules/home/gui/max-thumbnailer.nix。
+# MimeType application/x-wine-extension-max 由 wine-3dsmax install-launcher 写入用户 MIME 数据库
+# （env.sh 禁用了 winemenubuilder，Wine 自己不做这一步）；没跑过 install-launcher 时 .max 认不出。
+# Exec on-demand 提取 .max 内嵌缩略图给 %o（KDE 缓存，源目录零残留）。提取毫秒级，远低于 KIO 的
+# 5s 单次时限；输出按内嵌图原生宽高比，正方形问题暂搁置。
+# %o 语义（standardthumbnailjob.cpp）：KIO 在缩略图缓存目录预建 QTemporaryFile（0600），把路径
+# 作 %o 传入；本脚本 mv 覆盖该路径后，KIO 用 QImage 读之并另写最终缓存（644）。故脚本产物权限
+# 无关紧要——KIO 读的是自己创建的目录项；本脚本 0600 临时文件与 KIO 的 XXXXXX.png 前缀不同。
+# 不要在其他包重复安装同名 max.thumbnailer：KIO 按 XDG_DATA_DIRS 去重，先找到的文件生效。
+[Thumbnailer Entry]
+TryExec=max-thumbnail-render
+Exec=max-thumbnail-render show %i %o %s
+MimeType=application/x-wine-extension-max;

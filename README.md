@@ -37,7 +37,7 @@
   - `virtualization/`：虚拟化（Docker、Droidloom、QEMU、RDP-Windows、VirtualBox、Waydroid）
 - `modules/home/`：Home Manager 用户模块，由系统托管注入：
   - `cli/`：命令行工具（direnv、fd、git、nh、packages、xdg、zsh）
-  - `gui/`：图形应用（Firefox、Heroic、Kitty、MangoHud、Noctalia、nomacs、tracedraw、VSCode、winapps、wine-3dsmax、通用 GUI 包）
+  - `gui/`：图形应用（Firefox、Heroic、Kitty、MangoHud、max-thumbnailer、Noctalia、nomacs、tracedraw、VSCode、winapps、wine-3dsmax、通用 GUI 包）
 - `modules/flake/`：flake-parts 模块（`autowire.nix` 扫描装配并声明模块树选项，`desktop-host.nix` 顶层组合桌面特性，`packages.nix` 暴露 overlay 包）。
 
 ### 自定义包
