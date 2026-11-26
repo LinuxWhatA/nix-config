@@ -56,6 +56,8 @@ NixOS 配置仓库（flake-parts + 自定义目录自动接线）。
 - flake inputs 刻意锁定国内镜像（git.nju.edu.cn / gitee / gitcode），不要"修"回 github。
 - `hardware-configuration.nix`（naix/redmi/test）为手写 + disko 磁盘配置，不要用 `nixos-generate-config` 重生成。
 - 读 nixpkgs / home-manager / noctalia 等上游源码，一律**优先从 `/nix/store` 取本机已 fetch 的路径**再 grep：`nix eval --raw --impure --expr '(builtins.getFlake "<repo>").inputs.<name>.outPath'`；仅当 store 缺该源码时才联网 fetch，不要先联网再查 store。
+- 用户级 `nix-env` 装的包不进系统配置，落在 `~/.nix-profile/bin`（`/home/lwa/.nix-profile/bin`）；工具报"找不到"时先查这里。
+- 测试 Python 代码优先用 `~/.nix-profile/bin/uv` 在临时目录建项目：`uv init /tmp/xxx && cd /tmp/xxx && uv add <pkg>` 装依赖（uv 自带锁文件与 Python 版本管理），再用 `uv run <script.py>` 运行。不要在临时目录外跑裸 `python3`、不要用 `python3 -m venv` 加 `pip`，也不要为一次性测试把依赖加进本仓或系统配置。
 - 会话启动链改动（greetd/DM、合成器、环境导入、守护自启、portal 配置）须重新登录或整机重启验证，`nixos-rebuild switch` 只重启被改动的用户服务。
 - 暂存区规则（**只约束 agent / 自动化工具**，不约束用户；用户可手动 `git add` / 改暂存区，agent 不得动用户布局）。flake 只纳入 git 索引里的文件（新文件未 `git add` 不可见），文件内容取工作区（含未暂存改动）；故 agent 只在**一种**情形动暂存区，其余一律不碰：
   - **新文件**（`git cat-file -e HEAD:<path>` 失败表示 HEAD 里没有）：首建时必须 `git add <path>` 才会被 `nix eval` / `nix build` 看到。这是 agent **唯一**允许的暂存区操作。

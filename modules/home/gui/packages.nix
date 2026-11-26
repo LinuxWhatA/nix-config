@@ -19,6 +19,5 @@
     umu-launcher
     pdfcraft
     photocraft
-    dsh-desktop-next
   ];
 }
