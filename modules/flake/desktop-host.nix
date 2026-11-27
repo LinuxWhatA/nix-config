@@ -17,6 +17,7 @@ in
       nixosModules.gui.thunar
       nixosModules.gui.clash
       nixosModules.gui.steam
+      nixosModules.gui.flatpak
       nixosModules.hardware.bluetooth
       nixosModules.hardware.graphics
       nixosModules.hardware.persist
