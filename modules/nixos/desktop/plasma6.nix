@@ -31,6 +31,10 @@
     gnome.gnome-keyring.enable = true;
   };
 
+  environment.systemPackages = with pkgs; [
+    adwaita-icon-theme
+  ];
+
   environment.plasma6.excludePackages = with pkgs.kdePackages; [
     kate # 文本编辑器
     ktexteditor # kate 插件
